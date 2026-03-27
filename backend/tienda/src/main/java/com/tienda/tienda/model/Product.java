@@ -17,4 +17,10 @@ public class Product {
     private String material;
     private String consideraciones;
     private List<Promotion> promociones;
+
+    public Product(int id, String nombre, Double precio){
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+    }
 }
