@@ -1,18 +1,10 @@
 package com.tienda.tienda.controller;
 
-import com.tienda.tienda.model.Product;
 import com.tienda.tienda.dto.ProductDTO;
 import com.tienda.tienda.service.ProductService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
 
 
 @RestController
@@ -21,23 +13,34 @@ public class ProductController {
     
     private final ProductService productService;
 
-    //Constructor donde inyectamos el servicio
     public ProductController(ProductService productService){
         this.productService = productService;
     }
 
-    //Obtener todos los productos
     @GetMapping
     public List<ProductDTO> getAllProducts() {
         return productService.getAllProducts();
     }
 
-    //Obtener producto por id
     @GetMapping("/{id}")
     public ProductDTO getProductById(@PathVariable int id) {
-        return productService.getProductById(id);
+        return productService.getProductById(id);     
     }   
     
+    @PostMapping
+    public ProductDTO createProduct(@RequestBody ProductDTO dto) {
+        return productService.createProduct(dto);
+    }
+
+    @PutMapping("/{id}")
+    public ProductDTO updateProduct (@PathVariable int id, @RequestBody ProductDTO dto) {
+       return productService.updateProduct(id, dto);
+    }
+
+    @DeleteMapping("/{id}")
+    public boolean deleteProduct(@PathVariable int id) {
+        return productService.deleteProduct(id);
+    }
     
     
 }
