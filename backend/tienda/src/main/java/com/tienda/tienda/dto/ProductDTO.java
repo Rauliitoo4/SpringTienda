@@ -12,5 +12,5 @@ public class ProductDTO {
     private String descripcion;
     private String material;
     private String consideraciones;
-    private List<Promotion> promociones;
+    private List<PromotionDTO> promociones;
 }

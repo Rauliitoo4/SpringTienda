@@ -12,5 +12,5 @@ import java.util.List;
 public class Carrito {
     private int id;
     private double total;
-    private List<Product> productos;
+    private List<LineaCarrito> lineas;
 }
