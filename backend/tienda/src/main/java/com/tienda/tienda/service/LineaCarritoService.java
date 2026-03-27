@@ -33,7 +33,7 @@ public class LineaCarritoService {
                 Promotion promo = new Promotion();
                 promo.setId(promoDTO.getId());
                 promo.setDescripcion(promoDTO.getDescripcion());
-                promo.setDescuento(promo.getDescuento());
+                promo.setDescuento(promoDTO.getDescuento());
                 promociones.add(promo);
             }
             producto.setPromociones(promociones);

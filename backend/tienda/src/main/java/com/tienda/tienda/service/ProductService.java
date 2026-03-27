@@ -49,7 +49,7 @@ public class ProductService {
         for (Product product : productos) {
             if (product.getId() == id) {
                 if (dto.getNombre() != null) product.setNombre(dto.getNombre());
-                if (dto.getPrecio() != null) product.setPrecio(dto.getPrecio());
+                if (dto.getPrecio() > 0) product.setPrecio(dto.getPrecio());
                 if (dto.getDescripcion() != null) product.setDescripcion(dto.getDescripcion());
                 if (dto.getMaterial() != null) product.setMaterial(dto.getMaterial());
                 if (dto.getConsideraciones() != null) product.setConsideraciones(dto.getConsideraciones());
@@ -103,6 +103,19 @@ public class ProductService {
         dto.setDescripcion(p.getDescripcion());
         dto.setMaterial(p.getMaterial());
         dto.setConsideraciones(p.getConsideraciones());
+
+        List<PromotionDTO> promosDTO = new ArrayList<>();
+        if (p.getPromociones() != null) {
+            for (Promotion promo : p.getPromociones()) {
+                PromotionDTO pDTO = new PromotionDTO();
+                pDTO.setId(promo.getId());
+                pDTO.setDescripcion(promo.getDescripcion());
+                pDTO.setDescuento(promo.getDescuento());
+                promosDTO.add(pDTO);
+            }
+        }
+        dto.setPromociones(promosDTO);
+
         return dto;
     }
 

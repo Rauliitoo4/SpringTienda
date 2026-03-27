@@ -19,7 +19,6 @@ public class CarritoService {
 
     public CarritoDTO createCarrito() {
         Carrito carrito = new Carrito();
-        carrito.setId((int) (carritos.size() + 1));
         carrito.setLineas(new ArrayList<>());
         carritos.add(carrito);
         return convertToDTO(carrito);
@@ -66,6 +65,9 @@ public class CarritoService {
         
         //Añadimos la nueva linea al carrito
         carrito.getLineas().add(linea);
+
+        //Actualizar total
+        carrito.setTotal(calcularTotal(carritoID));
 
         //Devuelvo la versión DTO del carrito actualizado
         return convertToDTO(carrito);

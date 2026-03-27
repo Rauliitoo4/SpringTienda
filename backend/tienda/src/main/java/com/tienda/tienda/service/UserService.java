@@ -11,19 +11,32 @@ import java.util.List;
 public class UserService {
     
     private final List<User> users = new ArrayList<>();
+    private final CarritoService carritoService;
 
-    public UserDTO createUser(UserDTO dto) {
+    public UserService(CarritoService carritoService) {
+        this.carritoService = carritoService;
+    }
+
+    public UserResponseDTO createUser(UserDTO dto) {
         User user = new User();
         user.setId(dto.getId());
+        user.setNombre(dto.getNombre());
+        user.setApellidos(dto.getApellidos());
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
+
+        CarritoDTO carritoDTO = carritoService.createCarrito();
+        Carrito carrito = new Carrito();
+        carrito.setId(carritoDTO.getId());
+        carrito.setLineas(new ArrayList<>());
+        user.setCarrito(carrito);
         
         users.add(user);
         return convertToDTO(user);
     }
 
-    public UserDTO updateUser(int id, UserDTO dto){
+    public UserResponseDTO updateUser(int id, UserDTO dto){
         for (User user: users) {
             if (user.getId() == id) {
                 if (dto.getUsername() != null) user.setUsername(dto.getUsername());
@@ -39,7 +52,7 @@ public class UserService {
         return users.removeIf(u -> u.getId() == id);
     }
 
-    public UserDTO getUserById(int id) {
+    public UserResponseDTO getUserById(int id) {
         return users.stream()
                     .filter(u -> u.getId() == id)
                     .findFirst()
@@ -47,20 +60,21 @@ public class UserService {
                     .orElse(null);
     }
 
-    public List<UserDTO> getAllUsers() {
-        List<UserDTO> listDTO = new ArrayList<>();
+    public List<UserResponseDTO> getAllUsers() {
+        List<UserResponseDTO> listDTO = new ArrayList<>();
         for (User user: users) {
             listDTO.add(convertToDTO(user));
         }
         return listDTO;
     }
 
-    private UserDTO convertToDTO(User user) {
-        UserDTO dto = new UserDTO();
+    private UserResponseDTO convertToDTO(User user) {
+        UserResponseDTO dto = new UserResponseDTO();
         dto.setId(user.getId());
+        dto.setNombre(user.getNombre());
+        dto.setApellidos(user.getApellidos());
         dto.setEmail(user.getEmail());
         dto.setUsername(user.getUsername());
-        dto.setPassword(user.getPassword());
         return dto;
     }
 }
