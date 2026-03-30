@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/usuarios")
 public class UserController {
     
     private final UserService userService;
@@ -46,7 +46,7 @@ public class UserController {
     
     @DeleteMapping("/{id}")
     public boolean deleteUser(@PathVariable int id) {
-        return userService.deleteuser(id);
+        return userService.deleteUser(id);
     }
     
     

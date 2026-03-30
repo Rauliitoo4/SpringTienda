@@ -9,4 +9,5 @@ public class UserResponseDTO {
     private String apellidos;
     private String username;
     private String email;
+    private int carritoId;
 }

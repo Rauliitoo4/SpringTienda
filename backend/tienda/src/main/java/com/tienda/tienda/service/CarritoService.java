@@ -2,6 +2,7 @@ package com.tienda.tienda.service;
 
 import com.tienda.tienda.model.*;
 import com.tienda.tienda.dto.*;
+import com.tienda.tienda.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,76 +11,49 @@ import java.util.List;
 @Service
 public class CarritoService {
     
-    private List<Carrito> carritos = new ArrayList<>();
-    private final ProductService productService;
+    private final CarritoRepository carritoRepo;
+    private final ProductRepository productRepo;
 
-    public CarritoService(ProductService productService) {
-        this.productService = productService;
-    }
-
-    public CarritoDTO createCarrito() {
-        Carrito carrito = new Carrito();
-        carrito.setLineas(new ArrayList<>());
-        carritos.add(carrito);
-        return convertToDTO(carrito);
+    public CarritoService(ProductRepository productRepo, CarritoRepository carritoRepo) {
+        this.productRepo = productRepo;
+        this.carritoRepo = carritoRepo;
     }
 
     public boolean deleteCarrito (int id) {
-        return carritos.removeIf(c -> c.getId() == id);
+        if (!carritoRepo.existsById(id)) return false;
+        carritoRepo.deleteById(id);
+        return true;
     }
 
     public CarritoDTO getCarritoById (int id){
-        return carritos.stream()
-                    .filter(c -> c.getId() == id)
-                    .findFirst()
+        return carritoRepo.findById(id)
                     .map(this::convertToDTO)
                     .orElse(null);
     }
 
     public CarritoDTO addProductToCarrito (int carritoID, int productID, int cantidad) {
-        Carrito carrito = carritos.stream()         
-                    .filter(c -> c.getId() == carritoID)
-                    .findFirst()
-                    .orElse(null);
-        
+        Carrito carrito = carritoRepo.findById(carritoID).orElse(null);
         if (carrito == null) return null;
 
-        //Obtener el producto desde el Servicio
-        ProductDTO productoDTO = productService.getProductById(productID);
-        if (productoDTO == null) return null;
-
-        //Si el producto es correcto creamos la linea del carrito
-        LineaCarrito linea = new LineaCarrito();
-        linea.setId((int) (carrito.getLineas().size() + 1));
-        linea.setCantidad(cantidad);
-        linea.setSubtotal(productoDTO.getPrecio() * cantidad);
-
-        //Convertir de DTO a model
-        Product producto = new Product();
-        producto.setId(productoDTO.getId());
-        producto.setNombre(productoDTO.getNombre());
-        producto.setPrecio(productoDTO.getPrecio());
-
-        //Ya guardamos el producto en la linea
-        linea.setProducto(producto);
+        Product producto = productRepo.findById(productID).orElse(null);
+        if (producto == null) return null;
         
-        //Añadimos la nueva linea al carrito
+        LineaCarrito linea = new LineaCarrito();
+        linea.setCantidad(cantidad);
+        linea.setProducto(producto);
+        linea.setSubtotal(producto.getPrecio() * cantidad);
+        linea.setCarrito(carrito);
+
         carrito.getLineas().add(linea);
 
-        //Actualizar total
         carrito.setTotal(calcularTotal(carritoID));
 
-        //Devuelvo la versión DTO del carrito actualizado
+        carritoRepo.save(carrito);
         return convertToDTO(carrito);
-
-
     }
 
     public double calcularTotal(int carritoID){
-        Carrito carrito = carritos.stream()
-                    .filter(c -> c.getId() == carritoID)
-                    .findFirst()
-                    .orElse(null);
+        Carrito carrito = carritoRepo.findById(carritoID).orElse(null);
         if (carrito == null) return 0;
 
         return carrito.getLineas().stream()
@@ -105,6 +79,9 @@ public class CarritoService {
             productoDTO.setId(p.getId());
             productoDTO.setNombre(p.getNombre());
             productoDTO.setPrecio(p.getPrecio());
+            productoDTO.setDescripcion(p.getDescripcion()); 
+            productoDTO.setMaterial(p.getMaterial());
+            productoDTO.setConsideraciones(p.getConsideraciones());
 
             l.setProducto(productoDTO);
 

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
-@RequestMapping("/carts")
+@RequestMapping("/carritos")
 public class CarritoController {
     
     private final CarritoService carritoService;
@@ -26,7 +26,7 @@ public class CarritoController {
         return carritoService.getCarritoById(id);
     }
 
-    @PostMapping("/{carritoId}/products/{productoId}")
+    @PostMapping("/{carritoId}/productos/{productoId}")
     public CarritoDTO addProductToCarrito(@PathVariable int carritoId, @PathVariable int productoId, @RequestParam int cantidad) {
         return carritoService.addProductToCarrito(carritoId, productoId, cantidad);
     }

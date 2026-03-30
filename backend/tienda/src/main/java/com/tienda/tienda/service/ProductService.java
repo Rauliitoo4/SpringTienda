@@ -4,95 +4,59 @@ import com.tienda.tienda.dto.ProductDTO;
 import com.tienda.tienda.dto.PromotionDTO;
 import com.tienda.tienda.model.Product;
 import com.tienda.tienda.model.Promotion;
+import com.tienda.tienda.repository.ProductRepository;
 
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.ArrayList;
 
 @Service
 public class ProductService {
 
-    private List<Product> productos = new ArrayList<>();
+    private final ProductRepository productRepo;
     
-    public ProductService() {
-        productos.add(new Product(1, "Camiseta", 19.99));
-        productos.add(new Product(2, "Pantalón", 39.99));
+    public ProductService(ProductRepository productRepo) {
+        this.productRepo = productRepo;
     }
 
     public ProductDTO createProduct(ProductDTO dto){
-        Product product = new Product();
-        product.setId(dto.getId());
-        product.setNombre(dto.getNombre());
-        product.setPrecio(dto.getPrecio());
-        product.setDescripcion(dto.getDescripcion());
-        product.setMaterial(dto.getMaterial());
-        product.setConsideraciones(dto.getConsideraciones());
-
-        List<Promotion> promos = new ArrayList<>();
-        if (dto.getPromociones() != null) {
-            for (PromotionDTO p : dto.getPromociones()) {
-                Promotion promo = new Promotion();
-                promo.setId(p.getId());
-                promo.setDescuento(p.getDescuento());
-                promo.setDescripcion(p.getDescripcion());
-                promos.add(promo);
-            }
-        }
-        product.setPromociones(promos);
-
-        productos.add(product);
+        Product product = convertToEntity(dto);
+        productRepo.save(product);
         return convertToDTO(product);
     }
 
     public ProductDTO updateProduct(int id, ProductDTO dto){
-        for (Product product : productos) {
-            if (product.getId() == id) {
-                if (dto.getNombre() != null) product.setNombre(dto.getNombre());
-                if (dto.getPrecio() > 0) product.setPrecio(dto.getPrecio());
-                if (dto.getDescripcion() != null) product.setDescripcion(dto.getDescripcion());
-                if (dto.getMaterial() != null) product.setMaterial(dto.getMaterial());
-                if (dto.getConsideraciones() != null) product.setConsideraciones(dto.getConsideraciones());
+        Product producto = productRepo.findById(id).orElse(null);
+        if (producto == null) return null;
 
-                if (dto.getPromociones() != null) {
-                    List<Promotion> promos = new ArrayList<>();
-                    for (PromotionDTO p : dto.getPromociones()) {
-                        Promotion promo = new Promotion();
-                        promo.setId(p.getId());
-                        promo.setDescuento(p.getDescuento());
-                        promo.setDescripcion(p.getDescripcion());
-                        promos.add(promo);
-                    }
-                    product.setPromociones(promos);
-                }
+        if (dto.getNombre() != null) producto.setNombre(dto.getNombre());
+        if (dto.getPrecio() >= 0) producto.setPrecio(dto.getPrecio());
+        if (dto.getDescripcion() != null) producto.setDescripcion(dto.getDescripcion());
+        if (dto.getMaterial() != null) producto.setMaterial(dto.getMaterial());
+        if (dto.getConsideraciones() != null) producto.setConsideraciones(dto.getConsideraciones());
 
-                return convertToDTO(product);
-            }
-        }
-        return null;
+        productRepo.save(producto);
+        return convertToDTO(producto);
     }
 
     public boolean deleteProduct (int id) {
-        return productos.removeIf(p -> p.getId() == id);
+        if (!productRepo.existsById(id)) return false;
+        productRepo.deleteById(id);
+        return true;
     }
 
     public List<ProductDTO> getAllProducts() {
-        return productos.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
+        List <ProductDTO> listDTO = new ArrayList<>();
+        for (Product producto : productRepo.findAll()) {
+            listDTO.add(convertToDTO(producto));
+        }
+        return listDTO;
     }
 
     public ProductDTO getProductById(int id){
-        return productos.stream()
-                    .filter(p -> p.getId() == id)
-                    .findFirst()
+        return productRepo.findById(id)
                     .map(this::convertToDTO)
                     .orElse(null);
-    }
-
-    public void addProduct (ProductDTO dto) {
-        Product producto = convertToEntity(dto);
-        productos.add(producto);
     }
 
     private ProductDTO convertToDTO(Product p) {

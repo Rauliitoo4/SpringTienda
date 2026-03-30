@@ -2,6 +2,7 @@ package com.tienda.tienda.service;
 
 import com.tienda.tienda.model.*;
 import com.tienda.tienda.dto.*;
+import com.tienda.tienda.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,59 +11,52 @@ import java.util.List;
 @Service
 public class UserService {
     
-    private final List<User> users = new ArrayList<>();
-    private final CarritoService carritoService;
+    private final UserRepository userRepo;
 
-    public UserService(CarritoService carritoService) {
-        this.carritoService = carritoService;
+    public UserService(UserRepository userRepo) {
+        this.userRepo = userRepo;
     }
 
     public UserResponseDTO createUser(UserDTO dto) {
-        User user = new User();
-        user.setId(dto.getId());
-        user.setNombre(dto.getNombre());
-        user.setApellidos(dto.getApellidos());
-        user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
+        User user = convertToEntity(dto);
 
-        CarritoDTO carritoDTO = carritoService.createCarrito();
         Carrito carrito = new Carrito();
-        carrito.setId(carritoDTO.getId());
         carrito.setLineas(new ArrayList<>());
         user.setCarrito(carrito);
-        
-        users.add(user);
+
+        userRepo.save(user);
         return convertToDTO(user);
     }
 
     public UserResponseDTO updateUser(int id, UserDTO dto){
-        for (User user: users) {
-            if (user.getId() == id) {
-                if (dto.getUsername() != null) user.setUsername(dto.getUsername());
-                if (dto.getEmail() != null) user.setEmail(dto.getEmail());
-                if (dto.getPassword() != null) user.setPassword(dto.getPassword());
-                return convertToDTO(user);
-            }
-        }
-        return null;
+        User user = userRepo.findById(id).orElse(null);
+        if (user == null) return null;
+
+        if (dto.getNombre() != null) user.setNombre(dto.getNombre());
+        if (dto.getApellidos() != null) user.setNombre(dto.getApellidos());
+        if (dto.getUsername() != null) user.setNombre(dto.getUsername());
+        if (dto.getEmail() != null) user.setNombre(dto.getEmail());
+        if (dto.getPassword() != null) user.setNombre(dto.getPassword());
+
+        userRepo.save(user);
+        return convertToDTO(user);
     }
 
-    public boolean deleteuser(int id) {
-        return users.removeIf(u -> u.getId() == id);
+    public boolean deleteUser(int id) {
+        if (!userRepo.existsById(id)) return false;
+        userRepo.deleteById(id);
+        return true;
     }
 
     public UserResponseDTO getUserById(int id) {
-        return users.stream()
-                    .filter(u -> u.getId() == id)
-                    .findFirst()
+        return userRepo.findById(id)
                     .map(this::convertToDTO)
                     .orElse(null);
     }
 
     public List<UserResponseDTO> getAllUsers() {
         List<UserResponseDTO> listDTO = new ArrayList<>();
-        for (User user: users) {
+        for (User user: userRepo.findAll()) {
             listDTO.add(convertToDTO(user));
         }
         return listDTO;
@@ -75,6 +69,17 @@ public class UserService {
         dto.setApellidos(user.getApellidos());
         dto.setEmail(user.getEmail());
         dto.setUsername(user.getUsername());
+        dto.setCarritoId(user.getCarrito().getId());
         return dto;
+    }
+
+    private User convertToEntity (UserDTO dto) {
+        User user = new User();
+        user.setNombre(dto.getNombre());
+        user.setApellidos(dto.getApellidos());
+        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+        return user;
     }
 }

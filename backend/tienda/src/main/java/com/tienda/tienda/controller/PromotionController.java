@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
-@RequestMapping("/promotions")
+@RequestMapping("/promociones")
 public class PromotionController {
     
     private final PromotionService promotionService;

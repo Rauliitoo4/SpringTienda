@@ -2,6 +2,7 @@ package com.tienda.tienda.service;
 
 import com.tienda.tienda.model.*;
 import com.tienda.tienda.dto.*;
+import com.tienda.tienda.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,67 +11,61 @@ import java.util.List;
 @Service
 public class LineaCarritoService {
     
-    private List<LineaCarrito> lineas = new ArrayList<>();
+    private final LineaCarritoRepository lineaRepo;
+    private final CarritoRepository carritoRepo;
 
-    public LineaCarritoDTO createLinea(LineaCarritoDTO dto) {
-        LineaCarrito linea = new LineaCarrito();
-        linea.setId(dto.getId());
-        linea.setCantidad(dto.getCantidad());
-        linea.setSubtotal(dto.getProducto().getPrecio() * dto.getCantidad());
-
-        Product producto = new Product();
-        ProductDTO prodDTO = dto.getProducto();
-        if (prodDTO != null) {
-            producto.setId(prodDTO.getId());
-            producto.setNombre(prodDTO.getNombre());
-            producto.setPrecio(prodDTO.getPrecio());
-            producto.setDescripcion(prodDTO.getDescripcion());
-            producto.setMaterial(prodDTO.getMaterial());
-            producto.setConsideraciones(prodDTO.getConsideraciones());
-            
-            List<Promotion> promociones = new ArrayList<>();
-            for (PromotionDTO promoDTO : prodDTO.getPromociones()){
-                Promotion promo = new Promotion();
-                promo.setId(promoDTO.getId());
-                promo.setDescripcion(promoDTO.getDescripcion());
-                promo.setDescuento(promoDTO.getDescuento());
-                promociones.add(promo);
-            }
-            producto.setPromociones(promociones);
-        }
-
-        linea.setProducto(producto);
-
-        lineas.add(linea);
-
-        return convertToDTO(linea);
+    public LineaCarritoService(LineaCarritoRepository lineaRepo, CarritoRepository carritoRepo){
+        this.lineaRepo = lineaRepo;
+        this.carritoRepo = carritoRepo;
     }
 
     public LineaCarritoDTO updateLinea(int id, int cantidad) {
-        for (LineaCarrito linea : lineas) {
-            if (linea.getId() == id){
-                if (cantidad > 0) linea.setCantidad(cantidad);
-                return convertToDTO(linea);
-            }
+        LineaCarrito linea = lineaRepo.findById(id).orElse(null);
+        if (linea == null) return null;
+
+        if (cantidad > 0) {
+            linea.setCantidad(cantidad);
+            linea.setSubtotal(linea.getProducto().getPrecio() * cantidad);
         }
-        return null;
+
+        Carrito carrito = linea.getCarrito();
+        double total = carrito.getLineas().stream()
+                    .mapToDouble(LineaCarrito::getSubtotal)
+                    .sum();
+        carrito.setTotal(total);
+        carritoRepo.save(carrito);
+
+        lineaRepo.save(linea);
+        return convertToDTO(linea);
     }
 
     public boolean deleteLinea (int id) {
-        return lineas.removeIf(l -> l.getId() == id);
+        LineaCarrito linea = lineaRepo.findById(id).orElse(null);
+        if (linea == null) return false;
+
+        Carrito carrito = linea.getCarrito();
+        carrito.getLineas().remove(linea);
+
+        lineaRepo.deleteById(id);
+
+        double total = carrito.getLineas().stream()     
+                    .mapToDouble(LineaCarrito::getSubtotal)
+                    .sum();
+        carrito.setTotal(total);
+        carritoRepo.save(carrito);
+        
+        return true;
     }
 
     public LineaCarritoDTO getLineaById (int id){
-        return lineas.stream()
-                    .filter(l -> l.getId() == id)
-                    .findFirst()
+        return lineaRepo.findById(id)
                     .map(this::convertToDTO)
                     .orElse(null);
     }
 
     public List<LineaCarritoDTO> getAllLineas() {
         List<LineaCarritoDTO> listDTO = new ArrayList<>();
-        for (LineaCarrito linea : lineas) {
+        for (LineaCarrito linea : lineaRepo.findAll()) {
             listDTO.add(convertToDTO(linea));
         }
         return listDTO;
