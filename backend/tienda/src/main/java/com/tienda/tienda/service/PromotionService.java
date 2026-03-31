@@ -3,6 +3,8 @@ package com.tienda.tienda.service;
 import com.tienda.tienda.dto.*;
 import com.tienda.tienda.model.*;
 import org.springframework.stereotype.Service;
+
+import com.tienda.tienda.repository.ProductRepository;
 import com.tienda.tienda.repository.PromotionRepository;
 
 import java.util.List;
@@ -12,9 +14,12 @@ import java.util.ArrayList;
 public class PromotionService {
     
     private final PromotionRepository promotionRepo;
+    private final ProductRepository productRepo;
 
-    public PromotionService(PromotionRepository promotionRepo){
+    public PromotionService(PromotionRepository promotionRepo, ProductRepository productRepo){
         this.promotionRepo = promotionRepo;
+        this.productRepo = productRepo;
+
     }
 
     public PromotionDTO createPromotion(PromotionDTO dto) {
@@ -35,7 +40,17 @@ public class PromotionService {
     }
 
     public boolean deletePromotion (int id) {
-        if (!promotionRepo.existsById(id)) return false;
+        Promotion promocion = promotionRepo.findById(id).orElse(null);
+        if (promocion == null) return false;
+
+        List<Product> productos = productRepo.findAll();
+        for (Product producto : productos) {
+            if (producto.getPromociones().contains(promocion)) {
+                producto.getPromociones().remove(promocion);
+                productRepo.save(producto);
+            }
+        }
+
         promotionRepo.deleteById(id);
         return true;
     }

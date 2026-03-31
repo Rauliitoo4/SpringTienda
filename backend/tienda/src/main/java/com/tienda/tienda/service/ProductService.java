@@ -33,7 +33,10 @@ public class ProductService {
         if (producto == null) return null;
 
         if (dto.getNombre() != null) producto.setNombre(dto.getNombre());
-        if (dto.getPrecio() >= 0) producto.setPrecio(dto.getPrecio());
+        if (dto.getPrecio() >= 0) {
+            producto.setPrecio(dto.getPrecio());
+            recalcularPrecioFinal(producto);
+        }
         if (dto.getDescripcion() != null) producto.setDescripcion(dto.getDescripcion());
         if (dto.getMaterial() != null) producto.setMaterial(dto.getMaterial());
         if (dto.getConsideraciones() != null) producto.setConsideraciones(dto.getConsideraciones());
