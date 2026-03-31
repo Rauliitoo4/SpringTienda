@@ -24,6 +24,7 @@ public class Product {
     private String descripcion;
     private String material;
     private String consideraciones;
+    private String imagenUrl;
 
     @ManyToMany
     @JoinTable(

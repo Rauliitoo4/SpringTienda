@@ -98,6 +98,7 @@ public class ProductService {
         dto.setDescripcion(p.getDescripcion());
         dto.setMaterial(p.getMaterial());
         dto.setConsideraciones(p.getConsideraciones());
+        dto.setImagenUrl(p.getImagenUrl());
 
         List<PromotionDTO> promosDTO = new ArrayList<>();
         if (p.getPromociones() != null) {
@@ -123,6 +124,7 @@ public class ProductService {
         p.setDescripcion(dto.getDescripcion());
         p.setMaterial(dto.getMaterial());
         p.setConsideraciones(dto.getConsideraciones());
+        p.setImagenUrl(dto.getImagenUrl());
         return p;
     }
 
