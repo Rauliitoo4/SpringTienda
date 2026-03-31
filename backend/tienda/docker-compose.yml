@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: tienda_postgres
+    environment:
+      POSTGRES_DB: tienda
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    container_name: tienda_backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tienda
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin123
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:

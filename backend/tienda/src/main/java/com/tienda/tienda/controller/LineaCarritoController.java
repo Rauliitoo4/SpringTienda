@@ -31,7 +31,7 @@ public class LineaCarritoController {
     }
 
     @PutMapping("/{id}")
-    public LineaCarritoDTO updateLinea(@PathVariable int id, @RequestBody int cantidad) {
+    public LineaCarritoDTO updateLinea(@PathVariable int id, @RequestParam int cantidad) {
         return lineaCarritoService.updateLinea(id, cantidad);
     }
     
