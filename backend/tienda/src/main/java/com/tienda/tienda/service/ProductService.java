@@ -5,6 +5,7 @@ import com.tienda.tienda.dto.PromotionDTO;
 import com.tienda.tienda.model.Product;
 import com.tienda.tienda.model.Promotion;
 import com.tienda.tienda.repository.ProductRepository;
+import com.tienda.tienda.repository.PromotionRepository;
 
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -14,9 +15,11 @@ import java.util.ArrayList;
 public class ProductService {
 
     private final ProductRepository productRepo;
+    private final PromotionRepository promotionRepo;
     
-    public ProductService(ProductRepository productRepo) {
+    public ProductService(ProductRepository productRepo, PromotionRepository promotionRepo) {
         this.productRepo = productRepo;
+        this.promotionRepo = promotionRepo;
     }
 
     public ProductDTO createProduct(ProductDTO dto){
@@ -59,11 +62,39 @@ public class ProductService {
                     .orElse(null);
     }
 
+    public ProductDTO addPromotion(int productoID, int promocionID) {
+        Product producto = productRepo.findById(productoID).orElse(null);
+        if (producto == null) return null;
+
+        Promotion promo = promotionRepo.findById(promocionID).orElse(null);
+        if (promo == null) return null;
+
+        if (!producto.getPromociones().contains(promo)) {
+            producto.getPromociones().add(promo);
+        }
+
+        recalcularPrecioFinal(producto);
+        productRepo.save(producto);
+        return convertToDTO(producto);
+    }
+
+    public ProductDTO removePromotion(int productoID, int promocionID) {
+        Product producto = productRepo.findById(productoID).orElse(null);
+        if (producto == null) return null;
+
+        producto.getPromociones().removeIf(p -> p.getId() == promocionID);
+
+        recalcularPrecioFinal(producto);
+        productRepo.save(producto);
+        return convertToDTO(producto);
+    }
+
     private ProductDTO convertToDTO(Product p) {
         ProductDTO dto = new ProductDTO();
         dto.setId(p.getId());
         dto.setNombre(p.getNombre());
         dto.setPrecio(p.getPrecio());
+        dto.setPrecioFinal(p.getPrecioFinal());
         dto.setDescripcion(p.getDescripcion());
         dto.setMaterial(p.getMaterial());
         dto.setConsideraciones(p.getConsideraciones());
@@ -88,9 +119,23 @@ public class ProductService {
         p.setId(dto.getId());
         p.setNombre(dto.getNombre());
         p.setPrecio(dto.getPrecio());
+        p.setPrecioFinal(dto.getPrecio());
         p.setDescripcion(dto.getDescripcion());
         p.setMaterial(dto.getMaterial());
         p.setConsideraciones(dto.getConsideraciones());
         return p;
+    }
+
+    private void recalcularPrecioFinal(Product producto) {
+        if (producto.getPromociones() == null || producto.getPromociones().isEmpty()) {
+            producto.setPrecioFinal(producto.getPrecio());
+        }
+
+        double maxDescuento = producto.getPromociones().stream()
+                                .mapToDouble(Promotion::getDescuento)
+                                .max()
+                                .orElse(0);
+
+        producto.setPrecioFinal(producto.getPrecio() * (1 - maxDescuento / 100));
     }
 }

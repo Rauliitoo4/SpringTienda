@@ -9,6 +9,7 @@ public class ProductDTO {
     private int id;
     private String nombre;
     private double precio;
+    private double precioFinal;
     private String descripcion;
     private String material;
     private String consideraciones;

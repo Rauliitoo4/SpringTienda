@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
+
 @RestController
 @RequestMapping("/productos")
 public class ProductController {
@@ -41,6 +42,15 @@ public class ProductController {
     public boolean deleteProduct(@PathVariable int id) {
         return productService.deleteProduct(id);
     }
+
+    @PostMapping("/{productoID}/promociones/{promocionID}")
+    public ProductDTO addPromotion(@PathVariable int productoID, @PathVariable int promocionID) {
+        return productService.addPromotion(productoID, promocionID);
+    }
     
+    @DeleteMapping("/{productoID}/promociones/{promocionID}")
+    public ProductDTO removePromotion(@PathVariable int productoID, @PathVariable int promocionID) {
+        return productService.removePromotion(productoID, promocionID);
+    }
     
 }

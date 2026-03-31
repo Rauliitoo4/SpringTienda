@@ -20,6 +20,7 @@ public class Product {
 
     private String nombre;
     private double precio;
+    private double precioFinal;
     private String descripcion;
     private String material;
     private String consideraciones;
@@ -32,9 +33,4 @@ public class Product {
     )
     private List<Promotion> promociones;
 
-    public Product(int id, String nombre, Double precio){
-        this.id = id;
-        this.nombre = nombre;
-        this.precio = precio;
-    }
 }
