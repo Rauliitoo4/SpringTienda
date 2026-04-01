@@ -25,7 +25,7 @@ public class LineaCarritoService {
 
         if (cantidad > 0) {
             linea.setCantidad(cantidad);
-            linea.setSubtotal(linea.getProducto().getPrecio() * cantidad);
+            linea.setSubtotal(linea.getProducto().getPrecioFinal() * cantidad);
         }
 
         Carrito carrito = linea.getCarrito();
@@ -82,6 +82,7 @@ public class LineaCarritoService {
         productoDTO.setId(producto.getId());
         productoDTO.setNombre(producto.getNombre());
         productoDTO.setPrecio(producto.getPrecio());
+        productoDTO.setPrecioFinal(producto.getPrecioFinal());
         productoDTO.setDescripcion(producto.getDescripcion());
         productoDTO.setMaterial(producto.getMaterial());
         productoDTO.setConsideraciones(producto.getConsideraciones());

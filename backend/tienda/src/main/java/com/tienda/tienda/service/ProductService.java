@@ -2,10 +2,11 @@ package com.tienda.tienda.service;
 
 import com.tienda.tienda.dto.ProductDTO;
 import com.tienda.tienda.dto.PromotionDTO;
+import com.tienda.tienda.model.Carrito;
+import com.tienda.tienda.model.LineaCarrito;
 import com.tienda.tienda.model.Product;
 import com.tienda.tienda.model.Promotion;
-import com.tienda.tienda.repository.ProductRepository;
-import com.tienda.tienda.repository.PromotionRepository;
+import com.tienda.tienda.repository.*;
 
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -16,10 +17,15 @@ public class ProductService {
 
     private final ProductRepository productRepo;
     private final PromotionRepository promotionRepo;
+    private final CarritoRepository carritoRepo;
+    private final LineaCarritoRepository lineaRepo;
     
-    public ProductService(ProductRepository productRepo, PromotionRepository promotionRepo) {
+    
+    public ProductService(ProductRepository productRepo, PromotionRepository promotionRepo, CarritoRepository carritoRepo, LineaCarritoRepository lineaRepo) {
         this.productRepo = productRepo;
         this.promotionRepo = promotionRepo;
+        this.carritoRepo = carritoRepo;
+        this.lineaRepo = lineaRepo; 
     }
 
     public ProductDTO createProduct(ProductDTO dto){
@@ -77,6 +83,7 @@ public class ProductService {
         }
 
         recalcularPrecioFinal(producto);
+        actualizarLineasCarrito(producto);
         productRepo.save(producto);
         return convertToDTO(producto);
     }
@@ -88,6 +95,7 @@ public class ProductService {
         producto.getPromociones().removeIf(p -> p.getId() == promocionID);
 
         recalcularPrecioFinal(producto);
+        actualizarLineasCarrito(producto);
         productRepo.save(producto);
         return convertToDTO(producto);
     }
@@ -142,5 +150,22 @@ public class ProductService {
                                 .orElse(0);
 
         producto.setPrecioFinal(producto.getPrecio() * (1 - maxDescuento / 100));
+    }
+
+    private void actualizarLineasCarrito(Product producto) {
+        List<LineaCarrito> lineas = lineaRepo.findAll();
+        for (LineaCarrito linea : lineas) {
+            if (linea.getProducto().getId() == producto.getId()) {
+                linea.setSubtotal(producto.getPrecioFinal() * linea.getCantidad());
+                lineaRepo.save(linea);
+
+                Carrito carrito = linea.getCarrito();
+                double total = carrito.getLineas().stream()
+                                .mapToDouble(LineaCarrito::getSubtotal)
+                                .sum();
+                carrito.setTotal(total);
+                carritoRepo.save(carrito);
+            }
+        }
     }
 }
