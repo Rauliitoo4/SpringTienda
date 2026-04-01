@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="02-insert-promociones" author="raul.redondochicano">
+        <insert tableName="promociones">
+            <column name="descripcion" value="Descuento de verano"/>
+            <column name="descuento" valueNumeric="10.0"/>
+        </insert>
+        <insert tableName="promociones">
+            <column name="descripcion" value="Black Friday"/>
+            <column name="descuento" valueNumeric="20.0"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="02-insert-productos" author="raul.redondochicano">
+        <insert tableName="productos">
+            <column name="nombre" value="Camiseta básica blanca"/>
+            <column name="precio" valueNumeric="19.99"/>
+            <column name="precio_final" valueNumeric="19.99"/>
+            <column name="descripcion" value="Camiseta de algodón 100%, color blanco"/>
+            <column name="material" value="Algodón 100%"/>
+            <column name="consideraciones" value="Lavar a 30 grados"/>
+            <column name="imagen_url" value="https://ejemplo.com/camiseta.jpg"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="nombre" value="Pantalón Vaquero"/>
+            <column name="precio" valueNumeric="39.99"/>
+            <column name="precio_final" valueNumeric="39.99"/>
+            <column name="descripcion" value="Pantalón vaquero clásico"/>
+            <column name="material" value="Denim"/>
+            <column name="consideraciones" value="Lavar a 40 grados"/>
+            <column name="imagen_url" value="https://ejemplo.com/pantalon.jpg"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="nombre" value="Sudadera básica"/>
+            <column name="precio" valueNumeric="29.99"/>
+            <column name="precio_final" valueNumeric="29.99"/>
+            <column name="descripcion" value="Sudadera con capuchade algodón 100%, color gris"/>
+            <column name="material" value="Algodón 70%, Poliéster 30%"/>
+            <column name="consideraciones" value="Lavar a 50 grados"/>
+            <column name="imagen_url" value="https://ejemplo.com/sudadera.jpg"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="02-insert-carritos" author="raul.redondochicano">
+        <insert tableName="carritos">
+            <column name="total" valueNumeric="0.0"/>
+        </insert>
+        <insert tableName="carritos">
+            <column name="total" valueNumeric="0.0"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="02-insert-usuarios" author="raul.redondochicano">
+        <insert tableName="usuarios">
+            <column name="nombre" value="Juan"/>
+            <column name="apellidos" value="García López"/>
+            <column name="username" value="juanilloPalmillero"/>
+            <column name="email" value="juanillo@gmail.com"/>
+            <column name="password" value="1234"/>
+            <column name="carrito_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="usuarios">
+            <column name="nombre" value="José"/>
+            <column name="apellidos" value="Redondo Martínez"/>
+            <column name="username" value="churumbel"/>
+            <column name="email" value="churumbel@gmail.com"/>
+            <column name="password" value="1234"/>
+            <column name="carrito_id" valueNumeric="2"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
+
