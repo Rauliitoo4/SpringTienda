@@ -29,16 +29,6 @@ public class CarritoController {
     @PostMapping("/{carritoId}/productos/{productoId}")
     public CarritoDTO addProductToCarrito(@PathVariable int carritoId, @PathVariable int productoId, @RequestParam int cantidad) {
         return carritoService.addProductToCarrito(carritoId, productoId, cantidad);
-    }
-    
-    @DeleteMapping("/{id}")
-    public boolean deleteCarrito(@PathVariable int id) {
-        return carritoService.deleteCarrito(id);
-    }
-    
-    @GetMapping("/{id}/total")
-    public double calcularTotal(@PathVariable int id) {
-        return carritoService.calcularTotal(id);
-    }
+    } 
 }
 

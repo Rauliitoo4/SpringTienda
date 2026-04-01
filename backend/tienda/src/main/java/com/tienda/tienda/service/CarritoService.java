@@ -19,12 +19,6 @@ public class CarritoService {
         this.carritoRepo = carritoRepo;
     }
 
-    public boolean deleteCarrito (int id) {
-        if (!carritoRepo.existsById(id)) return false;
-        carritoRepo.deleteById(id);
-        return true;
-    }
-
     public CarritoDTO getCarritoById (int id){
         return carritoRepo.findById(id)
                     .map(this::convertToDTO)
