@@ -82,5 +82,12 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="01-rename-product-id" author="raul.redondochicano">
+        <renameColumn tableName="lineas_carrito" 
+                      oldColumnName="product_id" 
+                      newColumnName="producto_id"/>
+    </changeSet> 
+    
+
 </databaseChangeLog>
 
