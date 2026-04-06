@@ -50,12 +50,14 @@ paths:
               email: albertitog@gmail.com
               password: "1234"
       responses:
-        '200':
+        '201':
           description: Usuario creado exitosamente
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponseDTO'
+        '400':
+          description: Datos de usuario inválidos
 
   /usuarios/{id}:
     get:
@@ -100,6 +102,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponseDTO'
+        '400':
+          description: Datos de usuario inválidos
         '404':
           description: Usuario no encontrado  
     delete:
@@ -151,12 +155,14 @@ paths:
               consideraciones: Lavar a 30 grados
               imagenUrl: https://example.com/camiseta.jpg
       responses:
-        '200':
+        '201':
           description: Producto creado exitosamente
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProductDTO'
+        '400':
+          description: Datos de producto inválidos
 
   /productos/{id}:
     get:
@@ -201,6 +207,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProductDTO'
+        '400':
+          description: Datos de producto inválidos
         '404':
           description: Producto no encontrado  
     delete:
@@ -296,13 +304,15 @@ paths:
               descripcion: Descuento de verano
               descuento: 10.0
       responses:
-        '200':
+        '201':
           description: Promoción creada exitosamente
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PromotionDTO'
-            
+        '400':
+          description: Datos de promoción inválidos
+
   /promociones/{id}:
     get:
       tags: [PromotionController]
@@ -346,6 +356,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PromotionDTO'
+        '400':
+          description: Datos de promoción inválidos
         '404':
           description: Promoción no encontrada
     delete:
@@ -414,6 +426,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CarritoDTO'
+        '400':
+          description: Cantidad inválida
         '404':
           description: Carrito o producto no encontrado
     
@@ -471,6 +485,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LineaCarritoDTO'
+        '400':
+          description: Cantidad inválida
         '404':
           description: Línea de carrito no encontrada
     delete:
