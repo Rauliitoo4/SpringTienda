@@ -76,6 +76,7 @@ public class LineaCarritoService {
         dto.setId(linea.getId());
         dto.setCantidad(linea.getCantidad());
         dto.setSubtotal(linea.getSubtotal());
+        dto.setCarritoId(linea.getCarrito().getId());
 
         Product producto = linea.getProducto();
         ProductDTO productoDTO = new ProductDTO();

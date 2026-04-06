@@ -8,4 +8,5 @@ public class LineaCarritoDTO {
     private double subtotal;
     private ProductDTO producto;
     private int cantidad;
+    private int carritoId;
 }
