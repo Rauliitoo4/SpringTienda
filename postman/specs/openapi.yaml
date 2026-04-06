@@ -1,0 +1,587 @@
+openapi: 3.0.3
+info:
+  title: Tienda API
+  description: API REST para la gestión de una tienda online
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Servidor local
+
+tags:
+  - name: UserController
+    description: Gestión de usuarios
+  - name: ProductController
+    description: Gestión de productos
+  - name: PromotionController
+    description: Gestión de promociones
+  - name: CarritoController
+    description: Gestión de carritos
+  - name: LineaCarritoController
+    description: Gestión de líneas de carrito
+
+paths:
+  /usuarios:
+    get:
+      tags: [UserController]
+      summary: Obtener todos los usuarios
+      responses:
+        '200':
+          description: Lista de usuarios obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponseDTO'
+    post:
+      tags: [UserController]
+      summary: Crear un nuevo usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDTO'
+            example: 
+              nombre: Alberto
+              apellidos: García
+              username: albertitog
+              email: albertitog@gmail.com
+              password: "1234"
+      responses:
+        '200':
+          description: Usuario creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDTO'
+
+  /usuarios/{id}:
+    get:
+      tags: [UserController]
+      summary: Obtener un usuario por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDTO'
+        '404':
+          description: Usuario no encontrado
+    put:
+      tags: [UserController]
+      summary: Editar datos de un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDTO'
+            example: 
+              username: albertillo33
+      responses:
+        '200':
+          description: Usuario actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDTO'
+        '404':
+          description: Usuario no encontrado  
+    delete:
+      tags: [UserController]
+      summary: Eliminar un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario eliminado exitosamente
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '404':
+          description: Usuario no encontrado  
+
+  /productos:
+    get:
+      tags: [ProductController]
+      summary: Obtener todos los productos
+      responses:
+        '200':
+          description: Lista de productos obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductDTO'
+    post:
+      tags: [ProductController]
+      summary: Crear un nuevo producto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductDTO'
+            example: 
+              nombre: Camiseta básica
+              precio: 19.99
+              descripcion: Camiseta blanca básica de algodón
+              material: Algodón
+              consideraciones: Lavar a 30 grados
+              imagenUrl: https://example.com/camiseta.jpg
+      responses:
+        '200':
+          description: Producto creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDTO'
+
+  /productos/{id}:
+    get:
+      tags: [ProductController]
+      summary: Obtener un producto por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Producto obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDTO'
+        '404':
+          description: Producto no encontrado
+    put:
+      tags: [ProductController]
+      summary: Editar datos de un producto  
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductDTO'
+            example: 
+              precio: 29.99
+      responses:
+        '200':
+          description: Producto actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDTO'
+        '404':
+          description: Producto no encontrado  
+    delete:
+      tags: [ProductController]
+      summary: Eliminar un producto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Producto eliminado exitosamente
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '404':
+          description: Producto no encontrado
+
+  /productos/{productoID}/promociones/{promocionID}:
+    post:
+      tags: [ProductController]
+      summary: Añadir una promoción a un producto
+      parameters:
+        - name: productoID
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: promocionID
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Promoción añadida al producto exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDTO'
+        '404':
+          description: Producto o promoción no encontrado
+    delete:
+      tags: [ProductController]
+      summary: Eliminar una promoción de un producto
+      parameters:
+        - name: productoID
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: promocionID
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Promoción eliminada del producto exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDTO'
+        '404':
+          description: Producto o promoción no encontrado
+
+  /promociones: 
+    get:
+      tags: [PromotionController]
+      summary: Obtener todas las promociones
+      responses:
+        '200':
+          description: Lista de promociones obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PromotionDTO'
+    post:
+      tags: [PromotionController]
+      summary: Crear una nueva promoción
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromotionDTO'
+            example:
+              descripcion: Descuento de verano
+              descuento: 10.0
+      responses:
+        '200':
+          description: Promoción creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromotionDTO'
+            
+  /promociones/{id}:
+    get:
+      tags: [PromotionController]
+      summary: Obtener una promoción por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Promoción obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromotionDTO'
+        '404':
+          description: Promoción no encontrada
+    put:
+      tags: [PromotionController]
+      summary: Editar datos de una promoción
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromotionDTO'
+            example: 
+              descuento: 15.0
+      responses:
+        '200':
+          description: Promoción actualizada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromotionDTO'
+        '404':
+          description: Promoción no encontrada
+    delete:
+      tags: [PromotionController]
+      summary: Eliminar una promoción
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Promoción eliminada exitosamente
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '404':
+          description: Promoción no encontrada
+
+  /carritos/{id}:
+    get:
+      tags: [CarritoController]
+      summary: Obtener un carrito por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Carrito obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarritoDTO'
+        '404':
+          description: Carrito no encontrado
+
+  /carritos/{carritoId}/productos/{productoId}:
+    post:
+      tags: [CarritoController]
+      summary: Añadir un producto al carrito
+      parameters:
+        - name: carritoId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: productoId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: cantidad
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Producto añadido al carrito exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarritoDTO'
+        '404':
+          description: Carrito o producto no encontrado
+    
+  /lineas:
+    get:
+      tags: [LineaCarritoController]
+      summary: Obtener todas las líneas de carrito
+      responses:
+        '200':
+          description: Lista de líneas de carrito obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LineaCarritoDTO'
+
+  /lineas/{id}:
+    get:
+      tags: [LineaCarritoController]
+      summary: Obtener una línea de carrito por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Línea de carrito obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LineaCarritoDTO'
+        '404':
+          description: Línea de carrito no encontrada
+    put:
+      tags: [LineaCarritoController]
+      summary: Actualizar cantidad de una línea de carrito
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: cantidad
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cantidad actualizada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LineaCarritoDTO'
+        '404':
+          description: Línea de carrito no encontrada
+    delete:
+      tags: [LineaCarritoController]
+      summary: Eliminar una línea de carrito
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Línea de carrito eliminada exitosamente
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '404':
+          description: Línea de carrito no encontrada
+
+components:
+  schemas:
+    UserDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        apellidos:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+
+    UserResponseDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        apellidos:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        carritoId:
+          type: integer
+
+    ProductDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        precio:
+          type: number
+        precioFinal:
+          type: number
+        descripcion:
+          type: string
+        material:
+          type: string
+        consideraciones:
+          type: string
+        imagenUrl:
+          type: string
+        promociones:
+          type: array
+          items:
+            $ref: '#/components/schemas/PromotionDTO'
+
+    PromotionDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+        descripcion:
+          type: string
+        descuento:
+          type: number
+
+    CarritoDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+        total:
+          type: number
+        lineas:
+          type: array
+          items:
+            $ref: '#/components/schemas/LineaCarritoDTO'
+
+    LineaCarritoDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+        cantidad:
+          type: integer
+        subtotal:
+          type: number
+        carritoId:
+          type: integer
+        producto:
+          $ref: '#/components/schemas/ProductDTO'
