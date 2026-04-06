@@ -2,13 +2,11 @@ package com.tienda.tienda.integration;
 
 import com.tienda.tienda.dto.CarritoDTO;
 import com.tienda.tienda.dto.ProductDTO;
-import com.tienda.tienda.dto.PromotionDTO;
 import com.tienda.tienda.dto.UserDTO;
 import com.tienda.tienda.dto.UserResponseDTO;
 import com.tienda.tienda.dto.LineaCarritoDTO;
 import com.tienda.tienda.service.CarritoService;
 import com.tienda.tienda.service.ProductService;
-import com.tienda.tienda.service.PromotionService;
 import com.tienda.tienda.service.UserService;
 import com.tienda.tienda.service.LineaCarritoService;
 import org.junit.jupiter.api.Test;
