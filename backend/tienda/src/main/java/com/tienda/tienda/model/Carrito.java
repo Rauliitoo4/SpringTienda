@@ -19,6 +19,6 @@ public class Carrito {
     private int id;
     private double total;
 
-    @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval=true)
     private List<LineaCarrito> lineas;
 }

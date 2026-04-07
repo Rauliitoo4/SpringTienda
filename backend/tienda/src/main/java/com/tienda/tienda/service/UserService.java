@@ -33,10 +33,10 @@ public class UserService {
         if (user == null) return null;
 
         if (dto.getNombre() != null) user.setNombre(dto.getNombre());
-        if (dto.getApellidos() != null) user.setNombre(dto.getApellidos());
-        if (dto.getUsername() != null) user.setNombre(dto.getUsername());
-        if (dto.getEmail() != null) user.setNombre(dto.getEmail());
-        if (dto.getPassword() != null) user.setNombre(dto.getPassword());
+        if (dto.getApellidos() != null) user.setApellidos(dto.getApellidos());
+        if (dto.getUsername() != null) user.setUsername(dto.getUsername());
+        if (dto.getEmail() != null) user.setEmail(dto.getEmail());
+        if (dto.getPassword() != null) user.setPassword(dto.getPassword());
 
         userRepo.save(user);
         return convertToDTO(user);

@@ -26,7 +26,7 @@ public class Product {
     private String consideraciones;
     private String imagenUrl;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "producto_promocion",
         joinColumns = @JoinColumn(name = "producto_id"),

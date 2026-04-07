@@ -13,10 +13,12 @@ public class CarritoService {
     
     private final CarritoRepository carritoRepo;
     private final ProductRepository productRepo;
+    private final LineaCarritoRepository lineaRepo;
 
-    public CarritoService(ProductRepository productRepo, CarritoRepository carritoRepo) {
+    public CarritoService(ProductRepository productRepo, CarritoRepository carritoRepo, LineaCarritoRepository lineaRepo) {
         this.productRepo = productRepo;
         this.carritoRepo = carritoRepo;
+        this.lineaRepo = lineaRepo;
     }
 
     public CarritoDTO getCarritoById (int id){
@@ -37,10 +39,13 @@ public class CarritoService {
         linea.setProducto(producto);
         linea.setSubtotal(producto.getPrecioFinal() * cantidad);
         linea.setCarrito(carrito);
-
+        
+        lineaRepo.save(linea);
         carrito.getLineas().add(linea);
 
-        carrito.setTotal(calcularTotal(carritoID));
+        carrito.setTotal(carrito.getLineas().stream()
+                    .mapToDouble(LineaCarrito::getSubtotal)
+                    .sum());
 
         carritoRepo.save(carrito);
         return convertToDTO(carrito);
