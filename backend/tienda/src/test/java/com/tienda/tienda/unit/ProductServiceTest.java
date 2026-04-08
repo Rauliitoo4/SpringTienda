@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -104,6 +105,28 @@ class ProductServiceTest {
         //Then
         assertFalse(resultado);
         verify(productRepo, never()).deleteById(999);
+    }
+
+    @Test
+    void actualizarProducto_deberiaModificar_elProducto() {
+        //Given 
+        Product producto = new Product();
+        producto.setId(1);
+        producto.setNombre("Camiseta");
+        producto.setPrecio(20.0);
+        producto.setPromociones(new ArrayList<>());
+        when(productRepo.findById(1)).thenReturn(Optional.of(producto));
+        when(productRepo.save(any(Product.class))).thenReturn(producto);
+
+        ProductDTO dto = new ProductDTO();
+        dto.setPrecio(200.0);
+
+        //When
+        ProductDTO resultado = productService.updateProduct(1, dto);
+
+        //Then
+        assertNotNull(resultado);
+        assertEquals(200.0, resultado.getPrecio());
     }
 }
 
