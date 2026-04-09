@@ -89,25 +89,35 @@ class UserControllerTest {
     }
 
     @Test
-    void getUserById_noExistente_deberiaRetornarStatus200conNull() throws Exception {
+    void getUserById_noExistente_deberiaRetornar404() throws Exception {
         when(userService.getUserById(99)).thenReturn(null);
 
         mockMvc.perform(get("/usuarios/99"))
-                    .andExpect(status().isOk());     
+                    .andExpect(status().isNotFound());     
     }
 
     //POST /usuarios
     @Test
-    void createUser_deberiaRetornarUsuarioCreadoYStatus200() throws Exception {
+    void createUser_deberiaRetornarUsuarioCreadoYStatus201() throws Exception {
         when(userService.createUser(any(UserDTO.class))).thenReturn(usuarioResponse);
         
         mockMvc.perform(post("/usuarios")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(usuarioRequest)))
-                    .andExpect(status().isOk())
+                    .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.id").value(1))
                     .andExpect(jsonPath("$.nombre").value("Alberto"))
                     .andExpect(jsonPath("$.carritoId").value(1));
+    }
+
+    @Test
+    void createUser_fallido_deberiaRetornar400() throws Exception {
+        when(userService.createUser(any(UserDTO.class))).thenReturn(null);
+
+        mockMvc.perform(post("/usuarios")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(usuarioRequest)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -117,7 +127,7 @@ class UserControllerTest {
         mockMvc.perform(post("/usuarios")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(usuarioRequest)))
-                    .andExpect(status().isOk());
+                    .andExpect(status().isCreated());
         verify(userService, times(1)).createUser(any(UserDTO.class));
     }
 
@@ -135,31 +145,29 @@ class UserControllerTest {
     }
 
     @Test
-    void updateUser_noExistente_deberiaRetornarStatus200conNull() throws Exception {
+    void updateUser_noExistente_deberiaRetornar404() throws Exception {
         when(userService.updateUser(eq(99), any(UserDTO.class))).thenReturn(null);
 
         mockMvc.perform(put("/usuarios/99")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(usuarioRequest)))
-                    .andExpect(status().isOk());
+                    .andExpect(status().isNotFound());
     }
 
     //DELETE /usuarios/{id}
     @Test
-    void deleteUser_existente_deberiaRetornarTrueYStatus200() throws Exception {
+    void deleteUser_existente_deberiaRetornar204() throws Exception {
         when(userService.deleteUser(1)).thenReturn(true);
 
         mockMvc.perform(delete("/usuarios/1"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("true"));
+                    .andExpect(status().isNoContent());
     }
 
     @Test
-    void deleteUser_noExistente_deberiaRetornarFalseYStatus200() throws Exception {
+    void deleteUser_noExistente_deberiaRetornar404() throws Exception {
         when(userService.deleteUser(99)).thenReturn(false);
 
         mockMvc.perform(delete("/usuarios/99"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("false"));
+                    .andExpect(status().isNotFound());
     }
 }

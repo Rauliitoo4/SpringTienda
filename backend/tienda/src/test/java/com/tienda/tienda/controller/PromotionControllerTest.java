@@ -77,25 +77,35 @@ class PromotionControllerTest {
         }
 
     @Test
-    void getPromotionById_noExistente_deberiaRetornarStatus200conNull() throws Exception {
+    void getPromotionById_noExistente_deberiaRetornar404l() throws Exception {
         when(promotionService.getPromotionById(99)).thenReturn(null);
 
         mockMvc.perform(get("/promociones/99"))
-                    .andExpect(status().isOk());     
+                    .andExpect(status().isNotFound());     
     }
 
     //POST /promociones
     @Test
-    void createPromotion_deberiaRetornarPromocionCreadaYStatus200() throws Exception {
+    void createPromotion_deberiaRetornarPromocionCreadaYStatus201() throws Exception {
         when(promotionService.createPromotion(any(PromotionDTO.class))).thenReturn(promo);
         
         mockMvc.perform(post("/promociones")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(promo)))
-                    .andExpect(status().isOk())
+                    .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.id").value(1))
                     .andExpect(jsonPath("$.descripcion").value("Rebajas de verano"))
                     .andExpect(jsonPath("$.descuento").value(10.0));
+    }
+
+    @Test
+    void createPromotion_fallido_deberiaRetornar400() throws Exception {
+        when(promotionService.createPromotion(any(PromotionDTO.class))).thenReturn(null);
+
+        mockMvc.perform(post("/promociones")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(promo)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -105,7 +115,7 @@ class PromotionControllerTest {
         mockMvc.perform(post("/promociones")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(promo)))
-                    .andExpect(status().isOk());
+                    .andExpect(status().isCreated());
         verify(promotionService, times(1)).createPromotion(any(PromotionDTO.class));
     }
 
@@ -123,7 +133,7 @@ class PromotionControllerTest {
     }
 
     @Test
-    void updatePromotion_noExistente_deberiaRetornarStatus200conNull() throws Exception {
+    void updatePromotion_noExistente_deberiaRetornar404l() throws Exception {
         when(promotionService.updatePromotion(eq(99), any(PromotionDTO.class))).thenReturn(null);
 
         mockMvc.perform(put("/promotion/99")
@@ -134,20 +144,18 @@ class PromotionControllerTest {
 
     //DELETE /promociones/{id}
     @Test
-    void deletePromotion_existente_deberiaRetornarTrueYStatus200() throws Exception {
+    void deletePromotion_existente_deberiaRetornar204() throws Exception {
         when(promotionService.deletePromotion(1)).thenReturn(true);
 
         mockMvc.perform(delete("/promociones/1"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("true"));
+                    .andExpect(status().isNoContent());
     }
 
     @Test
-    void deletePromotion_noExistente_deberiaRetornarFalseYStatus200() throws Exception {
+    void deletePromotion_noExistente_deberiaRetornar404() throws Exception {
         when(promotionService.deletePromotion(99)).thenReturn(false);
 
         mockMvc.perform(delete("/promociones/99"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("false"));
+                    .andExpect(status().isNotFound());
     }
 }

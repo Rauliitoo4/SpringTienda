@@ -68,11 +68,11 @@ class CarritoControllerTest {
     }
 
     @Test
-    void getCarritoById_noExistente_deberiaRetornarStatus200conNull() throws Exception {
+    void getCarritoById_noExistente_deberiaRetornar404l() throws Exception {
         when(carritoService.getCarritoById(99)).thenReturn(null);
 
         mockMvc.perform(get("/carritos/99"))
-                    .andExpect(status().isOk());     
+                    .andExpect(status().isNotFound());     
     }
 
     //POST /carritos/{carritoId}/productos/{productoId}
@@ -92,12 +92,21 @@ class CarritoControllerTest {
     }
 
     @Test
-    void addProductToCarrito_carritoNoExiste_deberiaRetornarStatus200conNull() throws Exception {
+    void addProductToCarrito_carritoNoExiste_deberiaRetornar404() throws Exception {
         when(carritoService.addProductToCarrito(99, 1, 2)).thenReturn(null);
         
         mockMvc.perform(post("/carritos/99/productos/1")
                         .param("cantidad", "2"))
-                    .andExpect(status().isOk());
+                    .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void addProductToCarrito_productoNoExiste_deberiaRetornar404() throws Exception {
+        when(carritoService.addProductToCarrito(1, 99, 2)).thenReturn(null);
+        
+        mockMvc.perform(post("/carritos/1/productos/99")
+                        .param("cantidad", "2"))
+                    .andExpect(status().isNotFound());
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.tienda.tienda.controller;
 import com.tienda.tienda.dto.LineaCarritoDTO;
 import com.tienda.tienda.service.LineaCarritoService;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,23 +22,29 @@ public class LineaCarritoController {
     }
 
     @GetMapping
-    public List<LineaCarritoDTO> getAllLineas() {
-        return lineaCarritoService.getAllLineas();
+    public ResponseEntity<List<LineaCarritoDTO>> getAllLineas() {
+        return ResponseEntity.ok(lineaCarritoService.getAllLineas());
     }
 
     @GetMapping("/{id}")
-    public LineaCarritoDTO getLineaById(@PathVariable int id) {
-        return lineaCarritoService.getLineaById(id);
+    public ResponseEntity<LineaCarritoDTO> getLineaById(@PathVariable int id) {
+        LineaCarritoDTO dto = lineaCarritoService.getLineaById(id);
+        if (dto == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(dto);
     }
 
     @PutMapping("/{id}")
-    public LineaCarritoDTO updateLinea(@PathVariable int id, @RequestParam int cantidad) {
-        return lineaCarritoService.updateLinea(id, cantidad);
+    public ResponseEntity<LineaCarritoDTO> updateLinea(@PathVariable int id, @RequestParam int cantidad) {
+        LineaCarritoDTO actualizado = lineaCarritoService.updateLinea(id, cantidad);
+        if (actualizado == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(actualizado);
     }
     
     @DeleteMapping("/{id}")
-    public boolean deleteLinea(@PathVariable int id) {
-        return lineaCarritoService.deleteLinea(id);
+    public ResponseEntity<Void> deleteLinea(@PathVariable int id) {
+        boolean eliminado = lineaCarritoService.deleteLinea(id);
+        if (!eliminado) return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
     
     

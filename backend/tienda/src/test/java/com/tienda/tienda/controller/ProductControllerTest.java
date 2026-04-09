@@ -98,25 +98,35 @@ class ProductControllerTest {
     }
 
     @Test
-    void getProductById_noExistente_deberiaRetornarStatus200conNull() throws Exception {
+    void getProductById_noExistente_deberiaRetornar404() throws Exception {
         when(productService.getProductById(99)).thenReturn(null);
 
-        mockMvc.perform(get("/productos/1"))
-                    .andExpect(status().isOk());     
+        mockMvc.perform(get("/productos/99"))
+                    .andExpect(status().isNotFound());     
     }
 
     //POST /productos
     @Test
-    void createProduct_deberiaRetornarProductoCreadoYStatus200() throws Exception {
+    void createProduct_deberiaRetornarProductoCreadoYStatus201() throws Exception {
         when(productService.createProduct(any(ProductDTO.class))).thenReturn(productoBase);
         
         mockMvc.perform(post("/productos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(productoBase)))
-                    .andExpect(status().isOk())
+                    .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.id").value(1))
                     .andExpect(jsonPath("$.nombre").value("Camiseta"))
                     .andExpect(jsonPath("$.precio").value(20.0));
+    }
+
+    @Test
+    void createProduct_fallido_deberiaRetornar400() throws Exception {
+        when(productService.createProduct(any(ProductDTO.class))).thenReturn(null);
+
+        mockMvc.perform(post("/productos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(productoBase)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -126,7 +136,7 @@ class ProductControllerTest {
         mockMvc.perform(post("/productos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(productoBase)))
-                    .andExpect(status().isOk());
+                    .andExpect(status().isCreated());
         verify(productService, times(1)).createProduct(any(ProductDTO.class));
     }
 
@@ -144,32 +154,30 @@ class ProductControllerTest {
     }
 
     @Test
-    void updateProduct_noExistente_deberiaRetornarStatus200conNull() throws Exception {
+    void updateProduct_noExistente_deberiaRetornar404() throws Exception {
         when(productService.updateProduct(eq(99), any(ProductDTO.class))).thenReturn(null);
 
         mockMvc.perform(put("/productos/99")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(productoBase)))
-                    .andExpect(status().isOk());
+                    .andExpect(status().isNotFound());
     }
 
     //DELETE /productos/{id}
     @Test
-    void deleteProduct_existente_deberiaRetornarTrueYStatus200() throws Exception {
+    void deleteProduct_existente_deberiaRetornar204() throws Exception {
         when(productService.deleteProduct(1)).thenReturn(true);
 
         mockMvc.perform(delete("/productos/1"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("true"));
+                    .andExpect(status().isNoContent());
     }
 
     @Test
-    void deleteProduct_noExistente_deberiaRetornarFalseYStatus200() throws Exception {
+    void deleteProduct_noExistente_deberiaRetornar404() throws Exception {
         when(productService.deleteProduct(99)).thenReturn(false);
 
         mockMvc.perform(delete("/productos/99"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("false"));
+                    .andExpect(status().isNotFound());
     }
 
     //POST /productos/{productoID}/promociones/{promocionID}
@@ -185,19 +193,19 @@ class ProductControllerTest {
     }
 
     @Test
-    void addPromotion_productoNoExistente_deberiaRetornarStatus200conNull() throws Exception {
+    void addPromotion_productoNoExistente_deberiaRetornar404() throws Exception {
         when(productService.addPromotion(99, 1)).thenReturn(null);
 
         mockMvc.perform(post("/productos/1/promociones/1"))
-                    .andExpect(status().isOk());
+                    .andExpect(status().isNotFound());
     }
 
     @Test
-    void addPromotion_promoNoExistente_deberiaRetornarStatus200conNull() throws Exception {
+    void addPromotion_promoNoExistente_deberiaRetornar404() throws Exception {
         when(productService.addPromotion(1, 99)).thenReturn(null);
 
         mockMvc.perform(post("/productos/1/promociones/1"))
-                    .andExpect(status().isOk());
+                    .andExpect(status().isNotFound());
     }
 
     //DELETE /productos/{productoID}/promociones/{promocionID}
@@ -212,10 +220,10 @@ class ProductControllerTest {
     }
 
     @Test
-    void removePromotion_productoNoExistente_deberiaRetornarStatus200conNull() throws Exception {
+    void removePromotion_productoNoExistente_deberiaRetornar404() throws Exception {
         when(productService.removePromotion(99, 1)).thenReturn(null);
 
-        mockMvc.perform(delete("/productos/1/promociones/1"))
-                    .andExpect(status().isOk());
+        mockMvc.perform(delete("/productos/99/promociones/1"))
+                    .andExpect(status().isNotFound());
     }
 }

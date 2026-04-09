@@ -83,11 +83,11 @@ class LineaCarritoControllerTest {
     }
 
     @Test
-    void getLineaById_noExistente_deberiaRetornarStatus200conNull() throws Exception {
+    void getLineaById_noExistente_deberiaRetornar404() throws Exception {
         when(lineaCarritoService.getLineaById(99)).thenReturn(null);
 
         mockMvc.perform(get("/lineas/99"))
-                    .andExpect(status().isOk());     
+                    .andExpect(status().isNotFound());     
     }
 
     //PUT /lineas/{id}
@@ -105,7 +105,7 @@ class LineaCarritoControllerTest {
     }
 
     @Test
-    void updateLinea_noExistente_deberiaRetornarStatus200conNull() throws Exception {
+    void updateLinea_noExistente_deberiaRetornar404() throws Exception {
         when(lineaCarritoService.updateLinea(eq(99), eq(5))).thenReturn(null);
 
         mockMvc.perform(put("/usuarios/99")
@@ -115,20 +115,18 @@ class LineaCarritoControllerTest {
 
     //DELETE /lineas/{id}
     @Test
-    void deleteLinea_existente_deberiaRetornarTrueYStatus200() throws Exception {
+    void deleteLinea_existente_deberiaRetornar204() throws Exception {
         when(lineaCarritoService.deleteLinea(1)).thenReturn(true);
 
         mockMvc.perform(delete("/lineas/1"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("true"));
+                    .andExpect(status().isNoContent());
     }
 
     @Test
-    void deleteLinea_noExistente_deberiaRetornarFalseYStatus200() throws Exception {
+    void deleteLinea_noExistente_deberiaRetornar404() throws Exception {
         when(lineaCarritoService.deleteLinea(99)).thenReturn(false);
 
         mockMvc.perform(delete("/lineas/99"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("false"));
+                    .andExpect(status().isNotFound());
     }
 }
