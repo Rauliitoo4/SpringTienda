@@ -1,4 +1,4 @@
-package com.tienda.tienda.unit;
+package com.tienda.tienda.unit.service;
 
 import com.tienda.tienda.dto.UserResponseDTO;
 import com.tienda.tienda.dto.UserDTO;

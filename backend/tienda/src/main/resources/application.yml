@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: tienda
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tienda
+    username: postgres
+    password: admin123
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true

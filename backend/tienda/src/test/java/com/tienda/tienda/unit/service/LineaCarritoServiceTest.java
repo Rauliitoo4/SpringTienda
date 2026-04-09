@@ -1,4 +1,4 @@
-package com.tienda.tienda.unit;
+package com.tienda.tienda.unit.service;
 
 import com.tienda.tienda.dto.LineaCarritoDTO;
 import com.tienda.tienda.model.Carrito;

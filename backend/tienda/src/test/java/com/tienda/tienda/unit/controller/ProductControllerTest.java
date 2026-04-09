@@ -1,9 +1,10 @@
-package com.tienda.tienda.controller;
+package com.tienda.tienda.unit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tienda.tienda.dto.ProductDTO;
 import com.tienda.tienda.dto.PromotionDTO;
 import com.tienda.tienda.service.ProductService;
+import com.tienda.tienda.controller.ProductController;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
