@@ -1,29 +1,32 @@
 package com.tienda.tienda.model;
 
-import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "lineas_carrito")
+@Table("lineas_carrito")
 public class LineaCarrito {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private double subtotal;
     private int cantidad;
 
-    @ManyToOne
-    @JoinColumn(name = "producto_id")
+    @Column("carrito_id")
+    private Integer carritoId;
+
+    @Column("producto_id")
+    private Integer productoId;
+
+    @Transient
     private Product producto;
 
-    @ManyToOne
-    @JoinColumn(name = "carrito_id")
-    private Carrito carrito;
 }

@@ -1,37 +1,38 @@
 package com.tienda.tienda.model;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 import lombok.Data;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "productos")
+@Table("productos")
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private String nombre;
     private double precio;
+
+    @Column("precio_final")
     private double precioFinal;
+
     private String descripcion;
     private String material;
     private String consideraciones;
+
+    @Column("imagen_url")
     private String imagenUrl;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "producto_promocion",
-        joinColumns = @JoinColumn(name = "producto_id"),
-        inverseJoinColumns = @JoinColumn(name = "promocion_id")
-    )
+    @Transient
     private List<Promotion> promociones;
 
 }

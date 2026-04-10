@@ -3,8 +3,11 @@ package com.tienda.tienda.controller;
 import com.tienda.tienda.dto.ProductDTO;
 import com.tienda.tienda.service.ProductService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -21,50 +24,50 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
+    public ResponseEntity<Flux<ProductDTO>> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable int id) {
-        ProductDTO dto = productService.getProductById(id);
-        if (dto == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(dto);     
+    public Mono<ResponseEntity<ProductDTO>> getProductById(@PathVariable int id) {
+        return productService.getProductById(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }   
     
     @PostMapping
-    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO dto) {
-        ProductDTO creado = productService.createProduct(dto);
-        if (creado == null) return ResponseEntity.badRequest().build();
-        return ResponseEntity.status(201).body(creado);
+    public Mono<ResponseEntity<ProductDTO>> createProduct(@RequestBody ProductDTO dto) {
+        return productService.createProduct(dto)
+                .map(creado -> ResponseEntity.status(HttpStatus.CREATED).body(creado));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> updateProduct (@PathVariable int id, @RequestBody ProductDTO dto) {
-       ProductDTO actualizado = productService.updateProduct(id, dto);
-       if (actualizado == null) return ResponseEntity.notFound().build();
-       return ResponseEntity.ok(actualizado);
+    public Mono<ResponseEntity<ProductDTO>> updateProduct (@PathVariable int id, @RequestBody ProductDTO dto) {
+        return productService.updateProduct(id, dto)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable int id) {
-        boolean eliminado = productService.deleteProduct(id);
-        if (!eliminado) return ResponseEntity.notFound().build();
-        return ResponseEntity.noContent().build();
+    public Mono<ResponseEntity<Void>> deleteProduct(@PathVariable int id) {
+        return productService.deleteProduct(id)
+                .map(eliminado -> eliminado
+                        ? ResponseEntity.<Void>noContent().build()
+                        : ResponseEntity.<Void>notFound().build());
     }
 
     @PostMapping("/{productoID}/promociones/{promocionID}")
-    public ResponseEntity<ProductDTO> addPromotion(@PathVariable int productoID, @PathVariable int promocionID) {
-        ProductDTO dto = productService.addPromotion(productoID, promocionID);
-        if (dto == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(dto);
+    public Mono<ResponseEntity<ProductDTO>> addPromotion(@PathVariable int productoID, @PathVariable int promocionID) {
+            return productService.addPromotion(productoID, promocionID)
+                    .map(ResponseEntity::ok)
+                    .defaultIfEmpty(ResponseEntity.notFound().build());
     }
     
     @DeleteMapping("/{productoID}/promociones/{promocionID}")
-    public ResponseEntity<ProductDTO> removePromotion(@PathVariable int productoID, @PathVariable int promocionID) {
-        ProductDTO dto = productService.removePromotion(productoID, promocionID);
-        if (dto == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(dto);
+    public Mono<ResponseEntity<ProductDTO>> removePromotion(@PathVariable int productoID, @PathVariable int promocionID) {
+        return productService.removePromotion(productoID, promocionID)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
     
 }

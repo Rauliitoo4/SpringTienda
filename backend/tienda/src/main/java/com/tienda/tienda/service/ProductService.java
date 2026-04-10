@@ -2,15 +2,16 @@ package com.tienda.tienda.service;
 
 import com.tienda.tienda.dto.ProductDTO;
 import com.tienda.tienda.dto.PromotionDTO;
-import com.tienda.tienda.model.Carrito;
-import com.tienda.tienda.model.LineaCarrito;
 import com.tienda.tienda.model.Product;
 import com.tienda.tienda.model.Promotion;
 import com.tienda.tienda.repository.*;
 
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
 import java.util.List;
-import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -19,85 +20,105 @@ public class ProductService {
     private final PromotionRepository promotionRepo;
     private final CarritoRepository carritoRepo;
     private final LineaCarritoRepository lineaRepo;
+    private final ProductoPromocionRepository productoPromocionRepo;
     
     
-    public ProductService(ProductRepository productRepo, PromotionRepository promotionRepo, CarritoRepository carritoRepo, LineaCarritoRepository lineaRepo) {
+    public ProductService(ProductRepository productRepo, PromotionRepository promotionRepo, CarritoRepository carritoRepo, LineaCarritoRepository lineaRepo, ProductoPromocionRepository productoPromocionRepo) {
         this.productRepo = productRepo;
         this.promotionRepo = promotionRepo;
         this.carritoRepo = carritoRepo;
-        this.lineaRepo = lineaRepo; 
+        this.lineaRepo = lineaRepo;
+        this.productoPromocionRepo = productoPromocionRepo;
     }
 
-    public ProductDTO createProduct(ProductDTO dto){
+    private Mono<ProductDTO> cargarPromociones(Product product) {
+        return productoPromocionRepo
+                .findPromotionIdsByProductId(product.getId())
+                .flatMap(promoId -> promotionRepo.findById(promoId))
+                .collectList()
+                .doOnNext(product::setPromociones)
+                .thenReturn(product);
+    }
+
+    public Mono<ProductDTO> createProduct(ProductDTO dto){
         Product product = convertToEntity(dto);
-        productRepo.save(product);
-        return convertToDTO(product);
+        return productRepo.save(product)
+                .flatMap(this::cargarPromociones)
+                .map(this::convertToDTO);
     }
 
-    public ProductDTO updateProduct(int id, ProductDTO dto){
-        Product producto = productRepo.findById(id).orElse(null);
-        if (producto == null) return null;
-
-        if (dto.getNombre() != null) producto.setNombre(dto.getNombre());
-        if (dto.getPrecio() >= 0) {
-            producto.setPrecio(dto.getPrecio());
-            recalcularPrecioFinal(producto);
-        }
-        if (dto.getDescripcion() != null) producto.setDescripcion(dto.getDescripcion());
-        if (dto.getMaterial() != null) producto.setMaterial(dto.getMaterial());
-        if (dto.getConsideraciones() != null) producto.setConsideraciones(dto.getConsideraciones());
-
-        productRepo.save(producto);
-        return convertToDTO(producto);
-    }
-
-    public boolean deleteProduct (int id) {
-        if (!productRepo.existsById(id)) return false;
-        productRepo.deleteById(id);
-        return true;
-    }
-
-    public List<ProductDTO> getAllProducts() {
-        List <ProductDTO> listDTO = new ArrayList<>();
-        for (Product producto : productRepo.findAll()) {
-            listDTO.add(convertToDTO(producto));
-        }
-        return listDTO;
-    }
-
-    public ProductDTO getProductById(int id){
+    public Mono<ProductDTO> updateProduct(int id, ProductDTO dto){
         return productRepo.findById(id)
-                    .map(this::convertToDTO)
-                    .orElse(null);
+                .flatMap(producto -> cargarPromociones(producto)
+                        .flatMap(productoConPromos -> {
+                            if (dto.getNombre() != null) productoConPromos.setNombre(dto.getNombre());
+                            if (dto.getPrecio() >= 0) {
+                                productoConPromos.setPrecio(dto.getPrecio());
+                                recalcularPrecioFinal(productoConPromos);
+                            }
+                            if (dto.getDescripcion() != null) productoConPromos.setDescripcion(dto.getDescripcion());
+                            if (dto.getMaterial() != null) productoConPromos.setMaterial(dto.getMaterial());
+                            if (dto.getConsideraciones() != null) productoConPromos.setConsideraciones(dto.getConsideraciones());
+                            return productRepo.save(productoConPromos)
+                                    .map(this::convertToDTO);
+                        }));
     }
 
-    public ProductDTO addPromotion(int productoID, int promocionID) {
-        Product producto = productRepo.findById(productoID).orElse(null);
-        if (producto == null) return null;
-
-        Promotion promo = promotionRepo.findById(promocionID).orElse(null);
-        if (promo == null) return null;
-
-        if (!producto.getPromociones().contains(promo)) {
-            producto.getPromociones().add(promo);
-        }
-
-        recalcularPrecioFinal(producto);
-        actualizarLineasCarrito(producto);
-        productRepo.save(producto);
-        return convertToDTO(producto);
+    public Mono<Boolean> deleteProduct (int id) {
+        return productRepo.existsById(id)
+                .flatMap(exists -> {
+                    if (!exists) return Mono.just(false);
+                    return productRepo.deleteById(id).thenReturn(true);
+                });
     }
 
-    public ProductDTO removePromotion(int productoID, int promocionID) {
-        Product producto = productRepo.findById(productoID).orElse(null);
-        if (producto == null) return null;
+    public Flux<ProductDTO> getAllProducts() {
+        return productRepo.findAll()
+                .flatMap(this::cargarPromociones)
+                .map(this::convertToDTO);
+    }
 
-        producto.getPromociones().removeIf(p -> p.getId() == promocionID);
+    public Mono<ProductDTO> getProductById(int id){
+        return productRepo.findById(id)
+                    .flatMap(this::cargarPromociones)
+                    .map(this::convertToDTO);
+    }
 
-        recalcularPrecioFinal(producto);
-        actualizarLineasCarrito(producto);
-        productRepo.save(producto);
-        return convertToDTO(producto);
+    public Mono<ProductDTO> addPromotion(int productoID, int promocionID) {
+        return productRepo.findById(productoID)
+                .zipWith(promotionRepo.findById(promocionID))
+                .flatMap(tuple -> {
+                    Product producto = tuple.getT1();
+                    return productoPromocionRepo.existsRelation(productoID, promocionID)
+                            .flatMap(count -> {
+                                if (count > 0) return cargarPromociones(producto).map(this::convertToDTO);
+                                ProductoPromocionRepository.ProductoPromocion rel =
+                                        new ProductoPromocionRepository.ProductoPromocion();
+                                rel.setProductoId(productoID);
+                                rel.setPromotionId(promocionID);
+                                return productoPromocionRepo.save(rel)
+                                        .then(cargarPromociones(producto))
+                                        .flatMap(p -> {
+                                            recalcularPrecioFinal(p);
+                                            return productRepo.save(p)
+                                                    .then(actualizarLineasCarrito(p))
+                                                    .thenReturn(convertToDTO(p));
+                                        });
+                            });
+                });
+    }
+
+    public Mono<ProductDTO> removePromotion(int productoID, int promocionID) {
+        return productRepo.findById(productoID)
+                .flatMap(producto ->
+                        productoPromocionRepo.deleteByProductIdAndPromotionId(productoID, promocionID)
+                                .then(cargarPromociones(producto))
+                                .flatMap(p -> {
+                                    recalcularPrecioFinal(p);
+                                    return productRepo.save(p)
+                                            .then(actualizarLineasCarrito(p))
+                                            .thenReturn(convertToDTO(p));
+                                }));
     }
 
     private ProductDTO convertToDTO(Product p) {
@@ -111,24 +132,21 @@ public class ProductService {
         dto.setConsideraciones(p.getConsideraciones());
         dto.setImagenUrl(p.getImagenUrl());
 
-        List<PromotionDTO> promosDTO = new ArrayList<>();
         if (p.getPromociones() != null) {
-            for (Promotion promo : p.getPromociones()) {
+            List<PromotionDTO> promosDTO = p.getPromociones().stream().map(promo -> {
                 PromotionDTO pDTO = new PromotionDTO();
                 pDTO.setId(promo.getId());
                 pDTO.setDescripcion(promo.getDescripcion());
                 pDTO.setDescuento(promo.getDescuento());
-                promosDTO.add(pDTO);
-            }
+                return pDTO;
+            }).collect(Collectors.toList());
+            dto.setPromociones(promosDTO);
         }
-        dto.setPromociones(promosDTO);
-
         return dto;
     }
 
     private Product convertToEntity(ProductDTO dto) {
         Product p = new Product();
-        p.setId(dto.getId());
         p.setNombre(dto.getNombre());
         p.setPrecio(dto.getPrecio());
         p.setPrecioFinal(dto.getPrecio());
@@ -142,30 +160,27 @@ public class ProductService {
     private void recalcularPrecioFinal(Product producto) {
         if (producto.getPromociones() == null || producto.getPromociones().isEmpty()) {
             producto.setPrecioFinal(producto.getPrecio());
+            return;
         }
-
         double maxDescuento = producto.getPromociones().stream()
-                                .mapToDouble(Promotion::getDescuento)
-                                .max()
-                                .orElse(0);
-
+                .mapToDouble(Promotion::getDescuento)
+                .max()
+                .orElse(0);
         producto.setPrecioFinal(producto.getPrecio() * (1 - maxDescuento / 100));
     }
 
-    private void actualizarLineasCarrito(Product producto) {
-        List<LineaCarrito> lineas = lineaRepo.findAll();
-        for (LineaCarrito linea : lineas) {
-            if (linea.getProducto().getId() == producto.getId()) {
-                linea.setSubtotal(producto.getPrecioFinal() * linea.getCantidad());
-                lineaRepo.save(linea);
-
-                Carrito carrito = linea.getCarrito();
-                double total = carrito.getLineas().stream()
-                                .mapToDouble(LineaCarrito::getSubtotal)
-                                .sum();
-                carrito.setTotal(total);
-                carritoRepo.save(carrito);
-            }
-        }
+    private Mono<Void> actualizarLineasCarrito(Product producto) {
+        return lineaRepo.findAll()
+                .filter(linea -> linea.getProductoId() == producto.getId())
+                .flatMap(linea -> {
+                    linea.setSubtotal(producto.getPrecioFinal() * linea.getCantidad());
+                    return lineaRepo.save(linea)
+                            .then(carritoRepo.findById(linea.getCarritoId()))
+                            .flatMap(carrito ->
+                                    lineaRepo.findByCarritoId(carrito.getId())
+                                            .mapToDouble(l -> l) // ver nota abajo
+                                            .then()
+                            );
+                }).then();
     }
 }

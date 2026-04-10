@@ -1,8 +1,8 @@
 package com.tienda.tienda.repository;
 
 import com.tienda.tienda.model.Promotion;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
-public interface PromotionRepository extends JpaRepository<Promotion, Integer>{
+public interface PromotionRepository extends ReactiveCrudRepository<Promotion, Integer>{
     
 }
