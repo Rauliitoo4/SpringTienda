@@ -31,7 +31,7 @@ public class ProductService {
         this.productoPromocionRepo = productoPromocionRepo;
     }
 
-    private Mono<ProductDTO> cargarPromociones(Product product) {
+    private Mono<Product> cargarPromociones(Product product) {
         return productoPromocionRepo
                 .findPromotionIdsByProductId(product.getId())
                 .flatMap(promoId -> promotionRepo.findById(promoId))
@@ -95,7 +95,7 @@ public class ProductService {
                                 ProductoPromocionRepository.ProductoPromocion rel =
                                         new ProductoPromocionRepository.ProductoPromocion();
                                 rel.setProductoId(productoID);
-                                rel.setPromotionId(promocionID);
+                                rel.setPromocionId(promocionID);
                                 return productoPromocionRepo.save(rel)
                                         .then(cargarPromociones(producto))
                                         .flatMap(p -> {
@@ -171,16 +171,24 @@ public class ProductService {
 
     private Mono<Void> actualizarLineasCarrito(Product producto) {
         return lineaRepo.findAll()
-                .filter(linea -> linea.getProductoId() == producto.getId())
+                .filter(linea -> linea.getProductoId().equals(producto.getId()))
                 .flatMap(linea -> {
                     linea.setSubtotal(producto.getPrecioFinal() * linea.getCantidad());
-                    return lineaRepo.save(linea)
-                            .then(carritoRepo.findById(linea.getCarritoId()))
-                            .flatMap(carrito ->
-                                    lineaRepo.findByCarritoId(carrito.getId())
-                                            .mapToDouble(l -> l) // ver nota abajo
-                                            .then()
-                            );
-                }).then();
+                    return lineaRepo.save(linea);
+                })
+                .collectList()
+                .flatMap(lineasActualizadas -> {
+                    if (lineasActualizadas.isEmpty()) return Mono.empty();
+                    Integer carritoId = lineasActualizadas.get(0).getCarritoId();
+                    return lineaRepo.findByCarritoId(carritoId)
+                            .map(linea -> linea.getSubtotal())
+                            .reduce(0.0, Double::sum)
+                            .flatMap(total -> carritoRepo.findById(carritoId)
+                                    .flatMap(carrito -> {
+                                        carrito.setTotal(total);
+                                        return carritoRepo.save(carrito);
+                                    }));
+                })
+                .then();
     }
 }

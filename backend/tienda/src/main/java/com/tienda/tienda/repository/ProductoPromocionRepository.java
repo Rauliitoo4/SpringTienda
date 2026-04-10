@@ -3,6 +3,7 @@ package com.tienda.tienda.repository;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.r2dbc.repository.Query;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.data.relational.core.mapping.Table;
 import reactor.core.publisher.Flux;
@@ -16,7 +17,7 @@ public interface ProductoPromocionRepository extends ReactiveCrudRepository<Prod
     @Query("DELETE FROM producto_promocion WHERE producto_id = :productoId AND promocion_id = :promocionId")
     Mono<Void> deleteByProductIdAndPromotionId(int productoId, int promocionId);
 
-    @Query("SELECT COUNT(*) FROM producto_promocion WHERE producto_id = :productoId AND pomocion_id = :promocionId")
+    @Query("SELECT COUNT(*) FROM producto_promocion WHERE producto_id = :productoId AND promocion_id = :promocionId")
     Mono<Integer> existsRelation(int productoId, int promocionId);
 
     @Data
@@ -24,7 +25,11 @@ public interface ProductoPromocionRepository extends ReactiveCrudRepository<Prod
     class ProductoPromocion {
         @Id
         private Integer id;
+
+        @Column("producto_id")
         private Integer productoId;
+
+        @Column("promocion_id")
         private Integer promocionId;
     }
 }
