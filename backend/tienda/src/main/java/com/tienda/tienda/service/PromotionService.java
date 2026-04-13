@@ -2,71 +2,59 @@ package com.tienda.tienda.service;
 
 import com.tienda.tienda.dto.*;
 import com.tienda.tienda.model.*;
+import com.tienda.tienda.repository.ProductoPromocionRepository;
 import org.springframework.stereotype.Service;
 
 import com.tienda.tienda.repository.ProductRepository;
 import com.tienda.tienda.repository.PromotionRepository;
-
-import java.util.List;
-import java.util.ArrayList;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class PromotionService {
     
     private final PromotionRepository promotionRepo;
-    private final ProductRepository productRepo;
+    private final ProductoPromocionRepository productoPromocionRepo;
 
-    public PromotionService(PromotionRepository promotionRepo, ProductRepository productRepo){
+    public PromotionService(PromotionRepository promotionRepo, ProductoPromocionRepository productoPromocionRepo){
         this.promotionRepo = promotionRepo;
-        this.productRepo = productRepo;
-
+        this.productoPromocionRepo = productoPromocionRepo;
     }
 
-    public PromotionDTO createPromotion(PromotionDTO dto) {
-        Promotion promotion = convertToEntity(dto);
-        promotionRepo.save(promotion);
-        return convertToDTO(promotion);
+    public Mono<PromotionDTO> createPromotion(PromotionDTO dto) {
+        Promotion promocion = convertToEntity(dto);
+        return promotionRepo.save(promocion)
+                .map(this::convertToDTO);
     }
 
-    public PromotionDTO updatePromotion(int id, PromotionDTO dto) {
-        Promotion promotion = promotionRepo.findById(id).orElse(null);
-        if (promotion == null) return null;
-
-        if (dto.getDescuento() >= 0) promotion.setDescuento(dto.getDescuento());
-        if (dto.getDescripcion() != null) promotion.setDescripcion(dto.getDescripcion());
-
-        promotionRepo.save(promotion);
-        return convertToDTO(promotion);
-    }
-
-    public boolean deletePromotion (int id) {
-        Promotion promocion = promotionRepo.findById(id).orElse(null);
-        if (promocion == null) return false;
-
-        List<Product> productos = productRepo.findAll();
-        for (Product producto : productos) {
-            if (producto.getPromociones().contains(promocion)) {
-                producto.getPromociones().remove(promocion);
-                productRepo.save(producto);
-            }
-        }
-
-        promotionRepo.deleteById(id);
-        return true;
-    }
-
-    public PromotionDTO getPromotionById (int id){
+    public Mono<PromotionDTO> updatePromotion(int id, PromotionDTO dto) {
         return promotionRepo.findById(id)
-                    .map(this::convertToDTO)
-                    .orElse(null);
+                .flatMap(promo -> {
+                    if (dto.getDescripcion() != null) promo.setDescripcion(dto.getDescripcion());
+                    if (dto.getDescuento() >= 0) promo.setDescuento(dto.getDescuento());
+                    return promotionRepo.save(promo);
+                })
+                .map(this::convertToDTO);
     }
 
-    public List<PromotionDTO> getAllPromotions() {
-        List <PromotionDTO> listDTO = new ArrayList<>();
-        for (Promotion promotion : promotionRepo.findAll()) {
-            listDTO.add(convertToDTO(promotion));
-        }
-        return listDTO;
+    public Mono<Boolean> deletePromotion (int id) {
+        return promotionRepo.existsById(id)
+                .flatMap(exists -> {
+                    if (!exists) return Mono.just(false);
+                    return productoPromocionRepo.deleteByPromotionId(id)
+                            .then(promotionRepo.deleteById(id))
+                            .thenReturn(true);
+                });
+    }
+
+    public Mono<PromotionDTO> getPromotionById (int id){
+        return promotionRepo.findById(id)
+                    .map(this::convertToDTO);
+    }
+
+    public Flux<PromotionDTO> getAllPromotions() {
+        return promotionRepo.findAll()
+                .map(this::convertToDTO);
     }
 
     private PromotionDTO convertToDTO (Promotion promotion) {

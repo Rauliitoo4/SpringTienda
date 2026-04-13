@@ -4,9 +4,11 @@ import com.tienda.tienda.model.*;
 import com.tienda.tienda.dto.*;
 import com.tienda.tienda.repository.*;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CarritoService {
@@ -21,43 +23,60 @@ public class CarritoService {
         this.lineaRepo = lineaRepo;
     }
 
-    public CarritoDTO getCarritoById (int id){
+    public Mono<CarritoDTO> getCarritoById (int id){
         return carritoRepo.findById(id)
-                    .map(this::convertToDTO)
-                    .orElse(null);
+                    .map(this::convertToDTO);
     }
 
-    public CarritoDTO addProductToCarrito (int carritoID, int productID, int cantidad) {
-        Carrito carrito = carritoRepo.findById(carritoID).orElse(null);
-        if (carrito == null) return null;
+    public Mono<CarritoDTO> addProductToCarrito (int carritoID, int productID, int cantidad) {
+        return carritoRepo.findById(carritoID)
+                .zipWith(productRepo.findById(productID))
+                .flatMap(tupla -> {
+                    Carrito carrito = tupla.getT1();
+                    Product producto = tupla.getT2();
 
-        Product producto = productRepo.findById(productID).orElse(null);
-        if (producto == null) return null;
-        
-        LineaCarrito linea = new LineaCarrito();
-        linea.setCantidad(cantidad);
-        linea.setProducto(producto);
-        linea.setSubtotal(producto.getPrecioFinal() * cantidad);
-        linea.setCarrito(carrito);
-        
-        lineaRepo.save(linea);
-        carrito.getLineas().add(linea);
+                    LineaCarrito linea = new LineaCarrito();
+                    linea.setCantidad(cantidad);
+                    linea.setProductoId(producto.getId());
+                    linea.setCarritoId(carrito.getId());
+                    linea.setSubtotal(producto.getPrecioFinal() * cantidad);
+                    linea.setProducto(producto);
 
-        carrito.setTotal(carrito.getLineas().stream()
-                    .mapToDouble(LineaCarrito::getSubtotal)
-                    .sum());
-
-        carritoRepo.save(carrito);
-        return convertToDTO(carrito);
+                    return lineaRepo.save(linea)
+                            .then(recalcularTotal(carritoID))
+                            .then(carritoRepo.findById(carritoID))
+                            .flatMap(this::cargarLineas);
+                });
     }
 
-    public double calcularTotal(int carritoID){
-        Carrito carrito = carritoRepo.findById(carritoID).orElse(null);
-        if (carrito == null) return 0;
+    public Mono<Double> calcularTotal(int carritoID){
+        return lineaRepo.findByCarritoId(carritoID)
+                .map(LineaCarrito::getSubtotal)
+                .reduce(0.0, Double::sum);
+    }
 
-        return carrito.getLineas().stream()
-                    .mapToDouble(LineaCarrito::getSubtotal)
-                    .sum();
+    private Mono<Void> recalcularTotal(int carritoID) {
+        return calcularTotal(carritoID)
+                .flatMap(total -> carritoRepo.findById(carritoID)
+                        .flatMap(carrito -> {
+                            carrito.setTotal(total);
+                            return carritoRepo.save(carrito);
+                        }))
+                .then();
+    }
+
+    private Mono<CarritoDTO> cargarLineas (Carrito carrito) {
+        return lineaRepo.findByCarritoId(carrito.getId())
+                .flatMap(linea ->
+                    productRepo.findById(linea.getProductoId())
+                            .doOnNext(linea::setProducto)
+                            .thenReturn(linea)
+                )
+                .collectList()
+                .map(lineas -> {
+                    carrito.setLineas(lineas);
+                    return convertToDTO(carrito);
+                });
     }
 
     private CarritoDTO convertToDTO (Carrito carrito){
@@ -67,28 +86,29 @@ public class CarritoService {
         
         List<LineaCarritoDTO> lineasDTO = new ArrayList<>();
 
-        for (LineaCarrito linea : carrito.getLineas()) {
-            LineaCarritoDTO l = new LineaCarritoDTO();
-            l.setId(linea.getId());
-            l.setCantidad(linea.getCantidad());
-            l.setSubtotal(linea.getSubtotal());
+        if (carrito.getLineas() != null) {
+            dto.setLineas(carrito.getLineas().stream().map(linea -> {
+                LineaCarritoDTO l = new LineaCarritoDTO();
+                l.setId(linea.getId());
+                l.setCantidad(linea.getCantidad());
+                l.setSubtotal(linea.getSubtotal());
+                l.setCarritoId(linea.getCarritoId());
 
-            ProductDTO productoDTO = new ProductDTO();
-            Product p = linea.getProducto();
-            productoDTO.setId(p.getId());
-            productoDTO.setNombre(p.getNombre());
-            productoDTO.setPrecio(p.getPrecio());
-            productoDTO.setPrecioFinal(p.getPrecioFinal());
-            productoDTO.setDescripcion(p.getDescripcion()); 
-            productoDTO.setMaterial(p.getMaterial());
-            productoDTO.setConsideraciones(p.getConsideraciones());
-
-            l.setProducto(productoDTO);
-
-            lineasDTO.add(l);           
+                Product p = linea.getProducto();
+                if (p != null) {
+                    ProductDTO productoDTO = new ProductDTO();
+                    productoDTO.setId(p.getId());
+                    productoDTO.setNombre(p.getNombre());
+                    productoDTO.setPrecio(p.getPrecio());
+                    productoDTO.setPrecioFinal(p.getPrecioFinal());
+                    productoDTO.setDescripcion(p.getDescripcion());
+                    productoDTO.setMaterial(p.getMaterial());
+                    productoDTO.setConsideraciones(p.getConsideraciones());
+                    l.setProducto(productoDTO);
+                }
+                return l;
+            }).collect(java.util.stream.Collectors.toList()));
         }
-
-        dto.setLineas(lineasDTO);
         return dto;
     }
 

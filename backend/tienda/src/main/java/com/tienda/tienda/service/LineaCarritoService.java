@@ -4,102 +4,121 @@ import com.tienda.tienda.model.*;
 import com.tienda.tienda.dto.*;
 import com.tienda.tienda.repository.*;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LineaCarritoService {
     
     private final LineaCarritoRepository lineaRepo;
     private final CarritoRepository carritoRepo;
+    private final ProductRepository productRepo;
+    private final PromotionRepository promoRepo;
+    private final ProductoPromocionRepository productoPromocionRepo;
 
-    public LineaCarritoService(LineaCarritoRepository lineaRepo, CarritoRepository carritoRepo){
+    public LineaCarritoService(LineaCarritoRepository lineaRepo, CarritoRepository carritoRepo, ProductRepository productRepo, PromotionRepository promoRepo, ProductoPromocionRepository productoPromocionRepo){
         this.lineaRepo = lineaRepo;
         this.carritoRepo = carritoRepo;
+        this.productRepo = productRepo;
+        this.promoRepo = promoRepo;
+        this.productoPromocionRepo = productoPromocionRepo;
     }
 
-    public LineaCarritoDTO updateLinea(int id, int cantidad) {
-        LineaCarrito linea = lineaRepo.findById(id).orElse(null);
-        if (linea == null) return null;
-
-        if (cantidad > 0) {
-            linea.setCantidad(cantidad);
-            linea.setSubtotal(linea.getProducto().getPrecioFinal() * cantidad);
-        }
-
-        Carrito carrito = linea.getCarrito();
-        double total = carrito.getLineas().stream()
-                    .mapToDouble(LineaCarrito::getSubtotal)
-                    .sum();
-        carrito.setTotal(total);
-        carritoRepo.save(carrito);
-
-        lineaRepo.save(linea);
-        return convertToDTO(linea);
-    }
-
-    public boolean deleteLinea (int id) {
-        LineaCarrito linea = lineaRepo.findById(id).orElse(null);
-        if (linea == null) return false;
-
-        Carrito carrito = linea.getCarrito();
-        carrito.getLineas().remove(linea);
-
-        lineaRepo.deleteById(id);
-
-        double total = carrito.getLineas().stream()     
-                    .mapToDouble(LineaCarrito::getSubtotal)
-                    .sum();
-        carrito.setTotal(total);
-        carritoRepo.save(carrito);
-        
-        return true;
-    }
-
-    public LineaCarritoDTO getLineaById (int id){
+    public Mono<LineaCarritoDTO> updateLinea(int id, int cantidad) {
         return lineaRepo.findById(id)
-                    .map(this::convertToDTO)
-                    .orElse(null);
+                .flatMap(linea -> {
+                    if (cantidad <= 0) return Mono.empty();
+                    linea.setCantidad(cantidad);
+                    return productRepo.findById(linea.getProductoId())
+                            .flatMap(producto -> {
+                                linea.setSubtotal(producto.getPrecioFinal() * cantidad);
+                                return lineaRepo.save(linea)
+                                        .then(recalcularTotal(linea.getCarritoId()))
+                                        .then(cargarProducto(linea));
+                            });
+                })
+                .flatMap(this::convertToDTO);
     }
 
-    public List<LineaCarritoDTO> getAllLineas() {
-        List<LineaCarritoDTO> listDTO = new ArrayList<>();
-        for (LineaCarrito linea : lineaRepo.findAll()) {
-            listDTO.add(convertToDTO(linea));
-        }
-        return listDTO;
+    public Mono<Boolean> deleteLinea (int id) {
+        return lineaRepo.findById(id)
+                .flatMap(linea -> {
+                    Integer carritoId = linea.getCarritoId();
+                    return lineaRepo.deleteById(id)
+                            .then(recalcularTotal(carritoId))
+                            .thenReturn(true);
+                })
+                .defaultIfEmpty(false);
     }
 
-    private LineaCarritoDTO convertToDTO(LineaCarrito linea) {
+    public Mono<LineaCarritoDTO> getLineaById (int id){
+        return lineaRepo.findById(id)
+                .flatMap(this::cargarProducto)
+                .flatMap(this::convertToDTO);
+    }
+
+    public Flux<LineaCarritoDTO> getAllLineas() {
+        return lineaRepo.findAll()
+                .flatMap(this::cargarProducto)
+                .flatMap(this::convertToDTO);
+    }
+
+    private Mono<LineaCarrito> cargarProducto(LineaCarrito linea) {
+        return productRepo.findById(linea.getProductoId())
+                .flatMap(producto ->
+                    productoPromocionRepo.findPromotionIdsByProductId(producto.getId())
+                            .flatMap(promoId -> promoRepo.findById(promoId))
+                            .collectList()
+                            .doOnNext(producto::setPromociones)
+                            .thenReturn(producto)
+                )
+                .doOnNext(linea::setProducto)
+                .thenReturn(linea);
+    }
+
+    private Mono<Void> recalcularTotal(Integer carritoId) {
+        return lineaRepo.findByCarritoId(carritoId)
+                .map(LineaCarrito::getSubtotal)
+                .reduce(0.0, Double::sum)
+                .flatMap(total -> carritoRepo.findById(carritoId)
+                        .flatMap(carrito -> {
+                            carrito.setTotal(total);
+                            return carritoRepo.save(carrito);
+                        }))
+                .then();
+    }
+
+    private Mono<LineaCarritoDTO> convertToDTO(LineaCarrito linea) {
         LineaCarritoDTO dto = new LineaCarritoDTO();
         dto.setId(linea.getId());
         dto.setCantidad(linea.getCantidad());
         dto.setSubtotal(linea.getSubtotal());
-        dto.setCarritoId(linea.getCarrito().getId());
+        dto.setCarritoId(linea.getCarritoId());
 
         Product producto = linea.getProducto();
-        ProductDTO productoDTO = new ProductDTO();
-        productoDTO.setId(producto.getId());
-        productoDTO.setNombre(producto.getNombre());
-        productoDTO.setPrecio(producto.getPrecio());
-        productoDTO.setPrecioFinal(producto.getPrecioFinal());
-        productoDTO.setDescripcion(producto.getDescripcion());
-        productoDTO.setMaterial(producto.getMaterial());
-        productoDTO.setConsideraciones(producto.getConsideraciones());
-        
-        List<PromotionDTO> promosDTO = new ArrayList<>();
-        for (Promotion promo : producto.getPromociones()) {
-            PromotionDTO pDTO = new PromotionDTO();
-            pDTO.setId(promo.getId());
-            pDTO.setDescuento(promo.getDescuento());
-            pDTO.setDescripcion(promo.getDescripcion()); 
-            promosDTO.add(pDTO);
-        }
+        if (producto != null) {
+            ProductDTO productoDTO = new ProductDTO();
+            productoDTO.setId(producto.getId());
+            productoDTO.setNombre(producto.getNombre());
+            productoDTO.setPrecio(producto.getPrecio());
+            productoDTO.setPrecioFinal(producto.getPrecioFinal());
+            productoDTO.setDescripcion(producto.getDescripcion());
+            productoDTO.setMaterial(producto.getMaterial());
+            productoDTO.setConsideraciones(producto.getConsideraciones());
 
-        productoDTO.setPromociones(promosDTO);
-        dto.setProducto(productoDTO);
-        
-        return dto;
+            if (producto.getPromociones() != null) {
+                productoDTO.setPromociones(producto.getPromociones().stream().map(promo -> {
+                    PromotionDTO pDTO = new PromotionDTO();
+                    pDTO.setId(promo.getId());
+                    pDTO.setDescuento(promo.getDescuento());
+                    pDTO.setDescripcion(promo.getDescripcion());
+                    return pDTO;
+                }).collect(Collectors.toList()));
+            }
+            dto.setProducto(productoDTO);
+        }
+        return Mono.just(dto);
     }
 }

@@ -20,6 +20,9 @@ public interface ProductoPromocionRepository extends ReactiveCrudRepository<Prod
     @Query("SELECT COUNT(*) FROM producto_promocion WHERE producto_id = :productoId AND promocion_id = :promocionId")
     Mono<Integer> existsRelation(int productoId, int promocionId);
 
+    @Query("DELETE FROM producto_promocion WHERE promocion_id = :promocionId")
+    Mono<Void> deleteByPromotionId(int promocionId);
+
     @Data
     @Table("producto_promocion")
     class ProductoPromocion {

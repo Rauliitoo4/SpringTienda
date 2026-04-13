@@ -23,5 +23,5 @@ public class User {
     private String password;
 
     @Column("carrito_id")
-    private Integer carrito;
+    private Integer carritoId;
 }
