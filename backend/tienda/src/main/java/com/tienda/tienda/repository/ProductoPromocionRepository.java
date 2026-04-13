@@ -23,12 +23,12 @@ public interface ProductoPromocionRepository extends ReactiveCrudRepository<Prod
     @Query("DELETE FROM producto_promocion WHERE promocion_id = :promocionId")
     Mono<Void> deleteByPromotionId(int promocionId);
 
+    @Query("INSERT INTO producto_promocion (producto_id, promocion_id) VALUES (:productoId, :promocionId)")
+    Mono<Void> insertRelation(int productoId, int promocionId);
+
     @Data
     @Table("producto_promocion")
     class ProductoPromocion {
-        @Id
-        private Integer id;
-
         @Column("producto_id")
         private Integer productoId;
 

@@ -92,11 +92,7 @@ public class ProductService {
                     return productoPromocionRepo.existsRelation(productoID, promocionID)
                             .flatMap(count -> {
                                 if (count > 0) return cargarPromociones(producto).map(this::convertToDTO);
-                                ProductoPromocionRepository.ProductoPromocion rel =
-                                        new ProductoPromocionRepository.ProductoPromocion();
-                                rel.setProductoId(productoID);
-                                rel.setPromocionId(promocionID);
-                                return productoPromocionRepo.save(rel)
+                                return productoPromocionRepo.insertRelation(productoID, promocionID)
                                         .then(cargarPromociones(producto))
                                         .flatMap(p -> {
                                             recalcularPrecioFinal(p);
