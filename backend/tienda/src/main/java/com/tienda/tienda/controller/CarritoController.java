@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-
-
+import reactor.core.publisher.Mono;
 
 
 @RestController
@@ -24,17 +22,17 @@ public class CarritoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CarritoDTO> getCarritoById(@PathVariable int id) {
-        CarritoDTO dto = carritoService.getCarritoById(id);
-        if (dto == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(dto);
+    public Mono<ResponseEntity<CarritoDTO>> getCarritoById(@PathVariable int id) {
+        return carritoService.getCarritoById(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/{carritoId}/productos/{productoId}")
-    public ResponseEntity<CarritoDTO> addProductToCarrito(@PathVariable int carritoId, @PathVariable int productoId, @RequestParam int cantidad) {
-        CarritoDTO dto = carritoService.addProductToCarrito(carritoId, productoId, cantidad);
-        if (dto == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(dto);
+    public Mono<ResponseEntity<CarritoDTO>> addProductToCarrito(@PathVariable int carritoId, @PathVariable int productoId, @RequestParam int cantidad) {
+        return carritoService.addProductToCarrito(carritoId, productoId, cantidad)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     } 
 }
 

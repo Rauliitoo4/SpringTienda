@@ -5,6 +5,8 @@ import com.tienda.tienda.service.LineaCarritoService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -22,29 +24,30 @@ public class LineaCarritoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LineaCarritoDTO>> getAllLineas() {
+    public ResponseEntity<Flux<LineaCarritoDTO>> getAllLineas() {
         return ResponseEntity.ok(lineaCarritoService.getAllLineas());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LineaCarritoDTO> getLineaById(@PathVariable int id) {
-        LineaCarritoDTO dto = lineaCarritoService.getLineaById(id);
-        if (dto == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(dto);
+    public Mono<ResponseEntity<LineaCarritoDTO>> getLineaById(@PathVariable int id) {
+        return lineaCarritoService.getLineaById(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LineaCarritoDTO> updateLinea(@PathVariable int id, @RequestParam int cantidad) {
-        LineaCarritoDTO actualizado = lineaCarritoService.updateLinea(id, cantidad);
-        if (actualizado == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(actualizado);
+    public Mono<ResponseEntity<LineaCarritoDTO>> updateLinea(@PathVariable int id, @RequestParam int cantidad) {
+        return lineaCarritoService.updateLinea(id, cantidad)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLinea(@PathVariable int id) {
-        boolean eliminado = lineaCarritoService.deleteLinea(id);
-        if (!eliminado) return ResponseEntity.notFound().build();
-        return ResponseEntity.noContent().build();
+    public Mono<ResponseEntity<Void>> deleteLinea(@PathVariable int id) {
+        return lineaCarritoService.deleteLinea(id)
+                .map(eliminado -> eliminado
+                        ? ResponseEntity.<Void>noContent().build()
+                        : ResponseEntity.<Void>notFound().build());
     }
     
     

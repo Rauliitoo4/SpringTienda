@@ -3,8 +3,11 @@ package com.tienda.tienda.controller;
 import com.tienda.tienda.dto.UserDTO;
 import com.tienda.tienda.dto.UserResponseDTO;
 import com.tienda.tienda.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -22,36 +25,36 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+    public ResponseEntity<Flux<UserResponseDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable int id) {
-        UserResponseDTO dto = userService.getUserById(id);
-        if (dto == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(dto);
+    public Mono<ResponseEntity<UserResponseDTO>> getUserById(@PathVariable int id) {
+        return userService.getUserById(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserDTO dto) {
-        UserResponseDTO creado = userService.createUser(dto);
-        if (creado == null) return ResponseEntity.badRequest().build();
-        return ResponseEntity.status(201).body(creado);
+    public Mono<ResponseEntity<UserResponseDTO>> createUser(@RequestBody UserDTO dto) {
+        return userService.createUser(dto)
+                .map(creado -> ResponseEntity.status(HttpStatus.CREATED).body(creado));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable int id, @RequestBody UserDTO dto) {
-        UserResponseDTO actualizado = userService.updateUser(id, dto);
-        if (actualizado == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(actualizado);
+    public Mono<ResponseEntity<UserResponseDTO>> updateUser(@PathVariable int id, @RequestBody UserDTO dto) {
+        return userService.updateUser(id, dto)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable int id) {
-        boolean eliminado = userService.deleteUser(id);
-        if (!eliminado) return ResponseEntity.notFound().build();
-        return ResponseEntity.noContent().build();
+    public Mono<ResponseEntity<Void>> deleteUser(@PathVariable int id) {
+        return userService.deleteUser(id)
+                .map(eliminado -> eliminado
+                        ? ResponseEntity.<Void>noContent().build()
+                        : ResponseEntity.<Void>notFound().build());
     }
     
     
