@@ -7,7 +7,7 @@ COPY pom.xml .
 #Copia el archivo pom.xml al contenedor
 COPY src ./src
 #Copia la carpeta src al contenedor                                  
-RUN mvn clean package -DskipTests
+RUN mvn clean package -Dmaven.test.skip=true
 #Compila el proyecto y genera el .jar en la carpeta target. Con -Dskiptests evita ejeecutar los test durante la construcción.               
 
 #Fase 2: Crear la imagen final

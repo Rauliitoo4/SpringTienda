@@ -2,13 +2,13 @@ spring:
   application:
     name: tienda
 
-  datasource:
-    url: r2dbc:postgresql://localhost:5432/tienda
+  r2dbc:
+    url: r2dbc:postgresql://tienda_postgres:5432/tienda
     username: postgres
     password: admin123
 
   liquibase:
-    url: jdbc:postgresql://localhost:5432/tienda
+    url: jdbc:postgresql://tienda_postgres:5432/tienda
     user: postgres
     password: admin123
     change-log: classpath:db/changelog/db.changelog-master.xml

@@ -16,16 +16,20 @@ public class CarritoService {
     private final CarritoRepository carritoRepo;
     private final ProductRepository productRepo;
     private final LineaCarritoRepository lineaRepo;
+    private final ProductoPromocionRepository productoPromocionRepo;
+    private final PromotionRepository promotionRepo;
 
-    public CarritoService(ProductRepository productRepo, CarritoRepository carritoRepo, LineaCarritoRepository lineaRepo) {
+    public CarritoService(ProductRepository productRepo, CarritoRepository carritoRepo, LineaCarritoRepository lineaRepo, ProductoPromocionRepository productoPromocionRepo, PromotionRepository promotionRepo) {
         this.productRepo = productRepo;
         this.carritoRepo = carritoRepo;
         this.lineaRepo = lineaRepo;
+        this.productoPromocionRepo = productoPromocionRepo;
+        this.promotionRepo = promotionRepo;
     }
 
     public Mono<CarritoDTO> getCarritoById (int id){
         return carritoRepo.findById(id)
-                    .map(this::convertToDTO);
+                    .flatMap(this::cargarLineas);
     }
 
     public Mono<CarritoDTO> addProductToCarrito (int carritoID, int productID, int cantidad) {
@@ -69,7 +73,15 @@ public class CarritoService {
         return lineaRepo.findByCarritoId(carrito.getId())
                 .flatMap(linea ->
                     productRepo.findById(linea.getProductoId())
+                            .flatMap(producto ->
+                                    productoPromocionRepo.findPromotionIdsByProductId(producto.getId())
+                                            .flatMap(promoId -> promotionRepo.findById(promoId))
+                                            .collectList()
+                                            .doOnNext(producto::setPromociones)
+                                            .thenReturn(producto)
+                            )
                             .doOnNext(linea::setProducto)
+                            .doOnNext(p -> System.out.println("DEBUG linea carritoId=" + linea.getCarritoId() + " productoPromociones=" + linea.getProducto().getPromociones()))
                             .thenReturn(linea)
                 )
                 .collectList()
@@ -83,8 +95,6 @@ public class CarritoService {
         CarritoDTO dto = new CarritoDTO();
         dto.setId(carrito.getId());
         dto.setTotal(carrito.getTotal());
-        
-        List<LineaCarritoDTO> lineasDTO = new ArrayList<>();
 
         if (carrito.getLineas() != null) {
             dto.setLineas(carrito.getLineas().stream().map(linea -> {
@@ -104,10 +114,21 @@ public class CarritoService {
                     productoDTO.setDescripcion(p.getDescripcion());
                     productoDTO.setMaterial(p.getMaterial());
                     productoDTO.setConsideraciones(p.getConsideraciones());
+                    productoDTO.setImagenUrl(p.getImagenUrl());
+
+                    if (p.getPromociones() != null) {
+                        productoDTO.setPromociones(p.getPromociones().stream().map(promo -> {
+                            PromotionDTO pDTO = new PromotionDTO();
+                            pDTO.setId(promo.getId());
+                            pDTO.setDescuento(promo.getDescuento());
+                            pDTO.setDescripcion(promo.getDescripcion());
+                            return pDTO;
+                        }).collect(Collectors.toList()));
+                    }
                     l.setProducto(productoDTO);
                 }
                 return l;
-            }).collect(java.util.stream.Collectors.toList()));
+            }).collect(Collectors.toList()));
         }
         return dto;
     }
