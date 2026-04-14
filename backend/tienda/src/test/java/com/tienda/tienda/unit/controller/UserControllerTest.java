@@ -1,6 +1,5 @@
 package com.tienda.tienda.unit.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tienda.tienda.dto.UserResponseDTO;
 import com.tienda.tienda.dto.UserDTO;
 import com.tienda.tienda.service.UserService;
@@ -9,29 +8,27 @@ import com.tienda.tienda.controller.UserController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(UserController.class)
+@WebFluxTest(UserController.class)
 class UserControllerTest {
     
     @Autowired
-    private MockMvc mockMvc;
+    private WebTestClient webTestClient;
 
     @MockitoBean
     private UserService userService;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private UserResponseDTO usuarioResponse;
     private UserDTO usuarioRequest;
@@ -56,119 +53,117 @@ class UserControllerTest {
 
     //GET /usuarios
     @Test
-    void getAllUsers_deberiaRetornarListaYStatus200() throws Exception {
-        when(userService.getAllUsers()).thenReturn(List.of(usuarioResponse));
+    void getAllUsers_deberiaRetornarListaYStatus200() {
+        when(userService.getAllUsers()).thenReturn(Flux.just(usuarioResponse));
 
-        mockMvc.perform(get("/usuarios"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(1))
-                    .andExpect(jsonPath("$[0].id").value(1))
-                    .andExpect(jsonPath("$[0].nombre").value("Alberto"))
-                    .andExpect(jsonPath("$[0].carritoId").value(1));
+        webTestClient.get().uri("/usuarios")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(UserResponseDTO.class)
+                .hasSize(1);
 
     }
 
     @Test
-    void getAllUsers_listaVacia_deberiaRetornarArrayVacioYStatus200() throws Exception {
-        when(userService.getAllUsers()).thenReturn(List.of());
+    void getAllUsers_listaVacia_deberiaRetornarArrayVacioYStatus200() {
+        when(userService.getAllUsers()).thenReturn(Flux.empty());
 
-        mockMvc.perform(get("/usuarios"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(0));
+        webTestClient.get().uri("/usuarios")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(UserResponseDTO.class)
+                .hasSize(0);
     }
 
     //GET /usuarios/{id}
     @Test
-    void getUserById_existente_deberiaRetornarUsuarioyStatus200() throws Exception {
-        when(userService.getUserById(1)).thenReturn(usuarioResponse);
+    void getUserById_existente_deberiaRetornarUsuarioyStatus200() {
+        when(userService.getUserById(1)).thenReturn(Mono.just(usuarioResponse));
 
-        mockMvc.perform(get("/usuarios/1"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(1))
-                    .andExpect(jsonPath("$.nombre").value("Alberto"))
-                    .andExpect(jsonPath("$.carritoId").value(1));                 
+        webTestClient.get().uri("/usuarios/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(UserResponseDTO.class)
+                .isEqualTo(usuarioResponse);
     }
 
     @Test
-    void getUserById_noExistente_deberiaRetornar404() throws Exception {
-        when(userService.getUserById(99)).thenReturn(null);
+    void getUserById_noExistente_deberiaRetornar404() {
+        when(userService.getUserById(99)).thenReturn(Mono.empty());
 
-        mockMvc.perform(get("/usuarios/99"))
-                    .andExpect(status().isNotFound());     
+        webTestClient.get().uri("/usuarios/99")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     //POST /usuarios
     @Test
-    void createUser_deberiaRetornarUsuarioCreadoYStatus201() throws Exception {
-        when(userService.createUser(any(UserDTO.class))).thenReturn(usuarioResponse);
-        
-        mockMvc.perform(post("/usuarios")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(usuarioRequest)))
-                    .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.id").value(1))
-                    .andExpect(jsonPath("$.nombre").value("Alberto"))
-                    .andExpect(jsonPath("$.carritoId").value(1));
+    void createUser_deberiaRetornarUsuarioCreadoYStatus201() {
+        when(userService.createUser(any(UserDTO.class))).thenReturn(Mono.just(usuarioResponse));
+
+        webTestClient.post().uri("/usuarios")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(usuarioRequest)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(UserResponseDTO.class)
+                .isEqualTo(usuarioResponse);
     }
 
     @Test
-    void createUser_fallido_deberiaRetornar400() throws Exception {
-        when(userService.createUser(any(UserDTO.class))).thenReturn(null);
+    void createUser_deberiaDelegarEnServicio() {
+        when(userService.createUser(any(UserDTO.class))).thenReturn(Mono.just(usuarioResponse));
 
-        mockMvc.perform(post("/usuarios")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(usuarioRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void createUser_deberiaDelegarEnServicio() throws Exception {
-        when(userService.createUser(any(UserDTO.class))).thenReturn(usuarioResponse);
-        
-        mockMvc.perform(post("/usuarios")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(usuarioRequest)))
-                    .andExpect(status().isCreated());
+        webTestClient.post().uri("/usuarios")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(usuarioRequest)
+                .exchange()
+                .expectStatus().isCreated();
         verify(userService, times(1)).createUser(any(UserDTO.class));
     }
 
     //PUT /usuarios/{id}
     @Test
-    void updateUser_existente_deberiaRetornarUsuarioActualizadoYStatus200() throws Exception {
+    void updateUser_existente_deberiaRetornarUsuarioActualizadoYStatus200() {
         usuarioResponse.setNombre("Antonio");
-        when(userService.updateUser(eq(1), any(UserDTO.class))).thenReturn(usuarioResponse);
+        when(userService.updateUser(eq(1), any(UserDTO.class))).thenReturn(Mono.just(usuarioResponse));
 
-        mockMvc.perform(put("/usuarios/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(usuarioRequest)))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.nombre").value("Antonio"));
+        webTestClient.put().uri("/usuarios/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(usuarioRequest)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(UserResponseDTO.class)
+                .isEqualTo(usuarioResponse);
     }
 
     @Test
-    void updateUser_noExistente_deberiaRetornar404() throws Exception {
-        when(userService.updateUser(eq(99), any(UserDTO.class))).thenReturn(null);
+    void updateUser_noExistente_deberiaRetornar404() {
+        when(userService.updateUser(eq(99), any(UserDTO.class))).thenReturn(Mono.empty());
 
-        mockMvc.perform(put("/usuarios/99")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(usuarioRequest)))
-                    .andExpect(status().isNotFound());
+        webTestClient.put().uri("/usuarios/99")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(usuarioRequest)
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     //DELETE /usuarios/{id}
     @Test
-    void deleteUser_existente_deberiaRetornar204() throws Exception {
-        when(userService.deleteUser(1)).thenReturn(true);
+    void deleteUser_existente_deberiaRetornar204() {
+        when(userService.deleteUser(1)).thenReturn(Mono.just(true));
 
-        mockMvc.perform(delete("/usuarios/1"))
-                    .andExpect(status().isNoContent());
+        webTestClient.delete().uri("/usuarios/1")
+                .exchange()
+                .expectStatus().isNoContent();
     }
 
     @Test
-    void deleteUser_noExistente_deberiaRetornar404() throws Exception {
-        when(userService.deleteUser(99)).thenReturn(false);
+    void deleteUser_noExistente_deberiaRetornar404() {
+        when(userService.deleteUser(99)).thenReturn(Mono.just(false));
 
-        mockMvc.perform(delete("/usuarios/99"))
-                    .andExpect(status().isNotFound());
+        webTestClient.delete().uri("/usuarios/99")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }

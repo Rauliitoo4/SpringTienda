@@ -66,6 +66,7 @@ public class LineaCarritoServiceTest {
     void obtenerLineaPorId_deberiaDevolver_laLinea() {
         LineaCarrito linea = lineaDePrueba();
         when(lineaRepo.findById(1)).thenReturn(Mono.just(linea));
+        mockCargarProducto(1);
 
         StepVerifier.create(lineaCarritoService.getLineaById(1))
                 .expectNextMatches(dto ->
@@ -126,7 +127,6 @@ public class LineaCarritoServiceTest {
 
     @Test
     void eliminarLinea_siNoExiste_deberiaDevolverFalse() {
-        LineaCarrito linea = lineaDePrueba();
         when(lineaRepo.findById(999)).thenReturn(Mono.empty());
 
         StepVerifier.create(lineaCarritoService.deleteLinea(999))

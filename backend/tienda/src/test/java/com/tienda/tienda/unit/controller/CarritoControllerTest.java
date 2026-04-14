@@ -9,21 +9,20 @@ import com.tienda.tienda.controller.CarritoController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(CarritoController.class)
+@WebFluxTest(CarritoController.class)
 class CarritoControllerTest {
-    
+
     @Autowired
-    private MockMvc mockMvc;
+    private WebTestClient webTestClient;
 
     @MockitoBean
     private CarritoService carritoService;
@@ -58,66 +57,63 @@ class CarritoControllerTest {
 
     //GET /carritos/{id}
     @Test
-    void getCarritoById_existente_deberiaRetornarCarritoyStatus200() throws Exception {
-        when(carritoService.getCarritoById(1)).thenReturn(carritoVacio);
+    void getCarritoById_existente_deberiaRetornarCarritoyStatus200() {
+        when(carritoService.getCarritoById(1)).thenReturn(Mono.just(carritoVacio));
 
-        mockMvc.perform(get("/carritos/1"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(1))
-                    .andExpect(jsonPath("$.total").value(0.0))
-                    .andExpect(jsonPath("$.lineas.length()").value(0));                 
+        webTestClient.get().uri("/carritos/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CarritoDTO.class)
+                .isEqualTo(carritoVacio);
     }
 
     @Test
-    void getCarritoById_noExistente_deberiaRetornar404l() throws Exception {
-        when(carritoService.getCarritoById(99)).thenReturn(null);
+    void getCarritoById_noExistente_deberiaRetornar404() {
+        when(carritoService.getCarritoById(99)).thenReturn(Mono.empty());
 
-        mockMvc.perform(get("/carritos/99"))
-                    .andExpect(status().isNotFound());     
+        webTestClient.get().uri("/carritos/99")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     //POST /carritos/{carritoId}/productos/{productoId}
     @Test
-    void addProductToCarrito_deberiaRetornarCarritoActualizadoYStatus200() throws Exception {
-        when(carritoService.addProductToCarrito(1, 1, 2)).thenReturn(carritoConLinea);
-        
-        mockMvc.perform(post("/carritos/1/productos/1")
-                        .param("cantidad", "2"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(1))
-                    .andExpect(jsonPath("$.total").value(36.0))
-                    .andExpect(jsonPath("$.lineas.length()").value(1))
-                    .andExpect(jsonPath("$.lineas[0].cantidad").value(2))
-                    .andExpect(jsonPath("$.lineas[0].subtotal").value(36.0))
-                    .andExpect(jsonPath("$.lineas[0].producto.nombre").value("Camiseta"));
+    void addProductToCarrito_deberiaRetornarCarritoActualizadoYStatus200() {
+        when(carritoService.addProductToCarrito(1, 1, 2)).thenReturn(Mono.just(carritoConLinea));
+
+        webTestClient.post().uri("/carritos/1/productos/1?cantidad=2")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(CarritoDTO.class)
+                .isEqualTo(carritoConLinea);
     }
 
     @Test
-    void addProductToCarrito_carritoNoExiste_deberiaRetornar404() throws Exception {
-        when(carritoService.addProductToCarrito(99, 1, 2)).thenReturn(null);
-        
-        mockMvc.perform(post("/carritos/99/productos/1")
-                        .param("cantidad", "2"))
-                    .andExpect(status().isNotFound());
+    void addProductToCarrito_carritoNoExiste_deberiaRetornar404() {
+        when(carritoService.addProductToCarrito(99, 1, 2)).thenReturn(Mono.empty());
+
+        webTestClient.post().uri("/carritos/99/productos/1?cantidad=2")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     @Test
-    void addProductToCarrito_productoNoExiste_deberiaRetornar404() throws Exception {
-        when(carritoService.addProductToCarrito(1, 99, 2)).thenReturn(null);
-        
-        mockMvc.perform(post("/carritos/1/productos/99")
-                        .param("cantidad", "2"))
-                    .andExpect(status().isNotFound());
+    void addProductToCarrito_productoNoExiste_deberiaRetornar404() {
+        when(carritoService.addProductToCarrito(1, 99, 2)).thenReturn(Mono.empty());
+
+        webTestClient.post().uri("/carritos/1/productos/99?cantidad=2")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     @Test
-    void addProductToCarrito_deberiaDelegarEnServicio() throws Exception {
-        when(carritoService.addProductToCarrito(1, 1, 2)).thenReturn(carritoConLinea);
-        
-        mockMvc.perform(post("/carritos/1/productos/1")
-                        .param("cantidad", "2"))
-                    .andExpect(status().isOk());
-        
+    void addProductToCarrito_deberiaDelegarEnServicio() {
+        when(carritoService.addProductToCarrito(1, 1, 2)).thenReturn(Mono.just(carritoConLinea));
+
+        webTestClient.post().uri("/carritos/1/productos/1?cantidad=2")
+                .exchange()
+                .expectStatus().isOk();
+
         verify(carritoService, times(1)).addProductToCarrito(1, 1, 2);
     }
 }

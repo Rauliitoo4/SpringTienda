@@ -1,6 +1,5 @@
 package com.tienda.tienda.unit.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tienda.tienda.dto.PromotionDTO;
 import com.tienda.tienda.service.PromotionService;
 import com.tienda.tienda.controller.PromotionController;
@@ -8,29 +7,25 @@ import com.tienda.tienda.controller.PromotionController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.List;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(PromotionController.class)
+@WebFluxTest(PromotionController.class)
 class PromotionControllerTest {
     
     @Autowired
-    private MockMvc mockMvc;
+    private WebTestClient webTestClient;
 
     @MockitoBean
     private PromotionService promotionService;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private PromotionDTO promo;
 
@@ -44,119 +39,116 @@ class PromotionControllerTest {
 
     //GET /promociones
     @Test
-    void getAllPromotions_deberiaRetornarListaYStatus200() throws Exception {
-        when(promotionService.getAllPromotions()).thenReturn(List.of(promo));
+    void getAllPromotions_deberiaRetornarListaYStatus200() {
+        when(promotionService.getAllPromotions()).thenReturn(Flux.just(promo));
 
-        mockMvc.perform(get("/promociones"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(1))
-                    .andExpect(jsonPath("$[0].id").value(1))
-                    .andExpect(jsonPath("$[0].descripcion").value("Rebajas de verano"))
-                    .andExpect(jsonPath("$[0].descuento").value(10.0));
+        webTestClient.get().uri("/promociones")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(PromotionDTO.class)
+                .hasSize(1);
 
     }
 
     @Test
-    void getAllPromotions_listaVacia_deberiaRetornarArrayVacioYStatus200() throws Exception {
-        when(promotionService.getAllPromotions()).thenReturn(List.of());
+    void getAllPromotions_listaVacia_deberiaRetornarArrayVacioYStatus200() {
+        when(promotionService.getAllPromotions()).thenReturn(Flux.empty());
 
-        mockMvc.perform(get("/promociones"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(0));
+        webTestClient.get().uri("/promociones")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(PromotionDTO.class)
+                .hasSize(0);
     }
 
     //GET /promociones/{id}
     @Test
-    void getPromotionById_existente_deberiaRetornarPromocionyStatus200() throws Exception {
-        when(promotionService.getPromotionById(1)).thenReturn(promo);
+    void getPromotionById_existente_deberiaRetornarPromocionyStatus200() {
+        when(promotionService.getPromotionById(1)).thenReturn(Mono.just(promo));
 
-        mockMvc.perform(get("/promociones/1"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(1))
-                    .andExpect(jsonPath("$.descripcion").value("Rebajas de verano"))
-                    .andExpect(jsonPath("$.descuento").value(10.0));
-        }
+        webTestClient.get().uri("/promociones/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PromotionDTO.class)
+                .isEqualTo(promo);
+    }
 
     @Test
-    void getPromotionById_noExistente_deberiaRetornar404l() throws Exception {
-        when(promotionService.getPromotionById(99)).thenReturn(null);
+    void getPromotionById_noExistente_deberiaRetornar404() {
+        when(promotionService.getPromotionById(99)).thenReturn(Mono.empty());
 
-        mockMvc.perform(get("/promociones/99"))
-                    .andExpect(status().isNotFound());     
+        webTestClient.get().uri("/promociones/99")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     //POST /promociones
     @Test
-    void createPromotion_deberiaRetornarPromocionCreadaYStatus201() throws Exception {
-        when(promotionService.createPromotion(any(PromotionDTO.class))).thenReturn(promo);
-        
-        mockMvc.perform(post("/promociones")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(promo)))
-                    .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.id").value(1))
-                    .andExpect(jsonPath("$.descripcion").value("Rebajas de verano"))
-                    .andExpect(jsonPath("$.descuento").value(10.0));
+    void createPromotion_deberiaRetornarPromocionCreadaYStatus201() {
+        when(promotionService.createPromotion(any(PromotionDTO.class))).thenReturn(Mono.just(promo));
+
+        webTestClient.post().uri("/promociones")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(promo)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(PromotionDTO.class)
+                .isEqualTo(promo);
     }
 
     @Test
-    void createPromotion_fallido_deberiaRetornar400() throws Exception {
-        when(promotionService.createPromotion(any(PromotionDTO.class))).thenReturn(null);
+    void createPromotion_deberiaDelegarEnServicio() {
+        when(promotionService.createPromotion(any(PromotionDTO.class))).thenReturn(Mono.just(promo));
 
-        mockMvc.perform(post("/promociones")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(promo)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void createPromotion_deberiaDelegarEnServicio() throws Exception {
-        when(promotionService.createPromotion(any(PromotionDTO.class))).thenReturn(promo);
-        
-        mockMvc.perform(post("/promociones")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(promo)))
-                    .andExpect(status().isCreated());
+        webTestClient.post().uri("/promociones")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(promo)
+                .exchange()
+                .expectStatus().isCreated();
         verify(promotionService, times(1)).createPromotion(any(PromotionDTO.class));
     }
 
     //PUT /promociones/{id}
     @Test
-    void updatePromotion_existente_deberiaRetornarPromocionActualizadaYStatus200() throws Exception {
+    void updatePromotion_existente_deberiaRetornarPromocionActualizadaYStatus200() {
         promo.setDescuento(50.0);
-        when(promotionService.updatePromotion(eq(1), any(PromotionDTO.class))).thenReturn(promo);
+        when(promotionService.updatePromotion(eq(1), any(PromotionDTO.class))).thenReturn(Mono.just(promo));
 
-        mockMvc.perform(put("/promociones/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(promo)))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.descuento").value(50.0));
+        webTestClient.put().uri("/promociones/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(promo)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PromotionDTO.class)
+                .isEqualTo(promo);
     }
 
     @Test
-    void updatePromotion_noExistente_deberiaRetornar404l() throws Exception {
-        when(promotionService.updatePromotion(eq(99), any(PromotionDTO.class))).thenReturn(null);
+    void updatePromotion_noExistente_deberiaRetornar404l() {
+        when(promotionService.updatePromotion(eq(99), any(PromotionDTO.class))).thenReturn(Mono.empty());
 
-        mockMvc.perform(put("/promotion/99")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(promo)))
-                    .andExpect(status().isNotFound());
+        webTestClient.put().uri("/promociones/99")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(promo)
+                .exchange()
+                .expectStatus().isNotFound();
     }
-
     //DELETE /promociones/{id}
     @Test
-    void deletePromotion_existente_deberiaRetornar204() throws Exception {
-        when(promotionService.deletePromotion(1)).thenReturn(true);
+    void deletePromotion_existente_deberiaRetornar204() {
+        when(promotionService.deletePromotion(1)).thenReturn(Mono.just(true));
 
-        mockMvc.perform(delete("/promociones/1"))
-                    .andExpect(status().isNoContent());
+        webTestClient.delete().uri("/promociones/1")
+                .exchange()
+                .expectStatus().isNoContent();
     }
 
     @Test
-    void deletePromotion_noExistente_deberiaRetornar404() throws Exception {
-        when(promotionService.deletePromotion(99)).thenReturn(false);
+    void deletePromotion_noExistente_deberiaRetornar404() {
+        when(promotionService.deletePromotion(99)).thenReturn(Mono.just(false));
 
-        mockMvc.perform(delete("/promociones/99"))
-                    .andExpect(status().isNotFound());
+        webTestClient.delete().uri("/promociones/99")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }

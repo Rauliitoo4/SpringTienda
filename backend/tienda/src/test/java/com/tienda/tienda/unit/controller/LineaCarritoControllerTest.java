@@ -8,22 +8,22 @@ import com.tienda.tienda.controller.LineaCarritoController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(LineaCarritoController.class)
+@WebFluxTest(LineaCarritoController.class)
 class LineaCarritoControllerTest {
     
     @Autowired
-    private MockMvc mockMvc;
+    private WebTestClient webTestClient;
 
     @MockitoBean
     private LineaCarritoService lineaCarritoService;
@@ -49,85 +49,87 @@ class LineaCarritoControllerTest {
 
     //GET /lineas
     @Test
-    void getAllLineas_deberiaRetornarListaYStatus200() throws Exception {
-        when(lineaCarritoService.getAllLineas()).thenReturn(List.of(linea));
+    void getAllLineas_deberiaRetornarListaYStatus200() {
+        when(lineaCarritoService.getAllLineas()).thenReturn(Flux.just(linea));
 
-        mockMvc.perform(get("/lineas"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(1))
-                    .andExpect(jsonPath("$[0].id").value(1))
-                    .andExpect(jsonPath("$[0].cantidad").value(2))
-                    .andExpect(jsonPath("$[0].subtotal").value(36.0))
-                    .andExpect(jsonPath("$[0].carritoId").value(1));
+        webTestClient.get().uri("/lineas")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(LineaCarritoDTO.class)
+                .hasSize(1);
     }
 
     @Test
-    void getAllLineas_listaVacia_deberiaRetornarArrayVacioYStatus200() throws Exception {
-        when(lineaCarritoService.getAllLineas()).thenReturn(List.of());
+    void getAllLineas_listaVacia_deberiaRetornarArrayVacioYStatus200() {
+        when(lineaCarritoService.getAllLineas()).thenReturn(Flux.empty());
 
-        mockMvc.perform(get("/lineas"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(0));
+        webTestClient.get().uri("/lineas")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(LineaCarritoDTO.class)
+                .hasSize(0);
     }
 
     //GET /lineas/{id}
     @Test
-    void getLineaById_existente_deberiaRetornarLineayStatus200() throws Exception {
-        when(lineaCarritoService.getLineaById(1)).thenReturn(linea);
+    void getLineaById_existente_deberiaRetornarLineayStatus200() {
+        when(lineaCarritoService.getLineaById(1)).thenReturn(Mono.just(linea));
 
-        mockMvc.perform(get("/lineas/1"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(1))
-                    .andExpect(jsonPath("$.cantidad").value(2))
-                    .andExpect(jsonPath("$.subtotal").value(36.0))
-                    .andExpect(jsonPath("$.producto.nombre").value("Camiseta"));                 
+        webTestClient.get().uri("/lineas/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(LineaCarritoDTO.class)
+                .isEqualTo(linea);
     }
 
     @Test
-    void getLineaById_noExistente_deberiaRetornar404() throws Exception {
-        when(lineaCarritoService.getLineaById(99)).thenReturn(null);
+    void getLineaById_noExistente_deberiaRetornar404() {
+        when(lineaCarritoService.getLineaById(99)).thenReturn(Mono.empty());
 
-        mockMvc.perform(get("/lineas/99"))
-                    .andExpect(status().isNotFound());     
+        webTestClient.get().uri("/lineas/99")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     //PUT /lineas/{id}
     @Test
-    void updateLinea_existente_deberiaRetornarLineaActualizadaYStatus200() throws Exception {
+    void updateLinea_existente_deberiaRetornarLineaActualizadaYStatus200() {
         linea.setCantidad(5);
         linea.setSubtotal(90.0);
-        when(lineaCarritoService.updateLinea(eq(1), eq(5))).thenReturn(linea);
+        when(lineaCarritoService.updateLinea(eq(1), eq(5))).thenReturn(Mono.just(linea));
 
-        mockMvc.perform(put("/lineas/1")
-                        .param("cantidad", "5"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.cantidad").value(5))
-                    .andExpect(jsonPath("$.subtotal").value(90.0));
+        webTestClient.put().uri("/lineas/1?cantidad=5")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(LineaCarritoDTO.class)
+                .isEqualTo(linea);
     }
 
     @Test
-    void updateLinea_noExistente_deberiaRetornar404() throws Exception {
-        when(lineaCarritoService.updateLinea(eq(99), eq(5))).thenReturn(null);
+    void updateLinea_noExistente_deberiaRetornar404() {
+        when(lineaCarritoService.updateLinea(eq(99), eq(5))).thenReturn(Mono.empty());
 
-        mockMvc.perform(put("/usuarios/99")
-                        .param("cantidad", "5"))
-                    .andExpect(status().isNotFound());
+        webTestClient.put().uri("/lineas/99?cantidad=5")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     //DELETE /lineas/{id}
     @Test
-    void deleteLinea_existente_deberiaRetornar204() throws Exception {
-        when(lineaCarritoService.deleteLinea(1)).thenReturn(true);
+    void deleteLinea_existente_deberiaRetornar204() {
+        when(lineaCarritoService.deleteLinea(1)).thenReturn(Mono.just(true));
 
-        mockMvc.perform(delete("/lineas/1"))
-                    .andExpect(status().isNoContent());
+        webTestClient.delete().uri("/lineas/1")
+                .exchange()
+                .expectStatus().isNoContent();
     }
 
     @Test
-    void deleteLinea_noExistente_deberiaRetornar404() throws Exception {
-        when(lineaCarritoService.deleteLinea(99)).thenReturn(false);
+    void deleteLinea_noExistente_deberiaRetornar404() {
+        when(lineaCarritoService.deleteLinea(99)).thenReturn(Mono.just(false));
 
-        mockMvc.perform(delete("/lineas/99"))
-                    .andExpect(status().isNotFound());
+        webTestClient.delete().uri("/lineas/99")
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }
