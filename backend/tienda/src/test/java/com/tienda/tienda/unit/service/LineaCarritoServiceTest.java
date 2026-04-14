@@ -4,14 +4,16 @@ import com.tienda.tienda.dto.LineaCarritoDTO;
 import com.tienda.tienda.model.Carrito;
 import com.tienda.tienda.model.LineaCarrito;
 import com.tienda.tienda.model.Product;
-import com.tienda.tienda.repository.CarritoRepository;
-import com.tienda.tienda.repository.LineaCarritoRepository;
+import com.tienda.tienda.repository.*;
 import com.tienda.tienda.service.LineaCarritoService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,121 +25,113 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class LineaCarritoServiceTest {
-    
-    @Mock
-    private CarritoRepository carritoRepo;
 
-    @Mock
-    private LineaCarritoRepository lineaRepo;
+    @Mock private CarritoRepository carritoRepo;
+    @Mock private ProductRepository productRepo;
+    @Mock private LineaCarritoRepository lineaRepo;
+    @Mock private PromotionRepository promotionRepo;
+    @Mock private ProductoPromocionRepository productoPromocionRepo;
 
     @InjectMocks
     private LineaCarritoService lineaCarritoService;
 
-    private LineaCarrito crearLineaTest() {
+    private LineaCarrito lineaDePrueba() {
         Product producto = new Product();
         producto.setId(1);
         producto.setNombre("Camiseta");
         producto.setPrecio(20.0);
         producto.setPrecioFinal(20.0);
-        producto.setPromociones(new ArrayList<>());
-
-        Carrito carrito = new Carrito();
-        carrito.setId(1);
-        carrito.setTotal(0.0);
         
         LineaCarrito linea = new LineaCarrito();
         linea.setId(1);
         linea.setCantidad(2);
         linea.setSubtotal(40.0);
+        linea.setProductoId(1);
+        linea.setCarritoId(1);
         linea.setProducto(producto);
-        linea.setCarrito(carrito);
-
-        carrito.setLineas(new ArrayList<>(List.of(linea)));
-
         return linea;
+    }
+
+    private void mockCargarProducto(int productoId) {
+        Product producto = new Product();
+        producto.setId(1);
+        producto.setNombre("Camiseta");
+        producto.setPrecio(20.0);
+        producto.setPrecioFinal(20.0);
+        when(productRepo.findById(productoId)).thenReturn(Mono.just(producto));
+        when(productoPromocionRepo.findPromotionIdsByProductId(productoId)).thenReturn(Flux.empty());
     }
 
     @Test
     void obtenerLineaPorId_deberiaDevolver_laLinea() {
-        //Given
-        LineaCarrito linea = crearLineaTest();
-        when(lineaRepo.findById(1)).thenReturn(Optional.of(linea));
+        LineaCarrito linea = lineaDePrueba();
+        when(lineaRepo.findById(1)).thenReturn(Mono.just(linea));
 
-        //When
-        LineaCarritoDTO resultado = lineaCarritoService.getLineaById(1);
-
-        //Then
-        assertNotNull(resultado);
-        assertEquals(1, resultado.getId());
-        assertEquals(2, resultado.getCantidad());
-        assertEquals(40.0, resultado.getSubtotal());
+        StepVerifier.create(lineaCarritoService.getLineaById(1))
+                .expectNextMatches(dto ->
+                        dto.getId() == 1 &&
+                        dto.getCantidad() == 2 &&
+                        dto.getSubtotal() == 40.0)
+                .verifyComplete();
     }
 
     @Test
     void obtenerLineaPorId_siNoExiste_deberiaDevolverNull() {
-        //Given
-        when(lineaRepo.findById(999)).thenReturn(Optional.empty());
+        when(lineaRepo.findById(999)).thenReturn(Mono.empty());
 
-        //When
-        LineaCarritoDTO resultado = lineaCarritoService.getLineaById(999);
-
-        //Then
-        assertNull(resultado);
+        StepVerifier.create(lineaCarritoService.getLineaById(999))
+                .verifyComplete();
     }
 
     @Test
     void actualizarCantidad_deberiaRecalcular_elSubtotal() {
-        //Given
-        LineaCarrito linea = crearLineaTest();
-        when(lineaRepo.findById(1)).thenReturn(Optional.of(linea));
-        when(lineaRepo.save(any(LineaCarrito.class))).thenReturn(linea);
+        LineaCarrito linea = lineaDePrueba();
+        when(lineaRepo.findById(1)).thenReturn(Mono.just(linea));
+        mockCargarProducto(1);
+        when(lineaRepo.save(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
+        when(lineaRepo.findByCarritoId(1)).thenReturn(Flux.just(linea));
+        when(carritoRepo.findById(1)).thenReturn(Mono.just(new Carrito()));
+        when(carritoRepo.save(any())).thenReturn(Mono.just(new Carrito()));
 
-        //When
-        LineaCarritoDTO resultado = lineaCarritoService.updateLinea(1, 5);
+        StepVerifier.create(lineaCarritoService.updateLinea(1, 5))
+                .expectNextMatches(dto ->
+                        dto.getCantidad() == 5 &&
+                        dto.getSubtotal() == 100.0)
+                .verifyComplete();
 
-        //Then
-        assertNotNull(resultado);
-        assertEquals(5, resultado.getCantidad());
-        assertEquals(100.0, resultado.getSubtotal());
     }
 
     @Test
     void actualizarCantidad_siNoExiste_deberiaDevolverNull() {
-        //Given
-        when(lineaRepo.findById(999)).thenReturn(Optional.empty());
+        when(lineaRepo.findById(999)).thenReturn(Mono.empty());
 
-        //When
-        LineaCarritoDTO resultado = lineaCarritoService.updateLinea(999, 5);
-
-        //Then
-        assertNull(resultado);
+        StepVerifier.create(lineaCarritoService.updateLinea(999, 5))
+                .verifyComplete();
         verify(lineaRepo, never()).save(any(LineaCarrito.class));
     }
 
     @Test
     void eliminarLinea_siExiste_deberiaDevolverTrue() {
-        //Given
-        LineaCarrito linea = crearLineaTest();
-        when(lineaRepo.findById(1)).thenReturn(Optional.of(linea));
+        LineaCarrito linea = lineaDePrueba();
+        when(lineaRepo.findById(1)).thenReturn(Mono.just(linea));
+        when(lineaRepo.deleteById(1)).thenReturn(Mono.empty());
+        when(lineaRepo.findByCarritoId(1)).thenReturn(Flux.empty());
+        when(carritoRepo.findById(1)).thenReturn(Mono.just(new Carrito()));
+        when(carritoRepo.save(any())).thenReturn(Mono.just(new Carrito()));
 
-        //When
-        boolean resultado = lineaCarritoService.deleteLinea(1);
-
-        //Then
-        assertTrue(resultado);
-        verify(carritoRepo, times(1)).save(any(Carrito.class));
+        StepVerifier.create(lineaCarritoService.deleteLinea(1))
+                .expectNext(true)
+                .verifyComplete();
     }
 
     @Test
     void eliminarLinea_siNoExiste_deberiaDevolverFalse() {
-        //Given
-        when(lineaRepo.findById(999)).thenReturn(Optional.empty());
+        LineaCarrito linea = lineaDePrueba();
+        when(lineaRepo.findById(999)).thenReturn(Mono.empty());
 
-        //When
-        boolean resultado = lineaCarritoService.deleteLinea(999);
-
-        //Then
-        assertFalse(resultado);
-        verify(carritoRepo, never()).save(any(Carrito.class));
+        StepVerifier.create(lineaCarritoService.deleteLinea(999))
+                .expectNext(false)
+                .verifyComplete();
+        verify(carritoRepo, never()).save(any());
     }
 }

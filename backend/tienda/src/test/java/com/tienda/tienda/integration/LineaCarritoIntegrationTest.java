@@ -34,9 +34,15 @@ class LineaCarritoIntegrationTest {
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.r2dbc.url", () -> "r2dbc:postgresql://"
+                + postgres.getHost() + ":" + postgres.getMappedPort(5432)
+                + "/" + postgres.getDatabaseName());
+        registry.add("spring.r2dbc.username", postgres::getUsername);
+        registry.add("spring.r2dbc.password", postgres::getPassword);
+
+        registry.add("spring.liquibase.url", postgres::getJdbcUrl);
+        registry.add("spring.liquibase.user", postgres::getUsername);
+        registry.add("spring.liquibase.password", postgres::getPassword);
     }
 
     @Autowired
@@ -58,7 +64,7 @@ class LineaCarritoIntegrationTest {
         userDTO.setUsername("albertog");
         userDTO.setEmail("albertog@gmail.com");
         userDTO.setPassword("1234");
-        UserResponseDTO usuario = userService.createUser(userDTO);
+        UserResponseDTO usuario = userService.createUser(userDTO).block();
 
         ProductDTO productDTO = new ProductDTO();
         productDTO.setNombre("Camiseta Test");
@@ -66,9 +72,9 @@ class LineaCarritoIntegrationTest {
         productDTO.setDescripcion("Descripción test");
         productDTO.setMaterial("Algodón");
         productDTO.setConsideraciones("Lavar a 30 grados");
-        ProductDTO producto = productService.createProduct(productDTO);
+        ProductDTO producto = productService.createProduct(productDTO).block();
 
-        CarritoDTO carrito = carritoService.addProductToCarrito(usuario.getCarritoId(), producto.getId(), 2);
+        CarritoDTO carrito = carritoService.addProductToCarrito(usuario.getCarritoId(), producto.getId(), 2).block();
 
         return carrito.getLineas().get(0);
     }
@@ -76,7 +82,7 @@ class LineaCarritoIntegrationTest {
     @Test
     void obtenerTodasLasLineas_deberiaDevolver_lasLineasDeBD() {
         crearLineasTest();
-        List<LineaCarritoDTO> lineas = lineaCarritoService.getAllLineas();
+        List<LineaCarritoDTO> lineas = lineaCarritoService.getAllLineas().collectList().block();
         
         assertNotNull(lineas);
         assertFalse(lineas.isEmpty());
@@ -85,7 +91,7 @@ class LineaCarritoIntegrationTest {
     @Test
     void obtenerLineaPorID_deberiaDevolver_laLineaDeBD() {
         LineaCarritoDTO linea = crearLineasTest();
-        LineaCarritoDTO resultado = lineaCarritoService.getLineaById(linea.getId());
+        LineaCarritoDTO resultado = lineaCarritoService.getLineaById(linea.getId()).block();
 
         assertNotNull(resultado);
         assertEquals(linea.getId(), resultado.getId());
@@ -93,7 +99,7 @@ class LineaCarritoIntegrationTest {
 
     @Test
     void obtenerLineaPorID_siNoExiste_deberiaDevolverNull() {
-        LineaCarritoDTO resultado = lineaCarritoService.getLineaById(9999);
+        LineaCarritoDTO resultado = lineaCarritoService.getLineaById(9999).block();
         assertNull(resultado);
     }
 
@@ -101,7 +107,7 @@ class LineaCarritoIntegrationTest {
     void actualizarCantidad_deberiaRecalcularSubtotal() {
         LineaCarritoDTO creada = crearLineasTest();
 
-        LineaCarritoDTO actualizada = lineaCarritoService.updateLinea(creada.getId(), 5);
+        LineaCarritoDTO actualizada = lineaCarritoService.updateLinea(creada.getId(), 5).block();
 
         assertNotNull(actualizada);
         assertEquals(5, actualizada.getCantidad());
@@ -111,19 +117,19 @@ class LineaCarritoIntegrationTest {
     @Test
     void eliminarLinea_deberiaEliminarlaEnBD() {
         LineaCarritoDTO creada = crearLineasTest();
-        boolean eliminado = lineaCarritoService.deleteLinea(creada.getId());
+        boolean eliminado = lineaCarritoService.deleteLinea(creada.getId()).block();
 
         assertTrue(eliminado);
-        assertNull(lineaCarritoService.getLineaById(creada.getId()));
+        assertNull(lineaCarritoService.getLineaById(creada.getId()).block());
     }
 
     @Test
     void eliminarLinea_deberiaRecalcularTotalDelCarrito() {
         LineaCarritoDTO creada = crearLineasTest();
         
-        lineaCarritoService.deleteLinea(creada.getId());
+        lineaCarritoService.deleteLinea(creada.getId()).block();
 
-        double total = carritoService.calcularTotal(creada.getCarritoId());
+        double total = carritoService.calcularTotal(creada.getCarritoId()).block();
         assertEquals(0.00, total);
     }
 

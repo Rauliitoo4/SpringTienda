@@ -31,9 +31,15 @@ class CarritoIntegrationTest {
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.r2dbc.url", () -> "r2dbc:postgresql://"
+                + postgres.getHost() + ":" + postgres.getMappedPort(5432)
+                + "/" + postgres.getDatabaseName());
+        registry.add("spring.r2dbc.username", postgres::getUsername);
+        registry.add("spring.r2dbc.password", postgres::getPassword);
+
+        registry.add("spring.liquibase.url", postgres::getJdbcUrl);
+        registry.add("spring.liquibase.user", postgres::getUsername);
+        registry.add("spring.liquibase.password", postgres::getPassword);
     }
 
     @Autowired
@@ -52,7 +58,7 @@ class CarritoIntegrationTest {
         dto.setUsername("albertog");
         dto.setEmail("albertog@gmail.com");
         dto.setPassword("1234");
-        return userService.createUser(dto);
+        return userService.createUser(dto).block();
     }
 
     private ProductDTO crearProductoTest() {
@@ -61,13 +67,13 @@ class CarritoIntegrationTest {
         dto.setPrecio(20.00);
         dto.setDescripcion("Descripción test");
         dto.setConsideraciones("Lavar a 30 grados");
-        return productService.createProduct(dto);
+        return productService.createProduct(dto).block();
     }
 
     @Test
     void obtenerCarritoPorID_deberiaDevolver_ElCarritoDeBD() {
         UserResponseDTO usuario = crearUsuarioTest();
-        CarritoDTO resultado = carritoService.getCarritoById(usuario.getCarritoId());
+        CarritoDTO resultado = carritoService.getCarritoById(usuario.getCarritoId()).block();
 
         assertNotNull(resultado);
         assertEquals(usuario.getCarritoId(), resultado.getId());
@@ -75,7 +81,7 @@ class CarritoIntegrationTest {
 
     @Test
     void obtenerCarritoPorID_siNoExiste_deberiaDevolverNull() {
-        CarritoDTO resultado = carritoService.getCarritoById(9999);
+        CarritoDTO resultado = carritoService.getCarritoById(9999).block();
         assertNull(resultado);
     }
 
@@ -84,7 +90,7 @@ class CarritoIntegrationTest {
         UserResponseDTO usuario = crearUsuarioTest();
         ProductDTO producto = crearProductoTest();
 
-        CarritoDTO resultado = carritoService.addProductToCarrito(usuario.getCarritoId(), producto.getId(), 2);
+        CarritoDTO resultado = carritoService.addProductToCarrito(usuario.getCarritoId(), producto.getId(), 2).block();
 
         assertNotNull(resultado);
         assertFalse(resultado.getLineas().isEmpty());
@@ -94,14 +100,14 @@ class CarritoIntegrationTest {
     @Test
     void aniadirProductoAlCarrito_siCarritoNoExiste_deberiaDevolverNull() {
         ProductDTO producto = crearProductoTest();
-        CarritoDTO resultado = carritoService.addProductToCarrito(9999, producto.getId(), 2);
+        CarritoDTO resultado = carritoService.addProductToCarrito(9999, producto.getId(), 2).block();
         assertNull(resultado);
     }
 
     @Test
     void aniadirProductoAlCarrito_siProductoNoExiste_deberiaDevolverNull() {
         UserResponseDTO usuario = crearUsuarioTest();
-        CarritoDTO resultado = carritoService.addProductToCarrito(usuario.getCarritoId(), 9999, 2);
+        CarritoDTO resultado = carritoService.addProductToCarrito(usuario.getCarritoId(), 9999, 2).block();
         assertNull(resultado);
     }
 
@@ -110,9 +116,9 @@ class CarritoIntegrationTest {
         UserResponseDTO usuario = crearUsuarioTest();
         ProductDTO producto = crearProductoTest();
 
-        carritoService.addProductToCarrito(usuario.getCarritoId(), producto.getId(), 3);
+        carritoService.addProductToCarrito(usuario.getCarritoId(), producto.getId(), 3).block();
        
-        double total = carritoService.calcularTotal(usuario.getCarritoId());
+        double total = carritoService.calcularTotal(usuario.getCarritoId()).block();
         assertEquals(60.00, total);
     }
 }

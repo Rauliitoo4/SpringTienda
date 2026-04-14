@@ -29,9 +29,15 @@ class ProductIntegrationTest {
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.r2dbc.url", () -> "r2dbc:postgresql://"
+                + postgres.getHost() + ":" + postgres.getMappedPort(5432)
+                + "/" + postgres.getDatabaseName());
+        registry.add("spring.r2dbc.username", postgres::getUsername);
+        registry.add("spring.r2dbc.password", postgres::getPassword);
+
+        registry.add("spring.liquibase.url", postgres::getJdbcUrl);
+        registry.add("spring.liquibase.user", postgres::getUsername);
+        registry.add("spring.liquibase.password", postgres::getPassword);
     }
 
     @Autowired
@@ -46,14 +52,14 @@ class ProductIntegrationTest {
         dto.setPrecio(20.00);
         dto.setDescripcion("Descripción test");
         dto.setConsideraciones("Lavar a 30 grados");
-        return productService.createProduct(dto);
+        return productService.createProduct(dto).block();
     }
 
     @Test
     void crearProducto_deberiaGuardarloEnBD() {
         ProductDTO resultado = crearProductoTest();
 
-        assertNotNull(resultado.getId());
+        assertNotNull(resultado);
         assertEquals("Camiseta Test", resultado.getNombre());
         assertEquals(20.00, resultado.getPrecio());
         assertEquals(20.00, resultado.getPrecioFinal());
@@ -62,7 +68,7 @@ class ProductIntegrationTest {
     @Test
     void obtenerTodosLosProductos_deberiaDevolver_losProductosDeBD() {
         crearProductoTest();
-        List<ProductDTO> productos = productService.getAllProducts();
+        var productos = productService.getAllProducts().collectList().block();
 
         assertNotNull(productos);
         assertFalse(productos.isEmpty());
@@ -71,7 +77,7 @@ class ProductIntegrationTest {
     @Test
     void obtenerProductoPorID_deberiaDevolver_elProductoDeBD() {
         ProductDTO creado = crearProductoTest();
-        ProductDTO resultado = productService.getProductById(creado.getId());
+        ProductDTO resultado = productService.getProductById(creado.getId()).block();
 
         assertNotNull(resultado);
         assertEquals(creado.getId(), resultado.getId());
@@ -79,7 +85,7 @@ class ProductIntegrationTest {
 
     @Test
     void obtenerProductoPorID_siNoExiste_deberiaDevolverNull() {
-        ProductDTO resultado = productService.getProductById(9999);
+        ProductDTO resultado = productService.getProductById(9999).block();
         assertNull(resultado);
     }
 
@@ -90,7 +96,7 @@ class ProductIntegrationTest {
         ProductDTO cambios = new ProductDTO();
         cambios.setPrecio(29.99);
 
-        ProductDTO actualizado = productService.updateProduct(creado.getId(), cambios);
+        ProductDTO actualizado = productService.updateProduct(creado.getId(), cambios).block();
 
         assertNotNull(actualizado);
         assertEquals(29.99, actualizado.getPrecio());
@@ -100,10 +106,10 @@ class ProductIntegrationTest {
     @Test
     void eliminarProducto_deberiaEliminarloEnBD() {
         ProductDTO creado = crearProductoTest();
-        boolean eliminado = productService.deleteProduct(creado.getId());
+        boolean eliminado = productService.deleteProduct(creado.getId()).block();
 
         assertTrue(eliminado);
-        assertNull(productService.getProductById(creado.getId()));
+        assertNull(productService.getProductById(creado.getId()).block());
     }
 
     @Test
@@ -113,9 +119,9 @@ class ProductIntegrationTest {
         PromotionDTO promoDTO = new PromotionDTO();
         promoDTO.setDescripcion("Descuento Test");
         promoDTO.setDescuento(10.0);
-        PromotionDTO promo = promotionService.createPromotion(promoDTO);
+        PromotionDTO promo = promotionService.createPromotion(promoDTO).block();
 
-        ProductDTO resultado = productService.addPromotion(producto.getId(), promo.getId());
+        ProductDTO resultado = productService.addPromotion(producto.getId(), promo.getId()).block();
 
         assertNotNull(resultado);
         assertEquals(18.00, resultado.getPrecioFinal());
@@ -128,10 +134,10 @@ class ProductIntegrationTest {
         PromotionDTO promoDTO = new PromotionDTO();
         promoDTO.setDescripcion("Descuento Test");
         promoDTO.setDescuento(10.0);
-        PromotionDTO promo = promotionService.createPromotion(promoDTO);
+        PromotionDTO promo = promotionService.createPromotion(promoDTO).block();
 
-        productService.addPromotion(producto.getId(), promo.getId());
-        ProductDTO resultado = productService.removePromotion(producto.getId(), promo.getId());
+        productService.addPromotion(producto.getId(), promo.getId()).block();
+        ProductDTO resultado = productService.removePromotion(producto.getId(), promo.getId()).block();
 
         assertNotNull(resultado);
         assertEquals(20.00, resultado.getPrecioFinal());
