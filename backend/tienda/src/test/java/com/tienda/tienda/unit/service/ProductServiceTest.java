@@ -1,9 +1,11 @@
 package com.tienda.tienda.unit.service;
 
 import com.tienda.tienda.dto.ProductDTO;
+import com.tienda.tienda.dto.mapper.ProductMapper;
 import com.tienda.tienda.model.Product;
 import com.tienda.tienda.repository.*;
 import com.tienda.tienda.service.ProductService;
+import com.tienda.tienda.service.helper.PromotionLoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +29,8 @@ class ProductServiceTest {
     @Mock private CarritoRepository carritoRepo;
     @Mock private LineaCarritoRepository lineaCarritoRepo;
     @Mock private ProductoPromocionRepository productoPromocionRepo;
+    @Mock private ProductMapper productMapper;
+    @Mock private PromotionLoader promotionLoader;
 
     @InjectMocks
     private ProductService productService;
@@ -41,16 +45,25 @@ class ProductServiceTest {
         return producto;
     }
 
-    private void mockCargarPromociones(int productId) {
-        when(productoPromocionRepo.findPromotionIdsByProductId(productId))
-                .thenReturn(Flux.empty());
+    private ProductDTO dtoDePrueba() {
+        ProductDTO dto = new ProductDTO();
+        dto.setId(1);
+        dto.setNombre("Camiseta");
+        dto.setPrecio(20.0);
+        dto.setPrecioFinal(20.0);
+        return dto;
+    }
+
+    private void mockCargarPromociones() {
+        when(promotionLoader.cargarPromociones(any(Product.class)))
+                .thenReturn(Mono.just(productoDePrueba()));
     }
 
     @Test
     void obtenerProductoPorId_deberiaDevolver_elProducto() {
-        Product producto = productoDePrueba();
-        when(productRepo.findById(1)).thenReturn(Mono.just(producto));
-        mockCargarPromociones(1);
+        when(productRepo.findById(1)).thenReturn(Mono.just(productoDePrueba()));
+        mockCargarPromociones();
+        when(productMapper.toDTO(any(Product.class))).thenReturn(dtoDePrueba());
 
         StepVerifier.create(productService.getProductById(1))
                 .expectNextMatches(dto ->
@@ -70,8 +83,10 @@ class ProductServiceTest {
     @Test
     void crearProducto_deberiaGuardaryDevolverDTO() {
         Product productoGuardado = productoDePrueba();
+        when(productMapper.toEntity(any(ProductDTO.class))).thenReturn(productoGuardado);
         when(productRepo.save(any(Product.class))).thenReturn(Mono.just(productoGuardado));
-        mockCargarPromociones(1);
+        mockCargarPromociones();
+        when(productMapper.toDTO(any(Product.class))).thenReturn(dtoDePrueba());
 
         ProductDTO dto = new ProductDTO();
         dto.setNombre("Camiseta");
@@ -108,8 +123,15 @@ class ProductServiceTest {
     void actualizarProducto_deberiaModificar_elProducto() {
         Product producto = productoDePrueba();
         when(productRepo.findById(1)).thenReturn(Mono.just(producto));
-        mockCargarPromociones(1);
+        mockCargarPromociones();
         when(productRepo.save(any(Product.class))).thenReturn(Mono.just(producto));
+
+        ProductDTO dtoActualizado = new ProductDTO();
+        dtoActualizado.setId(1);
+        dtoActualizado.setNombre("Camiseta");
+        dtoActualizado.setPrecio(200.0);
+        dtoActualizado.setPrecioFinal(200.0);
+        when(productMapper.toDTO(any(Product.class))).thenReturn(dtoActualizado);
 
         ProductDTO dto = new ProductDTO();
         dto.setPrecio(200.0);

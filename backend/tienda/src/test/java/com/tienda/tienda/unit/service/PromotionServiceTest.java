@@ -1,6 +1,7 @@
 package com.tienda.tienda.unit.service;
 
 import com.tienda.tienda.dto.PromotionDTO;
+import com.tienda.tienda.dto.mapper.PromotionMapper;
 import com.tienda.tienda.model.Product;
 import com.tienda.tienda.model.Promotion;
 import com.tienda.tienda.repository.ProductoPromocionRepository;
@@ -32,6 +33,9 @@ public class PromotionServiceTest {
     @Mock
     private ProductoPromocionRepository productoPromocionRepo;
 
+    @Mock
+    private PromotionMapper promotionMapper;
+
     @InjectMocks
     private PromotionService promotionService;
 
@@ -43,9 +47,18 @@ public class PromotionServiceTest {
         return promo;
     }
 
+    private PromotionDTO dtoDePrueba() {
+        PromotionDTO dto = new PromotionDTO();
+        dto.setId(1);
+        dto.setDescripcion("Rebajas verano");
+        dto.setDescuento(20.0);
+        return dto;
+    }
+
     @Test
     void obtenerPromocionPorId_deberiaDevolver_laPromocion() {
         when(promotionRepo.findById(1)).thenReturn(Mono.just(promoDePrueba()));
+        when(promotionMapper.toDTO(any(Promotion.class))).thenReturn(dtoDePrueba());
 
         StepVerifier.create(promotionService.getPromotionById(1))
                 .expectNextMatches(dto ->
@@ -66,7 +79,9 @@ public class PromotionServiceTest {
     @Test
     void crearPromocion_deberiaGuardaryDevolverDTO() {
         Promotion promo = promoDePrueba();
+        when(promotionMapper.toEntity(any(PromotionDTO.class))).thenReturn(promo);
         when(promotionRepo.save(any(Promotion.class))).thenReturn(Mono.just(promo));
+        when(promotionMapper.toDTO(any(Promotion.class))).thenReturn(dtoDePrueba());
 
         PromotionDTO dto = new PromotionDTO();
         dto.setDescripcion("Rebajas verano");
@@ -105,8 +120,12 @@ public class PromotionServiceTest {
     @Test
     void actualizarPromocion_deberiaModificar_laPromocion() {
         Promotion promo = promoDePrueba();
+        PromotionDTO dtoActualizado = new PromotionDTO();
+        dtoActualizado.setDescuento(30.0);
+
         when(promotionRepo.findById(1)).thenReturn(Mono.just(promo));
         when(promotionRepo.save(any(Promotion.class))).thenReturn(Mono.just(promo));
+        when(promotionMapper.toDTO(any(Promotion.class))).thenReturn(dtoActualizado);
 
         PromotionDTO dto = new PromotionDTO();
         dto.setDescuento(30.0);

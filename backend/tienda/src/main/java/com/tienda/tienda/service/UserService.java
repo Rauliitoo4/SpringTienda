@@ -1,5 +1,6 @@
 package com.tienda.tienda.service;
 
+import com.tienda.tienda.dto.mapper.UserMapper;
 import com.tienda.tienda.model.*;
 import com.tienda.tienda.dto.*;
 import com.tienda.tienda.repository.CarritoRepository;
@@ -12,24 +13,23 @@ import reactor.core.publisher.Mono;
 public class UserService {
     
     private final UserRepository userRepo;
-    private final CarritoRepository carritoRepo;
+    private final CarritoService carritoService;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepo, CarritoRepository carritoRepo) {
+    public UserService(UserRepository userRepo, CarritoService carritoService, UserMapper userMapper) {
         this.userRepo = userRepo;
-        this.carritoRepo = carritoRepo;
+        this.carritoService = carritoService;
+        this.userMapper = userMapper;
     }
 
     public Mono<UserResponseDTO> createUser(UserDTO dto) {
-        Carrito carrito = new Carrito();
-        carrito.setTotal(0.0);
-
-        return carritoRepo.save(carrito)
+        return carritoService.createCarrito()
                 .flatMap(carritoGuardado -> {
-                    User user = convertToEntity(dto);
+                    User user = userMapper.toEntity(dto);
                     user.setCarritoId(carritoGuardado.getId());
                     return userRepo.save(user);
                 })
-                .map(this::convertToDTO);
+                .map(userMapper::toDTO);
     }
 
     public Mono<UserResponseDTO> updateUser(int id, UserDTO dto){
@@ -42,7 +42,7 @@ public class UserService {
                     if (dto.getPassword() != null) user.setPassword(dto.getPassword());
                     return userRepo.save(user);
                 })
-                .map(this::convertToDTO);
+                .map(userMapper::toDTO);
     }
 
     public Mono<Boolean> deleteUser(int id) {
@@ -55,32 +55,11 @@ public class UserService {
 
     public Mono<UserResponseDTO> getUserById(int id) {
         return userRepo.findById(id)
-                    .map(this::convertToDTO);
+                    .map(userMapper::toDTO);
     }
 
     public Flux<UserResponseDTO> getAllUsers() {
         return userRepo.findAll()
-                .map(this::convertToDTO);
-    }
-
-    private UserResponseDTO convertToDTO(User user) {
-        UserResponseDTO dto = new UserResponseDTO();
-        dto.setId(user.getId());
-        dto.setNombre(user.getNombre());
-        dto.setApellidos(user.getApellidos());
-        dto.setEmail(user.getEmail());
-        dto.setUsername(user.getUsername());
-        dto.setCarritoId(user.getCarritoId());
-        return dto;
-    }
-
-    private User convertToEntity (UserDTO dto) {
-        User user = new User();
-        user.setNombre(dto.getNombre());
-        user.setApellidos(dto.getApellidos());
-        user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
-        return user;
+                .map(userMapper::toDTO);
     }
 }

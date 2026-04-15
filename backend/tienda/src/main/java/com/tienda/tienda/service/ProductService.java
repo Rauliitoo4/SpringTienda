@@ -2,10 +2,12 @@ package com.tienda.tienda.service;
 
 import com.tienda.tienda.dto.ProductDTO;
 import com.tienda.tienda.dto.PromotionDTO;
+import com.tienda.tienda.dto.mapper.ProductMapper;
 import com.tienda.tienda.model.Product;
 import com.tienda.tienda.model.Promotion;
 import com.tienda.tienda.repository.*;
 
+import com.tienda.tienda.service.helper.PromotionLoader;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,35 +23,29 @@ public class ProductService {
     private final CarritoRepository carritoRepo;
     private final LineaCarritoRepository lineaRepo;
     private final ProductoPromocionRepository productoPromocionRepo;
+    private final ProductMapper productMapper;
+    private final PromotionLoader promotionLoader;
     
-    
-    public ProductService(ProductRepository productRepo, PromotionRepository promotionRepo, CarritoRepository carritoRepo, LineaCarritoRepository lineaRepo, ProductoPromocionRepository productoPromocionRepo) {
+    public ProductService(ProductRepository productRepo, PromotionRepository promotionRepo, CarritoRepository carritoRepo, LineaCarritoRepository lineaRepo, ProductoPromocionRepository productoPromocionRepo, ProductMapper productMapper, PromotionLoader promotionLoader) {
         this.productRepo = productRepo;
         this.promotionRepo = promotionRepo;
         this.carritoRepo = carritoRepo;
         this.lineaRepo = lineaRepo;
         this.productoPromocionRepo = productoPromocionRepo;
-    }
-
-    private Mono<Product> cargarPromociones(Product product) {
-        return productoPromocionRepo
-                .findPromotionIdsByProductId(product.getId())
-                .flatMap(promoId -> promotionRepo.findById(promoId))
-                .collectList()
-                .doOnNext(product::setPromociones)
-                .thenReturn(product);
+        this.productMapper = productMapper;
+        this.promotionLoader = promotionLoader;
     }
 
     public Mono<ProductDTO> createProduct(ProductDTO dto){
-        Product product = convertToEntity(dto);
+        Product product = productMapper.toEntity(dto);
         return productRepo.save(product)
-                .flatMap(this::cargarPromociones)
-                .map(this::convertToDTO);
+                .flatMap(promotionLoader::cargarPromociones)
+                .map(productMapper::toDTO);
     }
 
     public Mono<ProductDTO> updateProduct(int id, ProductDTO dto){
         return productRepo.findById(id)
-                .flatMap(producto -> cargarPromociones(producto)
+                .flatMap(producto -> promotionLoader.cargarPromociones(producto)
                         .flatMap(productoConPromos -> {
                             if (dto.getNombre() != null) productoConPromos.setNombre(dto.getNombre());
                             if (dto.getPrecio() >= 0) {
@@ -60,7 +56,7 @@ public class ProductService {
                             if (dto.getMaterial() != null) productoConPromos.setMaterial(dto.getMaterial());
                             if (dto.getConsideraciones() != null) productoConPromos.setConsideraciones(dto.getConsideraciones());
                             return productRepo.save(productoConPromos)
-                                    .map(this::convertToDTO);
+                                    .map(productMapper::toDTO);
                         }));
     }
 
@@ -74,14 +70,14 @@ public class ProductService {
 
     public Flux<ProductDTO> getAllProducts() {
         return productRepo.findAll()
-                .flatMap(this::cargarPromociones)
-                .map(this::convertToDTO);
+                .flatMap(promotionLoader::cargarPromociones)
+                .map(productMapper::toDTO);
     }
 
     public Mono<ProductDTO> getProductById(int id){
         return productRepo.findById(id)
-                    .flatMap(this::cargarPromociones)
-                    .map(this::convertToDTO);
+                    .flatMap(promotionLoader::cargarPromociones)
+                    .map(productMapper::toDTO);
     }
 
     public Mono<ProductDTO> addPromotion(int productoID, int promocionID) {
@@ -91,14 +87,14 @@ public class ProductService {
                     Product producto = tuple.getT1();
                     return productoPromocionRepo.existsRelation(productoID, promocionID)
                             .flatMap(count -> {
-                                if (count > 0) return cargarPromociones(producto).map(this::convertToDTO);
+                                if (count > 0) return promotionLoader.cargarPromociones(producto).map(productMapper::toDTO);
                                 return productoPromocionRepo.insertRelation(productoID, promocionID)
-                                        .then(cargarPromociones(producto))
+                                        .then(promotionLoader.cargarPromociones(producto))
                                         .flatMap(p -> {
                                             recalcularPrecioFinal(p);
                                             return productRepo.save(p)
                                                     .then(actualizarLineasCarrito(p))
-                                                    .thenReturn(convertToDTO(p));
+                                                    .thenReturn(productMapper.toDTO(p));
                                         });
                             });
                 });
@@ -108,49 +104,13 @@ public class ProductService {
         return productRepo.findById(productoID)
                 .flatMap(producto ->
                         productoPromocionRepo.deleteByProductIdAndPromotionId(productoID, promocionID)
-                                .then(cargarPromociones(producto))
+                                .then(promotionLoader.cargarPromociones(producto))
                                 .flatMap(p -> {
                                     recalcularPrecioFinal(p);
                                     return productRepo.save(p)
                                             .then(actualizarLineasCarrito(p))
-                                            .thenReturn(convertToDTO(p));
+                                            .thenReturn(productMapper.toDTO(p));
                                 }));
-    }
-
-    private ProductDTO convertToDTO(Product p) {
-        ProductDTO dto = new ProductDTO();
-        dto.setId(p.getId());
-        dto.setNombre(p.getNombre());
-        dto.setPrecio(p.getPrecio());
-        dto.setPrecioFinal(p.getPrecioFinal());
-        dto.setDescripcion(p.getDescripcion());
-        dto.setMaterial(p.getMaterial());
-        dto.setConsideraciones(p.getConsideraciones());
-        dto.setImagenUrl(p.getImagenUrl());
-
-        if (p.getPromociones() != null) {
-            List<PromotionDTO> promosDTO = p.getPromociones().stream().map(promo -> {
-                PromotionDTO pDTO = new PromotionDTO();
-                pDTO.setId(promo.getId());
-                pDTO.setDescripcion(promo.getDescripcion());
-                pDTO.setDescuento(promo.getDescuento());
-                return pDTO;
-            }).collect(Collectors.toList());
-            dto.setPromociones(promosDTO);
-        }
-        return dto;
-    }
-
-    private Product convertToEntity(ProductDTO dto) {
-        Product p = new Product();
-        p.setNombre(dto.getNombre());
-        p.setPrecio(dto.getPrecio());
-        p.setPrecioFinal(dto.getPrecio());
-        p.setDescripcion(dto.getDescripcion());
-        p.setMaterial(dto.getMaterial());
-        p.setConsideraciones(dto.getConsideraciones());
-        p.setImagenUrl(dto.getImagenUrl());
-        return p;
     }
 
     private void recalcularPrecioFinal(Product producto) {

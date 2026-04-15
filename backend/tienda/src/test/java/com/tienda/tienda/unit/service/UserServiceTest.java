@@ -2,10 +2,12 @@ package com.tienda.tienda.unit.service;
 
 import com.tienda.tienda.dto.UserResponseDTO;
 import com.tienda.tienda.dto.UserDTO;
+import com.tienda.tienda.dto.mapper.UserMapper;
 import com.tienda.tienda.model.User;
 import com.tienda.tienda.model.Carrito;
 import com.tienda.tienda.repository.CarritoRepository;
 import com.tienda.tienda.repository.UserRepository;
+import com.tienda.tienda.service.CarritoService;
 import com.tienda.tienda.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +31,10 @@ public class UserServiceTest {
     private UserRepository userRepo;
 
     @Mock
-    private CarritoRepository carritoRepo;
+    private CarritoService carritoService;
+
+    @Mock
+    private UserMapper userMapper;
 
     @InjectMocks
     private UserService userService;
@@ -46,9 +51,21 @@ public class UserServiceTest {
         return user;
     }
 
+    private UserResponseDTO dtoDePrueba() {
+        UserResponseDTO dto = new UserResponseDTO();
+        dto.setId(1);
+        dto.setNombre("Alberto");
+        dto.setApellidos("García");
+        dto.setUsername("albertog");
+        dto.setEmail("albertog@gmail.com");
+        dto.setCarritoId(1);
+        return dto;
+    }
+
     @Test
     void obtenerUsuarioPorId_deberiaDevolver_elUsuario() {
         when(userRepo.findById(1)).thenReturn(Mono.just(usuarioDePrueba()));
+        when(userMapper.toDTO(any(User.class))).thenReturn(dtoDePrueba());
 
         StepVerifier.create(userService.getUserById(1))
                 .expectNextMatches(dto ->
@@ -73,8 +90,10 @@ public class UserServiceTest {
 
         User userGuardado = usuarioDePrueba();
 
-        when(carritoRepo.save(any(Carrito.class))).thenReturn(Mono.just(carrito));
+        when(carritoService.createCarrito()).thenReturn(Mono.just(carrito));
+        when(userMapper.toEntity(any(UserDTO.class))).thenReturn(userGuardado);
         when(userRepo.save(any(User.class))).thenReturn(Mono.just(userGuardado));
+        when(userMapper.toDTO(any(User.class))).thenReturn(dtoDePrueba());
 
         UserDTO dto = new UserDTO();
         dto.setNombre("Alberto");
@@ -113,8 +132,12 @@ public class UserServiceTest {
     @Test
     void actualizarUsuario_deberiaModificar_elUsuario() {
         User user = usuarioDePrueba();
+        UserResponseDTO dtoActualizado = dtoDePrueba();
+        dtoActualizado.setUsername("albertitog");
+
         when(userRepo.findById(1)).thenReturn(Mono.just(user));
         when(userRepo.save(any(User.class))).thenReturn(Mono.just(user));
+        when(userMapper.toDTO(any(User.class))).thenReturn(dtoActualizado);
 
         UserDTO dto = new UserDTO();
         dto.setUsername("albertitog");

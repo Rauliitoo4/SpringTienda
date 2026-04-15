@@ -1,11 +1,13 @@
 package com.tienda.tienda.unit.service;
 
 import com.tienda.tienda.dto.CarritoDTO;
+import com.tienda.tienda.dto.mapper.CarritoMapper;
 import com.tienda.tienda.model.Carrito;
 import com.tienda.tienda.model.LineaCarrito;
 import com.tienda.tienda.model.Product;
 import com.tienda.tienda.repository.*;
 import com.tienda.tienda.service.CarritoService;
+import com.tienda.tienda.service.helper.LineaLoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,8 +30,8 @@ public class CarritoServiceTest {
     @Mock private CarritoRepository carritoRepo;
     @Mock private ProductRepository productRepo;
     @Mock private LineaCarritoRepository lineaRepo;
-    @Mock private PromotionRepository promotionRepo;
-    @Mock private ProductoPromocionRepository productoPromocionRepo;
+    @Mock private CarritoMapper carritoMapper;
+    @Mock private LineaLoader lineaLoader;
 
     @InjectMocks
     private CarritoService carritoService;
@@ -50,15 +52,19 @@ public class CarritoServiceTest {
         return producto;
     }
 
-    private void mockCargarLineas(int carritoId) {
-        when(lineaRepo.findByCarritoId(carritoId)).thenReturn(Flux.empty());
+    private CarritoDTO dtoDePrueba(double total) {
+        CarritoDTO dto = new CarritoDTO();
+        dto.setId(1);
+        dto.setTotal(total);
+        return dto;
     }
 
     @Test
     void obtenerCarritoPorId_deberiaDevolver_elCarrito() {
         Carrito carrito = carritoDePrueba();
         when(carritoRepo.findById(1)).thenReturn(Mono.just(carrito));
-        mockCargarLineas(1);
+        when(lineaLoader.cargarLineas(any(Carrito.class))).thenReturn(Mono.just(carrito));
+        when(carritoMapper.toDTO(any(Carrito.class))).thenReturn(dtoDePrueba(0.0));
 
         StepVerifier.create(carritoService.getCarritoById(1))
                 .expectNextMatches(dto ->
@@ -95,7 +101,8 @@ public class CarritoServiceTest {
          when(lineaRepo.save(any(LineaCarrito.class))).thenReturn(Mono.just(lineaGuardada));
          when(lineaRepo.findByCarritoId(1)).thenReturn(Flux.just(lineaGuardada));
          when(carritoRepo.save(any(Carrito.class))).thenReturn(Mono.just(carritoActualizado));
-         when(productoPromocionRepo.findPromotionIdsByProductId(1)).thenReturn(Flux.empty());
+         when(lineaLoader.cargarLineas(any(Carrito.class))).thenReturn(Mono.just(carritoActualizado));
+         when(carritoMapper.toDTO(any(Carrito.class))).thenReturn(dtoDePrueba(40.0));
 
          StepVerifier.create(carritoService.addProductToCarrito(1, 1, 2))
                  .expectNextMatches(dto -> dto.getTotal() == 40.0)

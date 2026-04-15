@@ -4,8 +4,8 @@ import com.tienda.tienda.dto.*;
 import com.tienda.tienda.model.*;
 import com.tienda.tienda.repository.ProductoPromocionRepository;
 import org.springframework.stereotype.Service;
+import com.tienda.tienda.dto.mapper.PromotionMapper;
 
-import com.tienda.tienda.repository.ProductRepository;
 import com.tienda.tienda.repository.PromotionRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,16 +15,18 @@ public class PromotionService {
     
     private final PromotionRepository promotionRepo;
     private final ProductoPromocionRepository productoPromocionRepo;
+    private final PromotionMapper promotionMapper;
 
-    public PromotionService(PromotionRepository promotionRepo, ProductoPromocionRepository productoPromocionRepo){
+    public PromotionService(PromotionRepository promotionRepo, ProductoPromocionRepository productoPromocionRepo, PromotionMapper promotionMapper){
         this.promotionRepo = promotionRepo;
         this.productoPromocionRepo = productoPromocionRepo;
+        this.promotionMapper = promotionMapper;
     }
 
     public Mono<PromotionDTO> createPromotion(PromotionDTO dto) {
-        Promotion promocion = convertToEntity(dto);
+        Promotion promocion = promotionMapper.toEntity(dto);
         return promotionRepo.save(promocion)
-                .map(this::convertToDTO);
+                .map(promotionMapper::toDTO);
     }
 
     public Mono<PromotionDTO> updatePromotion(int id, PromotionDTO dto) {
@@ -34,7 +36,7 @@ public class PromotionService {
                     if (dto.getDescuento() >= 0) promo.setDescuento(dto.getDescuento());
                     return promotionRepo.save(promo);
                 })
-                .map(this::convertToDTO);
+                .map(promotionMapper::toDTO);
     }
 
     public Mono<Boolean> deletePromotion (int id) {
@@ -49,26 +51,11 @@ public class PromotionService {
 
     public Mono<PromotionDTO> getPromotionById (int id){
         return promotionRepo.findById(id)
-                    .map(this::convertToDTO);
+                    .map(promotionMapper::toDTO);
     }
 
     public Flux<PromotionDTO> getAllPromotions() {
         return promotionRepo.findAll()
-                .map(this::convertToDTO);
-    }
-
-    private PromotionDTO convertToDTO (Promotion promotion) {
-        PromotionDTO dto = new PromotionDTO();
-        dto.setId(promotion.getId());
-        dto.setDescuento(promotion.getDescuento());
-        dto.setDescripcion(promotion.getDescripcion());
-        return dto;
-    }
-
-    private Promotion convertToEntity (PromotionDTO dto) {
-        Promotion promo = new Promotion();
-        promo.setDescripcion(dto.getDescripcion());
-        promo.setDescuento(dto.getDescuento());
-        return promo;
+                .map(promotionMapper::toDTO);
     }
 }

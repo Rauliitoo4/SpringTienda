@@ -1,11 +1,13 @@
 package com.tienda.tienda.unit.service;
 
 import com.tienda.tienda.dto.LineaCarritoDTO;
+import com.tienda.tienda.dto.mapper.LineaCarritoMapper;
 import com.tienda.tienda.model.Carrito;
 import com.tienda.tienda.model.LineaCarrito;
 import com.tienda.tienda.model.Product;
 import com.tienda.tienda.repository.*;
 import com.tienda.tienda.service.LineaCarritoService;
+import com.tienda.tienda.service.helper.ProductLoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,10 +29,9 @@ import static org.mockito.Mockito.*;
 public class LineaCarritoServiceTest {
 
     @Mock private CarritoRepository carritoRepo;
-    @Mock private ProductRepository productRepo;
     @Mock private LineaCarritoRepository lineaRepo;
-    @Mock private PromotionRepository promotionRepo;
-    @Mock private ProductoPromocionRepository productoPromocionRepo;
+    @Mock private LineaCarritoMapper lineaCarritoMapper;
+    @Mock private ProductLoader productLoader;
 
     @InjectMocks
     private LineaCarritoService lineaCarritoService;
@@ -52,21 +53,21 @@ public class LineaCarritoServiceTest {
         return linea;
     }
 
-    private void mockCargarProducto(int productoId) {
-        Product producto = new Product();
-        producto.setId(1);
-        producto.setNombre("Camiseta");
-        producto.setPrecio(20.0);
-        producto.setPrecioFinal(20.0);
-        when(productRepo.findById(productoId)).thenReturn(Mono.just(producto));
-        when(productoPromocionRepo.findPromotionIdsByProductId(productoId)).thenReturn(Flux.empty());
+    private LineaCarritoDTO dtoDePrueba(int cantidad, double subtotal) {
+        LineaCarritoDTO dto = new LineaCarritoDTO();
+        dto.setId(1);
+        dto.setCantidad(cantidad);
+        dto.setSubtotal(subtotal);
+        dto.setCarritoId(1);
+        return dto;
     }
 
     @Test
     void obtenerLineaPorId_deberiaDevolver_laLinea() {
         LineaCarrito linea = lineaDePrueba();
         when(lineaRepo.findById(1)).thenReturn(Mono.just(linea));
-        mockCargarProducto(1);
+        when(productLoader.cargarProducto(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
+        when(lineaCarritoMapper.toDTO(any(LineaCarrito.class))).thenReturn(dtoDePrueba(2, 40.0));
 
         StepVerifier.create(lineaCarritoService.getLineaById(1))
                 .expectNextMatches(dto ->
@@ -88,11 +89,12 @@ public class LineaCarritoServiceTest {
     void actualizarCantidad_deberiaRecalcular_elSubtotal() {
         LineaCarrito linea = lineaDePrueba();
         when(lineaRepo.findById(1)).thenReturn(Mono.just(linea));
-        mockCargarProducto(1);
+        when(productLoader.cargarProducto(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
         when(lineaRepo.save(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
         when(lineaRepo.findByCarritoId(1)).thenReturn(Flux.just(linea));
         when(carritoRepo.findById(1)).thenReturn(Mono.just(new Carrito()));
         when(carritoRepo.save(any())).thenReturn(Mono.just(new Carrito()));
+        when(lineaCarritoMapper.toDTO(any(LineaCarrito.class))).thenReturn(dtoDePrueba(5, 100.0));
 
         StepVerifier.create(lineaCarritoService.updateLinea(1, 5))
                 .expectNextMatches(dto ->
