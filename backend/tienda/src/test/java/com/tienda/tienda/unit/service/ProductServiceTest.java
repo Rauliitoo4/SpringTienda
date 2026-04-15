@@ -4,7 +4,9 @@ import com.tienda.tienda.dto.ProductDTO;
 import com.tienda.tienda.dto.mapper.ProductMapper;
 import com.tienda.tienda.model.Product;
 import com.tienda.tienda.repository.*;
+import com.tienda.tienda.service.LineaCarritoService;
 import com.tienda.tienda.service.ProductService;
+import com.tienda.tienda.service.helper.PrecioCalculator;
 import com.tienda.tienda.service.helper.PromotionLoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,11 +28,11 @@ class ProductServiceTest {
 
     @Mock private ProductRepository productRepo;
     @Mock private PromotionRepository promotionRepo;
-    @Mock private CarritoRepository carritoRepo;
-    @Mock private LineaCarritoRepository lineaCarritoRepo;
     @Mock private ProductoPromocionRepository productoPromocionRepo;
     @Mock private ProductMapper productMapper;
     @Mock private PromotionLoader promotionLoader;
+    @Mock private LineaCarritoService lineaCarritoService;
+    @Mock private PrecioCalculator precioCalculator;
 
     @InjectMocks
     private ProductService productService;

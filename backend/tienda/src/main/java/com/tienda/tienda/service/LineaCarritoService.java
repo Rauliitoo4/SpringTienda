@@ -18,12 +18,14 @@ public class LineaCarritoService {
     private final CarritoRepository carritoRepo;
     private final LineaCarritoMapper lineaCarritoMapper;
     private final ProductLoader productLoader;
+    private final CarritoService carritoService;
 
-    public LineaCarritoService(LineaCarritoRepository lineaRepo, CarritoRepository carritoRepo, LineaCarritoMapper lineaCarritoMapper, ProductLoader productLoader){
+    public LineaCarritoService(LineaCarritoRepository lineaRepo, CarritoRepository carritoRepo, LineaCarritoMapper lineaCarritoMapper, ProductLoader productLoader, CarritoService carritoService){
         this.lineaRepo = lineaRepo;
         this.carritoRepo = carritoRepo;
         this.lineaCarritoMapper = lineaCarritoMapper;
         this.productLoader = productLoader;
+        this.carritoService = carritoService;
     }
 
     public Mono<LineaCarritoDTO> updateLinea(int id, int cantidad) {
@@ -35,7 +37,7 @@ public class LineaCarritoService {
                             .flatMap(lineaConProducto -> {
                                 lineaConProducto.setSubtotal(lineaConProducto.getProducto().getPrecioFinal() * cantidad);
                                 return lineaRepo.save(linea)
-                                        .then(recalcularTotal(linea.getCarritoId()))
+                                        .then(carritoService.recalcularTotal(linea.getCarritoId()))
                                         .then(productLoader.cargarProducto(linea));
                             });
                 })
@@ -47,7 +49,7 @@ public class LineaCarritoService {
                 .flatMap(linea -> {
                     Integer carritoId = linea.getCarritoId();
                     return lineaRepo.deleteById(id)
-                            .then(recalcularTotal(carritoId))
+                            .then(carritoService.recalcularTotal(carritoId))
                             .thenReturn(true);
                 })
                 .defaultIfEmpty(false);
@@ -65,15 +67,19 @@ public class LineaCarritoService {
                 .map(lineaCarritoMapper::toDTO);
     }
 
-    private Mono<Void> recalcularTotal(Integer carritoId) {
-        return lineaRepo.findByCarritoId(carritoId)
-                .map(LineaCarrito::getSubtotal)
-                .reduce(0.0, Double::sum)
-                .flatMap(total -> carritoRepo.findById(carritoId)
-                        .flatMap(carrito -> {
-                            carrito.setTotal(total);
-                            return carritoRepo.save(carrito);
-                        }))
+    public Mono<Void> actualizarLineasCarrito(Product producto) {
+        return lineaRepo.findAll()
+                .filter(linea -> linea.getProductoId().equals(producto.getId()))
+                .flatMap(linea -> {
+                    linea.setSubtotal(producto.getPrecioFinal() * linea.getCantidad());
+                    return lineaRepo.save(linea);
+                })
+                .collectList()
+                .flatMap(lineasActualizadas -> {
+                    if (lineasActualizadas.isEmpty()) return Mono.empty();
+                    Integer carritoId = lineasActualizadas.get(0).getCarritoId();
+                    return carritoService.recalcularTotal(carritoId);
+                })
                 .then();
     }
 }

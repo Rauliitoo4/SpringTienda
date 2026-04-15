@@ -70,7 +70,7 @@ public class CarritoService {
                 .reduce(0.0, Double::sum);
     }
 
-    private Mono<Void> recalcularTotal(int carritoID) {
+    public Mono<Void> recalcularTotal(int carritoID) {
         return calcularTotal(carritoID)
                 .flatMap(total -> carritoRepo.findById(carritoID)
                         .flatMap(carrito -> {

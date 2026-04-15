@@ -6,6 +6,7 @@ import com.tienda.tienda.model.Carrito;
 import com.tienda.tienda.model.LineaCarrito;
 import com.tienda.tienda.model.Product;
 import com.tienda.tienda.repository.*;
+import com.tienda.tienda.service.CarritoService;
 import com.tienda.tienda.service.LineaCarritoService;
 import com.tienda.tienda.service.helper.ProductLoader;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ public class LineaCarritoServiceTest {
     @Mock private LineaCarritoRepository lineaRepo;
     @Mock private LineaCarritoMapper lineaCarritoMapper;
     @Mock private ProductLoader productLoader;
+    @Mock private CarritoService carritoService;
 
     @InjectMocks
     private LineaCarritoService lineaCarritoService;
@@ -91,9 +93,7 @@ public class LineaCarritoServiceTest {
         when(lineaRepo.findById(1)).thenReturn(Mono.just(linea));
         when(productLoader.cargarProducto(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
         when(lineaRepo.save(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
-        when(lineaRepo.findByCarritoId(1)).thenReturn(Flux.just(linea));
-        when(carritoRepo.findById(1)).thenReturn(Mono.just(new Carrito()));
-        when(carritoRepo.save(any())).thenReturn(Mono.just(new Carrito()));
+        when(carritoService.recalcularTotal(anyInt())).thenReturn(Mono.empty());
         when(lineaCarritoMapper.toDTO(any(LineaCarrito.class))).thenReturn(dtoDePrueba(5, 100.0));
 
         StepVerifier.create(lineaCarritoService.updateLinea(1, 5))
@@ -118,9 +118,7 @@ public class LineaCarritoServiceTest {
         LineaCarrito linea = lineaDePrueba();
         when(lineaRepo.findById(1)).thenReturn(Mono.just(linea));
         when(lineaRepo.deleteById(1)).thenReturn(Mono.empty());
-        when(lineaRepo.findByCarritoId(1)).thenReturn(Flux.empty());
-        when(carritoRepo.findById(1)).thenReturn(Mono.just(new Carrito()));
-        when(carritoRepo.save(any())).thenReturn(Mono.just(new Carrito()));
+        when(carritoService.recalcularTotal(anyInt())).thenReturn(Mono.empty());
 
         StepVerifier.create(lineaCarritoService.deleteLinea(1))
                 .expectNext(true)
