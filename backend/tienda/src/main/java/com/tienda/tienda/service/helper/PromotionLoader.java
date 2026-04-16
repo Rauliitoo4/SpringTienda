@@ -1,7 +1,7 @@
 package com.tienda.tienda.service.helper;
 
 import com.tienda.tienda.model.Product;
-import com.tienda.tienda.repository.ProductoPromocionRepository;
+import com.tienda.tienda.repository.ProductPromotionRepository;
 import com.tienda.tienda.repository.PromotionRepository;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -9,20 +9,20 @@ import reactor.core.publisher.Mono;
 @Component
 public class PromotionLoader {
 
-    private final ProductoPromocionRepository productoPromocionRepo;
+    private final ProductPromotionRepository productPromotionRepo;
     private final PromotionRepository promotionRepo;
 
-    public PromotionLoader (ProductoPromocionRepository productoPromocionRepo, PromotionRepository promotionRepo) {
-        this.productoPromocionRepo = productoPromocionRepo;
+    public PromotionLoader (ProductPromotionRepository productPromotionRepo, PromotionRepository promotionRepo) {
+        this.productPromotionRepo = productPromotionRepo;
         this.promotionRepo = promotionRepo;
     }
 
-    public Mono<Product> cargarPromociones(Product product) {
-        return productoPromocionRepo
+    public Mono<Product> loadPromotions(Product product) {
+        return productPromotionRepo
                 .findPromotionIdsByProductId(product.getId())
                 .flatMap(promotionRepo::findById)
                 .collectList()
-                .doOnNext(product::setPromociones)
+                .doOnNext(product::setPromotions)
                 .thenReturn(product);
     }
 }

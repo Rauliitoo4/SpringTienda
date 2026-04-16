@@ -42,10 +42,10 @@ class UserIntegrationTest {
     @Autowired
     private UserService userService;
 
-    private UserResponseDTO crearUsuarioTest() {
+    private UserResponseDTO createUserTest() {
         UserDTO dto = new UserDTO();
-        dto.setNombre("Alberto");
-        dto.setApellidos("García");
+        dto.setName("Alberto");
+        dto.setLastname("García");
         dto.setUsername("albertog");
         dto.setEmail("albertog@gmail.com");
         dto.setPassword("1234");
@@ -53,68 +53,68 @@ class UserIntegrationTest {
     }
 
     @Test
-    void crearUsuario_deberiaGuardarloEnBD() {
-        UserResponseDTO resultado = crearUsuarioTest();
+    void createUser_shouldSaveInDB() {
+        UserResponseDTO result = createUserTest();
 
-        assertNotNull(resultado);
-        assertNotNull(resultado.getId());
-        assertEquals("Alberto", resultado.getNombre());
-        assertEquals("García", resultado.getApellidos());
-        assertEquals("albertog", resultado.getUsername());
-        assertEquals("albertog@gmail.com", resultado.getEmail());
-        assertTrue(resultado.getCarritoId() > 0);
+        assertNotNull(result);
+        assertNotNull(result.getId());
+        assertEquals("Alberto", result.getName());
+        assertEquals("García", result.getLastname());
+        assertEquals("albertog", result.getUsername());
+        assertEquals("albertog@gmail.com", result.getEmail());
+        assertTrue(result.getCarritoId() > 0);
     }
 
     @Test
-    void crearUsuario_deberiaCrearCarrito() {
-        UserResponseDTO resultado = crearUsuarioTest();
-        assertTrue(resultado.getCarritoId() > 0);    
+    void createUser_shouldCreateCarrito() {
+        UserResponseDTO result = createUserTest();
+        assertTrue(result.getCarritoId() > 0);
     }
 
     @Test
-    void obtenerTodosLosUsuarios_deberiaDevolver_losUsuariosDeBD() {
-        crearUsuarioTest();
-        List<UserResponseDTO> usuarios = userService.getAllUsers().collectList().block();
+    void getAllUsers_shouldReturn_usersFromDB() {
+        createUserTest();
+        List<UserResponseDTO> users = userService.getAllUsers().collectList().block();
 
-        assertNotNull(usuarios);
-        assertFalse(usuarios.isEmpty());
+        assertNotNull(users);
+        assertFalse(users.isEmpty());
     }
 
     @Test
-    void obtenerUsuarioPorID_deberiaDevolver_elUsuarioDeBD() {
-        UserResponseDTO creado = crearUsuarioTest();
-        UserResponseDTO resultado = userService.getUserById(creado.getId()).block();
+    void getUserById_shouldReturn_userFromDB() {
+        UserResponseDTO created = createUserTest();
+        UserResponseDTO result = userService.getUserById(created.getId()).block();
 
-        assertNotNull(resultado);
-        assertEquals(creado.getId(), resultado.getId());
+        assertNotNull(result);
+        assertEquals(created.getId(), result.getId());
     }
 
     @Test
-    void obtenerUsuarioPorID_siNoExiste_deberiaDevolverNull() {
-        UserResponseDTO resultado = userService.getUserById(9999).block();
-        assertNull(resultado);
+    void getUserById_ifNotExists_shouldReturnNull() {
+        UserResponseDTO result = userService.getUserById(9999).block();
+        assertNull(result);
     }
 
     @Test
-    void actualizarUsuario_deberiaModificarLosDatosEnBD() {
-        UserResponseDTO creado = crearUsuarioTest();
+    void updateUser_shouldUpdateDataInDB() {
+        UserResponseDTO created = createUserTest();
 
-        UserDTO cambios = new UserDTO();
-        cambios.setUsername("albertitog");
+        UserDTO changes = new UserDTO();
+        changes.setUsername("albertitog");
 
-        UserResponseDTO actualizado = userService.updateUser(creado.getId(), cambios).block();
+        UserResponseDTO updated = userService.updateUser(created.getId(), changes).block();
 
-        assertNotNull(actualizado);
-        assertEquals("albertitog", actualizado.getUsername());
+        assertNotNull(updated);
+        assertEquals("albertitog", updated.getUsername());
     }
 
     @Test
-    void eliminarUsuario_deberiaEliminarloEnBD() {
-        UserResponseDTO creado = crearUsuarioTest();
-        boolean eliminado = userService.deleteUser(creado.getId()).block();
+    void deleteUser_shouldDeleteInDB() {
+        UserResponseDTO created = createUserTest();
+        boolean deleted = userService.deleteUser(created.getId()).block();
 
-        assertTrue(eliminado);
-        assertNull(userService.getUserById(creado.getId()).block());
+        assertTrue(deleted);
+        assertNull(userService.getUserById(created.getId()).block());
     }
 
 }

@@ -18,15 +18,15 @@ public class LineaCarrito {
     private Integer id;
 
     private double subtotal;
-    private int cantidad;
+    private int quantity;
 
     @Column("carrito_id")
     private Integer carritoId;
 
-    @Column("producto_id")
-    private Integer productoId;
+    @Column("product_id")
+    private Integer productId;
 
     @Transient
-    private Product producto;
+    private Product product;
 
 }

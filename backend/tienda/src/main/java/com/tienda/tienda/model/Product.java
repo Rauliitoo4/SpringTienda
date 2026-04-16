@@ -19,20 +19,20 @@ public class Product {
     @Id
     private Integer id;
 
-    private String nombre;
-    private double precio;
+    private String name;
+    private double price;
 
-    @Column("precio_final")
-    private double precioFinal;
+    @Column("final_price")
+    private double finalPrice;
 
-    private String descripcion;
+    private String description;
     private String material;
-    private String consideraciones;
+    private String considerations;
 
-    @Column("imagen_url")
-    private String imagenUrl;
+    @Column("image_url")
+    private String imageUrl;
 
     @Transient
-    private List<Promotion> promociones;
+    private List<Promotion> promotions;
 
 }

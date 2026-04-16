@@ -57,31 +57,31 @@ class LineaCarritoIntegrationTest {
     @Autowired
     private LineaCarritoService lineaCarritoService;
 
-    private LineaCarritoDTO crearLineasTest() {
+    private LineaCarritoDTO createLineasTest() {
         UserDTO userDTO = new UserDTO();
-        userDTO.setNombre("Alberto");
-        userDTO.setApellidos("García");
+        userDTO.setName("Alberto");
+        userDTO.setLastname("García");
         userDTO.setUsername("albertog");
         userDTO.setEmail("albertog@gmail.com");
         userDTO.setPassword("1234");
-        UserResponseDTO usuario = userService.createUser(userDTO).block();
+        UserResponseDTO user = userService.createUser(userDTO).block();
 
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setNombre("Camiseta Test");
-        productDTO.setPrecio(20.00);
-        productDTO.setDescripcion("Descripción test");
+        productDTO.setName("Camiseta Test");
+        productDTO.setPrice(20.00);
+        productDTO.setDescription("Descripción test");
         productDTO.setMaterial("Algodón");
-        productDTO.setConsideraciones("Lavar a 30 grados");
-        ProductDTO producto = productService.createProduct(productDTO).block();
+        productDTO.setConsiderations("Lavar a 30 grados");
+        ProductDTO product = productService.createProduct(productDTO).block();
 
-        CarritoDTO carrito = carritoService.addProductToCarrito(usuario.getCarritoId(), producto.getId(), 2).block();
+        CarritoDTO carrito = carritoService.addProductToCarrito(user.getCarritoId(), product.getId(), 2).block();
 
         return carrito.getLineas().get(0);
     }
 
     @Test
-    void obtenerTodasLasLineas_deberiaDevolver_lasLineasDeBD() {
-        crearLineasTest();
+    void getAllLineas_shouldReturn_theLineasFromDB() {
+        createLineasTest();
         List<LineaCarritoDTO> lineas = lineaCarritoService.getAllLineas().collectList().block();
         
         assertNotNull(lineas);
@@ -89,47 +89,47 @@ class LineaCarritoIntegrationTest {
     }
 
     @Test
-    void obtenerLineaPorID_deberiaDevolver_laLineaDeBD() {
-        LineaCarritoDTO linea = crearLineasTest();
-        LineaCarritoDTO resultado = lineaCarritoService.getLineaById(linea.getId()).block();
+    void getLineaById_shouldReturn_theLineaFromDB() {
+        LineaCarritoDTO linea = createLineasTest();
+        LineaCarritoDTO result = lineaCarritoService.getLineaById(linea.getId()).block();
 
-        assertNotNull(resultado);
-        assertEquals(linea.getId(), resultado.getId());
+        assertNotNull(result);
+        assertEquals(linea.getId(), result.getId());
     }
 
     @Test
-    void obtenerLineaPorID_siNoExiste_deberiaDevolverNull() {
+    void getLineaById_ifNotExists_shouldReturnNull() {
         LineaCarritoDTO resultado = lineaCarritoService.getLineaById(9999).block();
         assertNull(resultado);
     }
 
     @Test
-    void actualizarCantidad_deberiaRecalcularSubtotal() {
-        LineaCarritoDTO creada = crearLineasTest();
+    void updateQuantity_shouldRecalculateSubtotal() {
+        LineaCarritoDTO created = createLineasTest();
 
-        LineaCarritoDTO actualizada = lineaCarritoService.updateLinea(creada.getId(), 5).block();
+        LineaCarritoDTO updated = lineaCarritoService.updateLinea(created.getId(), 5).block();
 
-        assertNotNull(actualizada);
-        assertEquals(5, actualizada.getCantidad());
-        assertEquals(100.00, actualizada.getSubtotal());
+        assertNotNull(updated);
+        assertEquals(5, updated.getQuantity());
+        assertEquals(100.00, updated.getSubtotal());
     }
 
     @Test
-    void eliminarLinea_deberiaEliminarlaEnBD() {
-        LineaCarritoDTO creada = crearLineasTest();
-        boolean eliminado = lineaCarritoService.deleteLinea(creada.getId()).block();
+    void deleteLinea_shouldDeleteFromDB() {
+        LineaCarritoDTO created = createLineasTest();
+        boolean deleted = lineaCarritoService.deleteLinea(created.getId()).block();
 
-        assertTrue(eliminado);
-        assertNull(lineaCarritoService.getLineaById(creada.getId()).block());
+        assertTrue(deleted);
+        assertNull(lineaCarritoService.getLineaById(created.getId()).block());
     }
 
     @Test
-    void eliminarLinea_deberiaRecalcularTotalDelCarrito() {
-        LineaCarritoDTO creada = crearLineasTest();
+    void deleteLinea_shouldRecalculateTotalFromCarrito() {
+        LineaCarritoDTO created = createLineasTest();
         
-        lineaCarritoService.deleteLinea(creada.getId()).block();
+        lineaCarritoService.deleteLinea(created.getId()).block();
 
-        double total = carritoService.calcularTotal(creada.getCarritoId()).block();
+        double total = carritoService.calculateTotal(created.getCarritoId()).block();
         assertEquals(0.00, total);
     }
 

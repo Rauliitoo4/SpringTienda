@@ -27,48 +27,48 @@ class CarritoControllerTest {
     @MockitoBean
     private CarritoService carritoService;
 
-    private CarritoDTO carritoVacio;
-    private CarritoDTO carritoConLinea;
+    private CarritoDTO carritoEmpty;
+    private CarritoDTO carritoWithLinea;
 
     @BeforeEach
     void setUp() {
-        carritoVacio = new CarritoDTO();
-        carritoVacio.setId(1);
-        carritoVacio.setTotal(0.0);
-        carritoVacio.setLineas(List.of());
+        carritoEmpty = new CarritoDTO();
+        carritoEmpty.setId(1);
+        carritoEmpty.setTotal(0.0);
+        carritoEmpty.setLineas(List.of());
 
-        ProductDTO producto = new ProductDTO();
-        producto.setId(1);
-        producto.setNombre("Camiseta");
-        producto.setPrecio(20.0);
-        producto.setPrecioFinal(18.0);
+        ProductDTO product = new ProductDTO();
+        product.setId(1);
+        product.setName("Camiseta");
+        product.setPrice(20.0);
+        product.setFinalPrice(18.0);
 
         LineaCarritoDTO linea = new LineaCarritoDTO();
         linea.setId(1);
-        linea.setCantidad(2);
+        linea.setQuantity(2);
         linea.setSubtotal(36.0);
-        linea.setProducto(producto);
+        linea.setProduct(product);
 
-        carritoConLinea = new CarritoDTO();
-        carritoConLinea.setId(1);
-        carritoConLinea.setTotal(36.0);
-        carritoConLinea.setLineas(List.of(linea));
+        carritoWithLinea = new CarritoDTO();
+        carritoWithLinea.setId(1);
+        carritoWithLinea.setTotal(36.0);
+        carritoWithLinea.setLineas(List.of(linea));
     }
 
     //GET /carritos/{id}
     @Test
-    void getCarritoById_existente_deberiaRetornarCarritoyStatus200() {
-        when(carritoService.getCarritoById(1)).thenReturn(Mono.just(carritoVacio));
+    void getCarritoById_shouldReturnCarritoAndStatus200() {
+        when(carritoService.getCarritoById(1)).thenReturn(Mono.just(carritoEmpty));
 
         webTestClient.get().uri("/carritos/1")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(CarritoDTO.class)
-                .isEqualTo(carritoVacio);
+                .isEqualTo(carritoEmpty);
     }
 
     @Test
-    void getCarritoById_noExistente_deberiaRetornar404() {
+    void getCarritoById_ifNotExists_shouldReturn404() {
         when(carritoService.getCarritoById(99)).thenReturn(Mono.empty());
 
         webTestClient.get().uri("/carritos/99")
@@ -78,18 +78,18 @@ class CarritoControllerTest {
 
     //POST /carritos/{carritoId}/productos/{productoId}
     @Test
-    void addProductToCarrito_deberiaRetornarCarritoActualizadoYStatus200() {
-        when(carritoService.addProductToCarrito(1, 1, 2)).thenReturn(Mono.just(carritoConLinea));
+    void addProductToCarrito_shouldReturnCarritoUpdatedAndStatus200() {
+        when(carritoService.addProductToCarrito(1, 1, 2)).thenReturn(Mono.just(carritoWithLinea));
 
         webTestClient.post().uri("/carritos/1/productos/1?cantidad=2")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(CarritoDTO.class)
-                .isEqualTo(carritoConLinea);
+                .isEqualTo(carritoWithLinea);
     }
 
     @Test
-    void addProductToCarrito_carritoNoExiste_deberiaRetornar404() {
+    void addProductToCarrito_ifNotExistsCarrito_shouldReturn404() {
         when(carritoService.addProductToCarrito(99, 1, 2)).thenReturn(Mono.empty());
 
         webTestClient.post().uri("/carritos/99/productos/1?cantidad=2")
@@ -98,7 +98,7 @@ class CarritoControllerTest {
     }
 
     @Test
-    void addProductToCarrito_productoNoExiste_deberiaRetornar404() {
+    void addProductToCarrito_ifNotExistsProduct_shouldReturn404() {
         when(carritoService.addProductToCarrito(1, 99, 2)).thenReturn(Mono.empty());
 
         webTestClient.post().uri("/carritos/1/productos/99?cantidad=2")
@@ -107,8 +107,8 @@ class CarritoControllerTest {
     }
 
     @Test
-    void addProductToCarrito_deberiaDelegarEnServicio() {
-        when(carritoService.addProductToCarrito(1, 1, 2)).thenReturn(Mono.just(carritoConLinea));
+    void addProductToCarrito_shouldCallService() {
+        when(carritoService.addProductToCarrito(1, 1, 2)).thenReturn(Mono.just(carritoWithLinea));
 
         webTestClient.post().uri("/carritos/1/productos/1?cantidad=2")
                 .exchange()

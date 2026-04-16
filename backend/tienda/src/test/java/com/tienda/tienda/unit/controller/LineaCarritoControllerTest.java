@@ -32,24 +32,24 @@ class LineaCarritoControllerTest {
 
     @BeforeEach
     void setUp() {
-        ProductDTO producto = new ProductDTO();
-        producto.setId(1);
-        producto.setNombre("Camiseta");
-        producto.setPrecio(20.0);
-        producto.setPrecioFinal(18.0);
+        ProductDTO product = new ProductDTO();
+        product.setId(1);
+        product.setName("Camiseta");
+        product.setPrice(20.0);
+        product.setFinalPrice(18.0);
 
         linea = new LineaCarritoDTO();
         linea.setId(1);
-        linea.setCantidad(2);
+        linea.setQuantity(2);
         linea.setSubtotal(36.0);
         linea.setCarritoId(1);
-        linea.setProducto(producto);
+        linea.setProduct(product);
 
     }
 
     //GET /lineas
     @Test
-    void getAllLineas_deberiaRetornarListaYStatus200() {
+    void getAllLineas_shouldReturnListAndStatus200() {
         when(lineaCarritoService.getAllLineas()).thenReturn(Flux.just(linea));
 
         webTestClient.get().uri("/lineas")
@@ -60,7 +60,7 @@ class LineaCarritoControllerTest {
     }
 
     @Test
-    void getAllLineas_listaVacia_deberiaRetornarArrayVacioYStatus200() {
+    void getAllLineas_EmptyList_shouldReturnEmptyArrayAndStatus200() {
         when(lineaCarritoService.getAllLineas()).thenReturn(Flux.empty());
 
         webTestClient.get().uri("/lineas")
@@ -72,7 +72,7 @@ class LineaCarritoControllerTest {
 
     //GET /lineas/{id}
     @Test
-    void getLineaById_existente_deberiaRetornarLineayStatus200() {
+    void getLineaById_shouldReturnLineaAndStatus200() {
         when(lineaCarritoService.getLineaById(1)).thenReturn(Mono.just(linea));
 
         webTestClient.get().uri("/lineas/1")
@@ -83,7 +83,7 @@ class LineaCarritoControllerTest {
     }
 
     @Test
-    void getLineaById_noExistente_deberiaRetornar404() {
+    void getLineaById_ifNotExists_shouldReturn404() {
         when(lineaCarritoService.getLineaById(99)).thenReturn(Mono.empty());
 
         webTestClient.get().uri("/lineas/99")
@@ -93,8 +93,8 @@ class LineaCarritoControllerTest {
 
     //PUT /lineas/{id}
     @Test
-    void updateLinea_existente_deberiaRetornarLineaActualizadaYStatus200() {
-        linea.setCantidad(5);
+    void updateLinea_shouldReturnLineaUpdatedAndStatus200() {
+        linea.setQuantity(5);
         linea.setSubtotal(90.0);
         when(lineaCarritoService.updateLinea(eq(1), eq(5))).thenReturn(Mono.just(linea));
 
@@ -106,7 +106,7 @@ class LineaCarritoControllerTest {
     }
 
     @Test
-    void updateLinea_noExistente_deberiaRetornar404() {
+    void updateLinea_ifNotExists_shouldReturn404() {
         when(lineaCarritoService.updateLinea(eq(99), eq(5))).thenReturn(Mono.empty());
 
         webTestClient.put().uri("/lineas/99?cantidad=5")
@@ -116,7 +116,7 @@ class LineaCarritoControllerTest {
 
     //DELETE /lineas/{id}
     @Test
-    void deleteLinea_existente_deberiaRetornar204() {
+    void deleteLinea_shouldReturn204() {
         when(lineaCarritoService.deleteLinea(1)).thenReturn(Mono.just(true));
 
         webTestClient.delete().uri("/lineas/1")
@@ -125,7 +125,7 @@ class LineaCarritoControllerTest {
     }
 
     @Test
-    void deleteLinea_noExistente_deberiaRetornar404() {
+    void deleteLinea_ifNotExists_shouldReturn404() {
         when(lineaCarritoService.deleteLinea(99)).thenReturn(Mono.just(false));
 
         webTestClient.delete().uri("/lineas/99")

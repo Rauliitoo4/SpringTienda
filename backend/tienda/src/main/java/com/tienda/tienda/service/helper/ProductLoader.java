@@ -16,10 +16,10 @@ public class ProductLoader {
         this.promotionLoader = promotionLoader;
     }
 
-    public Mono<LineaCarrito> cargarProducto(LineaCarrito linea) {
-        return productRepo.findById(linea.getProductoId())
-                .flatMap(promotionLoader::cargarPromociones)
-                .doOnNext(linea::setProducto)
+    public Mono<LineaCarrito> loadProduct(LineaCarrito linea) {
+        return productRepo.findById(linea.getProductId())
+                .flatMap(promotionLoader::loadPromotions)
+                .doOnNext(linea::setProduct)
                 .thenReturn(linea);
     }
 }

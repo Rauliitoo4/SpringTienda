@@ -15,6 +15,6 @@ public class Promotion {
     @Id
     private Integer id;
 
-    private double descuento;
-    private String descripcion;
+    private double discount;
+    private String description;
 }

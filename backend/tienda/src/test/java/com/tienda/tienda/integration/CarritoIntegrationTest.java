@@ -51,74 +51,74 @@ class CarritoIntegrationTest {
     @Autowired
     private CarritoService carritoService;
 
-    private UserResponseDTO crearUsuarioTest() {
+    private UserResponseDTO createUserTest() {
         UserDTO dto = new UserDTO();
-        dto.setNombre("Alberto");
-        dto.setApellidos("García");
+        dto.setName("Alberto");
+        dto.setLastname("García");
         dto.setUsername("albertog");
         dto.setEmail("albertog@gmail.com");
         dto.setPassword("1234");
         return userService.createUser(dto).block();
     }
 
-    private ProductDTO crearProductoTest() {
+    private ProductDTO createProductTest() {
         ProductDTO dto = new ProductDTO();
-        dto.setNombre("Camiseta Test");
-        dto.setPrecio(20.00);
-        dto.setDescripcion("Descripción test");
-        dto.setConsideraciones("Lavar a 30 grados");
+        dto.setName("Camiseta Test");
+        dto.setPrice(20.00);
+        dto.setDescription("Descripción test");
+        dto.setConsiderations("Lavar a 30 grados");
         return productService.createProduct(dto).block();
     }
 
     @Test
-    void obtenerCarritoPorID_deberiaDevolver_ElCarritoDeBD() {
-        UserResponseDTO usuario = crearUsuarioTest();
-        CarritoDTO resultado = carritoService.getCarritoById(usuario.getCarritoId()).block();
+    void getCarritoById_shouldReturn_CarritoFromDB() {
+        UserResponseDTO user = createUserTest();
+        CarritoDTO result = carritoService.getCarritoById(user.getCarritoId()).block();
 
-        assertNotNull(resultado);
-        assertEquals(usuario.getCarritoId(), resultado.getId());
+        assertNotNull(result);
+        assertEquals(user.getCarritoId(), result.getId());
     }
 
     @Test
-    void obtenerCarritoPorID_siNoExiste_deberiaDevolverNull() {
-        CarritoDTO resultado = carritoService.getCarritoById(9999).block();
-        assertNull(resultado);
+    void getCarritoById_ifNotExists_shouldReturnNull() {
+        CarritoDTO result = carritoService.getCarritoById(9999).block();
+        assertNull(result);
     }
 
     @Test
-    void aniadirProductoAlCarrito_deberiaActualizarElTotal() {
-        UserResponseDTO usuario = crearUsuarioTest();
-        ProductDTO producto = crearProductoTest();
+    void addProductToCarrito_shouldUpdateTotal() {
+        UserResponseDTO user = createUserTest();
+        ProductDTO product = createProductTest();
 
-        CarritoDTO resultado = carritoService.addProductToCarrito(usuario.getCarritoId(), producto.getId(), 2).block();
+        CarritoDTO result = carritoService.addProductToCarrito(user.getCarritoId(), product.getId(), 2).block();
 
-        assertNotNull(resultado);
-        assertFalse(resultado.getLineas().isEmpty());
-        assertEquals(40.00, resultado.getTotal());
+        assertNotNull(result);
+        assertFalse(result.getLineas().isEmpty());
+        assertEquals(40.00, result.getTotal());
     }
 
     @Test
-    void aniadirProductoAlCarrito_siCarritoNoExiste_deberiaDevolverNull() {
-        ProductDTO producto = crearProductoTest();
-        CarritoDTO resultado = carritoService.addProductToCarrito(9999, producto.getId(), 2).block();
-        assertNull(resultado);
+    void addProductToCarrito_ifCarritoDoesntExists_shouldReturnNull() {
+        ProductDTO product = createProductTest();
+        CarritoDTO result = carritoService.addProductToCarrito(9999, product.getId(), 2).block();
+        assertNull(result);
     }
 
     @Test
-    void aniadirProductoAlCarrito_siProductoNoExiste_deberiaDevolverNull() {
-        UserResponseDTO usuario = crearUsuarioTest();
-        CarritoDTO resultado = carritoService.addProductToCarrito(usuario.getCarritoId(), 9999, 2).block();
-        assertNull(resultado);
+    void addProductToCarrito_ifProductDoesntExists_shouldReturnNull() {
+        UserResponseDTO user = createUserTest();
+        CarritoDTO result = carritoService.addProductToCarrito(user.getCarritoId(), 9999, 2).block();
+        assertNull(result);
     }
 
     @Test
-    void calcularTotal_deberiaDevolver_laSumaDeSubtotales() {
-        UserResponseDTO usuario = crearUsuarioTest();
-        ProductDTO producto = crearProductoTest();
+    void calculateTotal_shouldReturn_theSumOfSubtotals() {
+        UserResponseDTO user = createUserTest();
+        ProductDTO product = createProductTest();
 
-        carritoService.addProductToCarrito(usuario.getCarritoId(), producto.getId(), 3).block();
+        carritoService.addProductToCarrito(user.getCarritoId(), product.getId(), 3).block();
        
-        double total = carritoService.calcularTotal(usuario.getCarritoId()).block();
+        double total = carritoService.calculateTotal(user.getCarritoId()).block();
         assertEquals(60.00, total);
     }
 }

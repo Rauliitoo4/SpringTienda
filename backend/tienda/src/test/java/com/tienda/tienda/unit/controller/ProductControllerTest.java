@@ -30,50 +30,50 @@ class ProductControllerTest {
     @MockitoBean
     private ProductService productService;
 
-    private ProductDTO productoBase;
-    private ProductDTO productoConPromo;
+    private ProductDTO basicProduct;
+    private ProductDTO productWithPromo;
 
     @BeforeEach
     void setUp() {
-        productoBase = new ProductDTO();
-        productoBase.setId(1);
-        productoBase.setNombre("Camiseta");
-        productoBase.setPrecio(20.0);
-        productoBase.setPrecioFinal(20.0);
-        productoBase.setDescripcion("Camiseta de algodón");
-        productoBase.setMaterial("Algodón");
-        productoBase.setConsideraciones("Lavar a mano");
-        productoBase.setImagenUrl("http://img.com/camiseta.jpg");
-        productoBase.setPromociones(List.of());
+        basicProduct = new ProductDTO();
+        basicProduct.setId(1);
+        basicProduct.setName("Camiseta");
+        basicProduct.setPrice(20.0);
+        basicProduct.setFinalPrice(20.0);
+        basicProduct.setDescription("Camiseta de algodón");
+        basicProduct.setMaterial("Algodón");
+        basicProduct.setConsiderations("Lavar a mano");
+        basicProduct.setImageUrl("http://img.com/camiseta.jpg");
+        basicProduct.setPromotions(List.of());
 
         PromotionDTO promo = new PromotionDTO();
         promo.setId(1);
-        promo.setDescripcion("10% de descuento");
-        promo.setDescuento(10.0);
+        promo.setDescription("10% de descuento");
+        promo.setDiscount(10.0);
 
-        productoConPromo = new ProductDTO();
-        productoConPromo.setId(1);
-        productoConPromo.setNombre("Camiseta");
-        productoConPromo.setPrecio(20.0);
-        productoConPromo.setPrecioFinal(18.0);
-        productoConPromo.setPromociones(List.of(promo));
+        productWithPromo = new ProductDTO();
+        productWithPromo.setId(1);
+        productWithPromo.setName("Camiseta");
+        productWithPromo.setPrice(20.0);
+        productWithPromo.setFinalPrice(18.0);
+        productWithPromo.setPromotions(List.of(promo));
     }
 
     //GET /productos
     @Test
-    void getAllProdcuts_deberiaRetornarListaYStatus200() {
-        when(productService.getAllProducts()).thenReturn(Flux.just(productoBase));
+    void getAllProdcuts_shouldReturnListAndStatus200() {
+        when(productService.getAllProducts()).thenReturn(Flux.just(basicProduct));
 
         webTestClient.get().uri("/productos")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(ProductDTO.class)
                 .hasSize(1)
-                .contains(productoBase);
+                .contains(basicProduct);
     }
 
     @Test
-    void getAllProducts_listVacia_deberiaRetornarArrayVacioYStatus200() {
+    void getAllProducts_EmptyList_shouldReturnEmptyArraAndStatus200() {
         when(productService.getAllProducts()).thenReturn(Flux.empty());
 
         webTestClient.get().uri("/productos")
@@ -85,18 +85,18 @@ class ProductControllerTest {
 
     //GET /productos/{id}
     @Test
-    void getProductById_existente_deberiaRetornarProductoyStatus200() {
-        when(productService.getProductById(1)).thenReturn(Mono.just(productoBase));
+    void getProductById_shouldReturnProductAndStatus200() {
+        when(productService.getProductById(1)).thenReturn(Mono.just(basicProduct));
 
         webTestClient.get().uri("/productos/1")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(ProductDTO.class)
-                .isEqualTo(productoBase);
+                .isEqualTo(basicProduct);
     }
 
     @Test
-    void getProductById_noExistente_deberiaRetornar404() {
+    void getProductById_ifNotExists_shouldReturn404() {
         when(productService.getProductById(99)).thenReturn(Mono.empty());
 
         webTestClient.get().uri("/productos/99")
@@ -106,25 +106,25 @@ class ProductControllerTest {
 
     //POST /productos
     @Test
-    void createProduct_deberiaRetornarProductoCreadoYStatus201() {
-        when(productService.createProduct(any(ProductDTO.class))).thenReturn(Mono.just(productoBase));
+    void createProduct_shouldReturnCreatedProductAndStatus201() {
+        when(productService.createProduct(any(ProductDTO.class))).thenReturn(Mono.just(basicProduct));
 
         webTestClient.post().uri("/productos")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(productoBase)
+                .bodyValue(basicProduct)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody(ProductDTO.class)
-                .isEqualTo(productoBase);
+                .isEqualTo(basicProduct);
     }
 
     @Test
-    void createProduct_deberiaDelegarEnServicio() {
-        when(productService.createProduct(any(ProductDTO.class))).thenReturn(Mono.just(productoBase));
+    void createProduct_shouldCallService() {
+        when(productService.createProduct(any(ProductDTO.class))).thenReturn(Mono.just(basicProduct));
 
         webTestClient.post().uri("/productos")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(productoBase)
+                .bodyValue(basicProduct)
                 .exchange()
                 .expectStatus().isCreated();
 
@@ -133,33 +133,33 @@ class ProductControllerTest {
 
     //PUT /productos/{id}
     @Test
-    void updateProduct_existente_deberiaRetornarProductoActualizadoYStatus200() {
-        productoBase.setNombre("Camiseta Actualizada");
-        when(productService.updateProduct(eq(1), any(ProductDTO.class))).thenReturn(Mono.just(productoBase));
+    void updateProduct_shouldReturnUpdatedProductAndStatus200() {
+        basicProduct.setName("Camiseta Actualizada");
+        when(productService.updateProduct(eq(1), any(ProductDTO.class))).thenReturn(Mono.just(basicProduct));
 
         webTestClient.put().uri("/productos/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(productoBase)
+                .bodyValue(basicProduct)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(ProductDTO.class)
-                .isEqualTo(productoBase);
+                .isEqualTo(basicProduct);
     }
 
     @Test
-    void updateProduct_noExistente_deberiaRetornar404() {
+    void updateProduct_ifNotExists_shouldReturn404() {
         when(productService.updateProduct(eq(99), any(ProductDTO.class))).thenReturn(Mono.empty());
 
         webTestClient.put().uri("/productos/99")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(productoBase)
+                .bodyValue(basicProduct)
                 .exchange()
                 .expectStatus().isNotFound();
     }
 
     //DELETE /productos/{id}
     @Test
-    void deleteProduct_existente_deberiaRetornar204() {
+    void deleteProduct_shouldReturn204() {
         when(productService.deleteProduct(1)).thenReturn(Mono.just(true));
 
         webTestClient.delete().uri("/productos/1")
@@ -168,7 +168,7 @@ class ProductControllerTest {
     }
 
     @Test
-    void deleteProduct_noExistente_deberiaRetornar404() {
+    void deleteProduct_ifNotExists_shouldReturn404() {
         when(productService.deleteProduct(99)).thenReturn(Mono.just(false));
 
         webTestClient.delete().uri("/productos/99")
@@ -178,18 +178,18 @@ class ProductControllerTest {
 
     //POST /productos/{productoID}/promociones/{promocionID}
     @Test
-    void addPromotion_productoYPromoExistentes_deberiaRetornarProductoConPromoYStatus200() {
-        when(productService.addPromotion(1, 1)).thenReturn(Mono.just(productoConPromo));
+    void addPromotion_shouldReturnProductWithPromoAndStatus200() {
+        when(productService.addPromotion(1, 1)).thenReturn(Mono.just(productWithPromo));
 
         webTestClient.post().uri("/productos/1/promociones/1")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(ProductDTO.class)
-                .isEqualTo(productoConPromo);
+                .isEqualTo(productWithPromo);
     }
 
     @Test
-    void addPromotion_productoNoExistente_deberiaRetornar404() {
+    void addPromotion_ifNotExistsProduct_shouldReturn404() {
         when(productService.addPromotion(99, 1)).thenReturn(Mono.empty());
 
         webTestClient.post().uri("/productos/99/promociones/1")
@@ -198,7 +198,7 @@ class ProductControllerTest {
     }
 
     @Test
-    void addPromotion_promoNoExistente_deberiaRetornar404() {
+    void addPromotion_ifNotExistsPromotion_shouldReturn404() {
         when(productService.addPromotion(1, 99)).thenReturn(Mono.empty());
 
         webTestClient.post().uri("/productos/1/promociones/99")
@@ -208,18 +208,18 @@ class ProductControllerTest {
 
     //DELETE /productos/{productoID}/promociones/{promocionID}
     @Test
-    void removePromotion_deberiaRetornarProductoSinPromoYStatus200() {
-        when(productService.removePromotion(1, 1)).thenReturn(Mono.just(productoBase));
+    void removePromotion_shouldReturnProductWithOutPromoAndStatus200() {
+        when(productService.removePromotion(1, 1)).thenReturn(Mono.just(basicProduct));
 
         webTestClient.delete().uri("/productos/1/promociones/1")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(ProductDTO.class)
-                .isEqualTo(productoBase);
+                .isEqualTo(basicProduct);
     }
 
     @Test
-    void removePromotion_productoNoExistente_deberiaRetornar404() {
+    void removePromotion_ifNotExistsProduct_shouldReturn404() {
         when(productService.removePromotion(99, 1)).thenReturn(Mono.empty());
 
         webTestClient.delete().uri("/productos/99/promociones/1")

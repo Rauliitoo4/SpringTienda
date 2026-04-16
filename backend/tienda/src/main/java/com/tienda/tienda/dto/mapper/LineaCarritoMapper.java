@@ -15,12 +15,12 @@ public class LineaCarritoMapper {
     public LineaCarritoDTO toDTO (LineaCarrito linea) {
         LineaCarritoDTO dto = new LineaCarritoDTO();
         dto.setId(linea.getId());
-        dto.setCantidad(linea.getCantidad());
+        dto.setQuantity(linea.getQuantity());
         dto.setSubtotal(linea.getSubtotal());
         dto.setCarritoId(linea.getCarritoId());
 
-        if (linea.getProducto() != null){
-            dto.setProducto(productMapper.toDTO(linea.getProducto()));
+        if (linea.getProduct() != null){
+            dto.setProduct(productMapper.toDTO(linea.getProduct()));
         }
         return dto;
     }

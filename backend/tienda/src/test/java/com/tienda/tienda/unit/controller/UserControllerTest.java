@@ -30,31 +30,31 @@ class UserControllerTest {
     @MockitoBean
     private UserService userService;
 
-    private UserResponseDTO usuarioResponse;
-    private UserDTO usuarioRequest;
+    private UserResponseDTO userResponse;
+    private UserDTO userRequest;
 
     @BeforeEach
     void setUp() {
-        usuarioResponse = new UserResponseDTO();
-        usuarioResponse.setId(1);
-        usuarioResponse.setNombre("Alberto");
-        usuarioResponse.setApellidos("García");
-        usuarioResponse.setUsername("albertog");
-        usuarioResponse.setEmail("albertog@gmail.com");
-        usuarioResponse.setCarritoId(1);
+        userResponse = new UserResponseDTO();
+        userResponse.setId(1);
+        userResponse.setName("Alberto");
+        userResponse.setLastname("García");
+        userResponse.setUsername("albertog");
+        userResponse.setEmail("albertog@gmail.com");
+        userResponse.setCarritoId(1);
 
-        usuarioRequest = new UserDTO();
-        usuarioRequest.setNombre("Alberto");
-        usuarioRequest.setApellidos("García");
-        usuarioRequest.setUsername("albertog");
-        usuarioRequest.setEmail("albertog@gmail.com");
-        usuarioRequest.setPassword("1234");
+        userRequest = new UserDTO();
+        userRequest.setName("Alberto");
+        userRequest.setLastname("García");
+        userRequest.setUsername("albertog");
+        userRequest.setEmail("albertog@gmail.com");
+        userRequest.setPassword("1234");
     }
 
     //GET /usuarios
     @Test
-    void getAllUsers_deberiaRetornarListaYStatus200() {
-        when(userService.getAllUsers()).thenReturn(Flux.just(usuarioResponse));
+    void getAllUsers_shouldReturnListAndStatus200() {
+        when(userService.getAllUsers()).thenReturn(Flux.just(userResponse));
 
         webTestClient.get().uri("/usuarios")
                 .exchange()
@@ -65,7 +65,7 @@ class UserControllerTest {
     }
 
     @Test
-    void getAllUsers_listaVacia_deberiaRetornarArrayVacioYStatus200() {
+    void getAllUsers_emptyList_shouldReturnEmptyArrayAndStatus200() {
         when(userService.getAllUsers()).thenReturn(Flux.empty());
 
         webTestClient.get().uri("/usuarios")
@@ -77,18 +77,18 @@ class UserControllerTest {
 
     //GET /usuarios/{id}
     @Test
-    void getUserById_existente_deberiaRetornarUsuarioyStatus200() {
-        when(userService.getUserById(1)).thenReturn(Mono.just(usuarioResponse));
+    void getUserById_shouldReturnUserAndStatus200() {
+        when(userService.getUserById(1)).thenReturn(Mono.just(userResponse));
 
         webTestClient.get().uri("/usuarios/1")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(UserResponseDTO.class)
-                .isEqualTo(usuarioResponse);
+                .isEqualTo(userResponse);
     }
 
     @Test
-    void getUserById_noExistente_deberiaRetornar404() {
+    void getUserById_ifNotExists_shouldReturn404() {
         when(userService.getUserById(99)).thenReturn(Mono.empty());
 
         webTestClient.get().uri("/usuarios/99")
@@ -98,25 +98,25 @@ class UserControllerTest {
 
     //POST /usuarios
     @Test
-    void createUser_deberiaRetornarUsuarioCreadoYStatus201() {
-        when(userService.createUser(any(UserDTO.class))).thenReturn(Mono.just(usuarioResponse));
+    void createUser_shouldReturnCreatedUserAndStatus201() {
+        when(userService.createUser(any(UserDTO.class))).thenReturn(Mono.just(userResponse));
 
         webTestClient.post().uri("/usuarios")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(usuarioRequest)
+                .bodyValue(userRequest)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody(UserResponseDTO.class)
-                .isEqualTo(usuarioResponse);
+                .isEqualTo(userResponse);
     }
 
     @Test
-    void createUser_deberiaDelegarEnServicio() {
-        when(userService.createUser(any(UserDTO.class))).thenReturn(Mono.just(usuarioResponse));
+    void createUser_shouldCallService() {
+        when(userService.createUser(any(UserDTO.class))).thenReturn(Mono.just(userResponse));
 
         webTestClient.post().uri("/usuarios")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(usuarioRequest)
+                .bodyValue(userRequest)
                 .exchange()
                 .expectStatus().isCreated();
         verify(userService, times(1)).createUser(any(UserDTO.class));
@@ -124,33 +124,33 @@ class UserControllerTest {
 
     //PUT /usuarios/{id}
     @Test
-    void updateUser_existente_deberiaRetornarUsuarioActualizadoYStatus200() {
-        usuarioResponse.setNombre("Antonio");
-        when(userService.updateUser(eq(1), any(UserDTO.class))).thenReturn(Mono.just(usuarioResponse));
+    void updateUser_shouldReturnUpdatedUserAndStatus200() {
+        userResponse.setName("Antonio");
+        when(userService.updateUser(eq(1), any(UserDTO.class))).thenReturn(Mono.just(userResponse));
 
         webTestClient.put().uri("/usuarios/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(usuarioRequest)
+                .bodyValue(userRequest)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(UserResponseDTO.class)
-                .isEqualTo(usuarioResponse);
+                .isEqualTo(userResponse);
     }
 
     @Test
-    void updateUser_noExistente_deberiaRetornar404() {
+    void updateUser_ifNotExists_shouldReturn404() {
         when(userService.updateUser(eq(99), any(UserDTO.class))).thenReturn(Mono.empty());
 
         webTestClient.put().uri("/usuarios/99")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(usuarioRequest)
+                .bodyValue(userRequest)
                 .exchange()
                 .expectStatus().isNotFound();
     }
 
     //DELETE /usuarios/{id}
     @Test
-    void deleteUser_existente_deberiaRetornar204() {
+    void deleteUser_shouldReturn204() {
         when(userService.deleteUser(1)).thenReturn(Mono.just(true));
 
         webTestClient.delete().uri("/usuarios/1")
@@ -159,7 +159,7 @@ class UserControllerTest {
     }
 
     @Test
-    void deleteUser_noExistente_deberiaRetornar404() {
+    void deleteUser_ifNotExists_shouldReturn404() {
         when(userService.deleteUser(99)).thenReturn(Mono.just(false));
 
         webTestClient.delete().uri("/usuarios/99")

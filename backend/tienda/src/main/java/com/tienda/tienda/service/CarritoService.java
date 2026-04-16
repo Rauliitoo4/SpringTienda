@@ -32,28 +32,28 @@ public class CarritoService {
 
     public Mono<CarritoDTO> getCarritoById (int id){
         return carritoRepo.findById(id)
-                    .flatMap(lineaLoader::cargarLineas)
+                    .flatMap(lineaLoader::loadLineas)
                     .map(carritoMapper::toDTO);
     }
 
-    public Mono<CarritoDTO> addProductToCarrito (int carritoID, int productID, int cantidad) {
+    public Mono<CarritoDTO> addProductToCarrito (int carritoID, int productID, int quantity) {
         return carritoRepo.findById(carritoID)
                 .zipWith(productRepo.findById(productID))
-                .flatMap(tupla -> {
-                    Carrito carrito = tupla.getT1();
-                    Product producto = tupla.getT2();
+                .flatMap(tuple -> {
+                    Carrito carrito = tuple.getT1();
+                    Product product = tuple.getT2();
 
                     LineaCarrito linea = new LineaCarrito();
-                    linea.setCantidad(cantidad);
-                    linea.setProductoId(producto.getId());
+                    linea.setQuantity(quantity);
+                    linea.setProductId(product.getId());
                     linea.setCarritoId(carrito.getId());
-                    linea.setSubtotal(producto.getPrecioFinal() * cantidad);
-                    linea.setProducto(producto);
+                    linea.setSubtotal(product.getFinalPrice() * quantity);
+                    linea.setProduct(product);
 
                     return lineaRepo.save(linea)
-                            .then(recalcularTotal(carritoID))
+                            .then(recalculateTotal(carritoID))
                             .then(carritoRepo.findById(carritoID))
-                            .flatMap(lineaLoader::cargarLineas)
+                            .flatMap(lineaLoader::loadLineas)
                             .map(carritoMapper::toDTO);
                 });
     }
@@ -64,14 +64,14 @@ public class CarritoService {
         return carritoRepo.save(carrito);
     }
 
-    public Mono<Double> calcularTotal(int carritoID){
+    public Mono<Double> calculateTotal(int carritoID){
         return lineaRepo.findByCarritoId(carritoID)
                 .map(LineaCarrito::getSubtotal)
                 .reduce(0.0, Double::sum);
     }
 
-    public Mono<Void> recalcularTotal(int carritoID) {
-        return calcularTotal(carritoID)
+    public Mono<Void> recalculateTotal(int carritoID) {
+        return calculateTotal(carritoID)
                 .flatMap(total -> carritoRepo.findById(carritoID)
                         .flatMap(carrito -> {
                             carrito.setTotal(total);

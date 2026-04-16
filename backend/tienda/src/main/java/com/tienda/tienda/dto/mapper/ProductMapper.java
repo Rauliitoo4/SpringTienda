@@ -16,38 +16,38 @@ public class ProductMapper {
     public ProductDTO toDTO(Product p) {
         ProductDTO dto = new ProductDTO();
         dto.setId(p.getId());
-        dto.setNombre(p.getNombre());
-        dto.setPrecio(p.getPrecio());
-        dto.setPrecioFinal(p.getPrecioFinal());
-        dto.setDescripcion(p.getDescripcion());
+        dto.setName(p.getName());
+        dto.setPrice(p.getPrice());
+        dto.setFinalPrice(p.getFinalPrice());
+        dto.setDescription(p.getDescription());
         dto.setMaterial(p.getMaterial());
-        dto.setConsideraciones(p.getConsideraciones());
-        dto.setImagenUrl(p.getImagenUrl());
+        dto.setConsiderations(p.getConsiderations());
+        dto.setImageUrl(p.getImageUrl());
 
-        if (p.getPromociones() != null) {
-            List<PromotionDTO> promosDTO = p.getPromociones().stream().map(promo -> {
+        if (p.getPromotions() != null) {
+            List<PromotionDTO> promosDTO = p.getPromotions().stream().map(promo -> {
                 PromotionDTO pDTO = new PromotionDTO();
                 pDTO.setId(promo.getId());
-                pDTO.setDescripcion(promo.getDescripcion());
-                pDTO.setDescuento(promo.getDescuento());
+                pDTO.setDescription(promo.getDescription());
+                pDTO.setDiscount(promo.getDiscount());
                 return pDTO;
             }).collect(Collectors.toList());
-            dto.setPromociones(promosDTO);
+            dto.setPromotions(promosDTO);
         } else {
-            dto.setPromociones(Collections.emptyList());
+            dto.setPromotions(Collections.emptyList());
         }
         return dto;
     }
 
     public Product toEntity(ProductDTO dto){
         Product p = new Product();
-        p.setNombre(dto.getNombre());
-        p.setPrecio(dto.getPrecio());
-        p.setPrecioFinal(dto.getPrecio());
-        p.setDescripcion(dto.getDescripcion());
+        p.setName(dto.getName());
+        p.setPrice(dto.getPrice());
+        p.setFinalPrice(dto.getPrice());
+        p.setDescription(dto.getDescription());
         p.setMaterial(dto.getMaterial());
-        p.setConsideraciones(dto.getConsideraciones());
-        p.setImagenUrl(dto.getImagenUrl());
+        p.setConsiderations(dto.getConsiderations());
+        p.setImageUrl(dto.getImageUrl());
         return p;
     }
 }

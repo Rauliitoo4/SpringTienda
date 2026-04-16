@@ -38,49 +38,49 @@ public class LineaCarritoServiceTest {
     @InjectMocks
     private LineaCarritoService lineaCarritoService;
 
-    private LineaCarrito lineaDePrueba() {
-        Product producto = new Product();
-        producto.setId(1);
-        producto.setNombre("Camiseta");
-        producto.setPrecio(20.0);
-        producto.setPrecioFinal(20.0);
-        
+    private LineaCarrito testingLinea() {
+        Product product = new Product();
+        product.setId(1);
+        product.setName("Camiseta");
+        product.setPrice(20.0);
+        product.setFinalPrice(20.0);
+
         LineaCarrito linea = new LineaCarrito();
         linea.setId(1);
-        linea.setCantidad(2);
+        linea.setQuantity(2);
         linea.setSubtotal(40.0);
-        linea.setProductoId(1);
+        linea.setProductId(1);
         linea.setCarritoId(1);
-        linea.setProducto(producto);
+        linea.setProduct(product);
         return linea;
     }
 
-    private LineaCarritoDTO dtoDePrueba(int cantidad, double subtotal) {
+    private LineaCarritoDTO testingDto(int quantity, double subtotal) {
         LineaCarritoDTO dto = new LineaCarritoDTO();
         dto.setId(1);
-        dto.setCantidad(cantidad);
+        dto.setQuantity(quantity);
         dto.setSubtotal(subtotal);
         dto.setCarritoId(1);
         return dto;
     }
 
     @Test
-    void obtenerLineaPorId_deberiaDevolver_laLinea() {
-        LineaCarrito linea = lineaDePrueba();
+    void getLineaById_shouldReturn_Linea() {
+        LineaCarrito linea = testingLinea();
         when(lineaRepo.findById(1)).thenReturn(Mono.just(linea));
-        when(productLoader.cargarProducto(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
-        when(lineaCarritoMapper.toDTO(any(LineaCarrito.class))).thenReturn(dtoDePrueba(2, 40.0));
+        when(productLoader.loadProduct(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
+        when(lineaCarritoMapper.toDTO(any(LineaCarrito.class))).thenReturn(testingDto(2, 40.0));
 
         StepVerifier.create(lineaCarritoService.getLineaById(1))
                 .expectNextMatches(dto ->
                         dto.getId() == 1 &&
-                        dto.getCantidad() == 2 &&
+                        dto.getQuantity() == 2 &&
                         dto.getSubtotal() == 40.0)
                 .verifyComplete();
     }
 
     @Test
-    void obtenerLineaPorId_siNoExiste_deberiaDevolverNull() {
+    void getLineaById_ifNotExists_shouldReturnNull() {
         when(lineaRepo.findById(999)).thenReturn(Mono.empty());
 
         StepVerifier.create(lineaCarritoService.getLineaById(999))
@@ -88,24 +88,24 @@ public class LineaCarritoServiceTest {
     }
 
     @Test
-    void actualizarCantidad_deberiaRecalcular_elSubtotal() {
-        LineaCarrito linea = lineaDePrueba();
+    void updateQuantity_shouldRecalculate_subtotal() {
+        LineaCarrito linea = testingLinea();
         when(lineaRepo.findById(1)).thenReturn(Mono.just(linea));
-        when(productLoader.cargarProducto(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
+        when(productLoader.loadProduct(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
         when(lineaRepo.save(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
-        when(carritoService.recalcularTotal(anyInt())).thenReturn(Mono.empty());
-        when(lineaCarritoMapper.toDTO(any(LineaCarrito.class))).thenReturn(dtoDePrueba(5, 100.0));
+        when(carritoService.recalculateTotal(anyInt())).thenReturn(Mono.empty());
+        when(lineaCarritoMapper.toDTO(any(LineaCarrito.class))).thenReturn(testingDto(5, 100.0));
 
         StepVerifier.create(lineaCarritoService.updateLinea(1, 5))
                 .expectNextMatches(dto ->
-                        dto.getCantidad() == 5 &&
+                        dto.getQuantity() == 5 &&
                         dto.getSubtotal() == 100.0)
                 .verifyComplete();
 
     }
 
     @Test
-    void actualizarCantidad_siNoExiste_deberiaDevolverNull() {
+    void updateQuantity_ifNotExists_shouldReturnNull() {
         when(lineaRepo.findById(999)).thenReturn(Mono.empty());
 
         StepVerifier.create(lineaCarritoService.updateLinea(999, 5))
@@ -114,11 +114,11 @@ public class LineaCarritoServiceTest {
     }
 
     @Test
-    void eliminarLinea_siExiste_deberiaDevolverTrue() {
-        LineaCarrito linea = lineaDePrueba();
+    void deleteLinea_shouldReturnTrue() {
+        LineaCarrito linea = testingLinea();
         when(lineaRepo.findById(1)).thenReturn(Mono.just(linea));
         when(lineaRepo.deleteById(1)).thenReturn(Mono.empty());
-        when(carritoService.recalcularTotal(anyInt())).thenReturn(Mono.empty());
+        when(carritoService.recalculateTotal(anyInt())).thenReturn(Mono.empty());
 
         StepVerifier.create(lineaCarritoService.deleteLinea(1))
                 .expectNext(true)
@@ -126,7 +126,7 @@ public class LineaCarritoServiceTest {
     }
 
     @Test
-    void eliminarLinea_siNoExiste_deberiaDevolverFalse() {
+    void deleteLinea_ifNotExists_shouldReturnFalse() {
         when(lineaRepo.findById(999)).thenReturn(Mono.empty());
 
         StepVerifier.create(lineaCarritoService.deleteLinea(999))

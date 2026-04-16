@@ -24,9 +24,9 @@ public class UserService {
 
     public Mono<UserResponseDTO> createUser(UserDTO dto) {
         return carritoService.createCarrito()
-                .flatMap(carritoGuardado -> {
+                .flatMap(carrito -> {
                     User user = userMapper.toEntity(dto);
-                    user.setCarritoId(carritoGuardado.getId());
+                    user.setCarritoId(carrito.getId());
                     return userRepo.save(user);
                 })
                 .map(userMapper::toDTO);
@@ -35,8 +35,8 @@ public class UserService {
     public Mono<UserResponseDTO> updateUser(int id, UserDTO dto){
         return userRepo.findById(id)
                 .flatMap(user -> {
-                    if (dto.getNombre() != null) user.setNombre(dto.getNombre());
-                    if (dto.getApellidos() != null) user.setApellidos(dto.getApellidos());
+                    if (dto.getName() != null) user.setName(dto.getName());
+                    if (dto.getLastname() != null) user.setLastname(dto.getLastname());
                     if (dto.getUsername() != null) user.setUsername(dto.getUsername());
                     if (dto.getEmail() != null) user.setEmail(dto.getEmail());
                     if (dto.getPassword() != null) user.setPassword(dto.getPassword());

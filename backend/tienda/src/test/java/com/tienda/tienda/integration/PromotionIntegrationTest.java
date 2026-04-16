@@ -41,67 +41,67 @@ class PromotionIntegrationTest {
     @Autowired
     private PromotionService promotionService;
 
-    private PromotionDTO crearPromocionTest() {
+    private PromotionDTO createPromocionTest() {
         PromotionDTO dto = new PromotionDTO();
-        dto.setDescripcion("Descuento de verano");
-        dto.setDescuento(10.0);
+        dto.setDescription("Descuento de verano");
+        dto.setDiscount(10.0);
         return promotionService.createPromotion(dto).block();
     }
 
     @Test
-    void crearPromocion_deberiaGuardarlaEnBD() {
-        PromotionDTO resultado = crearPromocionTest();
+    void createPromotion_shouldSaveInDB() {
+        PromotionDTO result = createPromocionTest();
 
-        assertNotNull(resultado);
-        assertNotNull(resultado.getId());
-        assertEquals("Descuento de verano", resultado.getDescripcion());
-        assertEquals(10.0, resultado.getDescuento());
+        assertNotNull(result);
+        assertNotNull(result.getId());
+        assertEquals("Descuento de verano", result.getDescription());
+        assertEquals(10.0, result.getDiscount());
     }
 
     @Test
-    void obtenerTodasLasPromociones_deberiaDevolver_lasPromocionesDeBD() {
-        crearPromocionTest();
-        List<PromotionDTO> promociones = promotionService.getAllPromotions().collectList().block();
+    void getAllPromotions_shouldReturn_PromotionsFromDB() {
+        createPromocionTest();
+        List<PromotionDTO> promotions = promotionService.getAllPromotions().collectList().block();
 
-        assertNotNull(promociones);
-        assertFalse(promociones.isEmpty());
+        assertNotNull(promotions);
+        assertFalse(promotions.isEmpty());
     }
 
     @Test
-    void obtenerPromocionPorID_deberiaDevolver_laPromocionDeBD() {
-        PromotionDTO creada = crearPromocionTest();
-        PromotionDTO resultado = promotionService.getPromotionById(creada.getId()).block();
+    void getPromotionById_shouldReturn_PromotionFromDB() {
+        PromotionDTO created = createPromocionTest();
+        PromotionDTO result = promotionService.getPromotionById(created.getId()).block();
 
-        assertNotNull(resultado);
-        assertEquals(creada.getId(), resultado.getId());
+        assertNotNull(result);
+        assertEquals(created.getId(), result.getId());
     }
 
     @Test
-    void obtenerPromocionPorID_siNoExiste_deberiaDevolverNull() {
-        PromotionDTO resultado = promotionService.getPromotionById(9999).block();
-        assertNull(resultado);
+    void getPromotionById_ifNotExists_shouldReturnNull() {
+        PromotionDTO result = promotionService.getPromotionById(9999).block();
+        assertNull(result);
     }
 
     @Test
-    void actualizarPromocion_deberiaModificarLosDatosEnBD() {
-        PromotionDTO creada = crearPromocionTest();
+    void updatePromotion_shouldUpdateDataInDB() {
+        PromotionDTO created = createPromocionTest();
 
-        PromotionDTO cambios = new PromotionDTO();
-        cambios.setDescuento(20.0);
+        PromotionDTO changes = new PromotionDTO();
+        changes.setDiscount(20.0);
 
-        PromotionDTO actualizada = promotionService.updatePromotion(creada.getId(), cambios).block();
+        PromotionDTO updated = promotionService.updatePromotion(created.getId(), changes).block();
 
-        assertNotNull(actualizada);
-        assertEquals(20.0, actualizada.getDescuento());
+        assertNotNull(updated);
+        assertEquals(20.0, updated.getDiscount());
     }
 
     @Test
-    void eliminarPromocion_deberiaEliminarlaEnBD() {
-        PromotionDTO creada = crearPromocionTest();
-        boolean eliminado = promotionService.deletePromotion(creada.getId()).block();
+    void deletePromotion_shouldDeleteFromDB() {
+        PromotionDTO created = createPromocionTest();
+        boolean deleted = promotionService.deletePromotion(created.getId()).block();
 
-        assertTrue(eliminado);
-        assertNull(promotionService.getPromotionById(creada.getId()).block());
+        assertTrue(deleted);
+        assertNull(promotionService.getPromotionById(created.getId()).block());
     }
 
 }

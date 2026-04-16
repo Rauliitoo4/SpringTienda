@@ -10,15 +10,15 @@ public class PromotionMapper {
     public PromotionDTO toDTO(Promotion promotion){
         PromotionDTO dto = new PromotionDTO();
         dto.setId(promotion.getId());
-        dto.setDescuento(promotion.getDescuento());
-        dto.setDescripcion(promotion.getDescripcion());
+        dto.setDiscount(promotion.getDiscount());
+        dto.setDescription(promotion.getDescription());
         return dto;
     }
 
     public Promotion toEntity(PromotionDTO dto) {
         Promotion promo = new Promotion();
-        promo.setDescripcion(dto.getDescripcion());
-        promo.setDescuento(dto.getDescuento());
+        promo.setDescription(dto.getDescription());
+        promo.setDiscount(dto.getDiscount());
         return promo;
     }
 }

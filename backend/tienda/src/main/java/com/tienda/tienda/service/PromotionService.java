@@ -2,7 +2,7 @@ package com.tienda.tienda.service;
 
 import com.tienda.tienda.dto.*;
 import com.tienda.tienda.model.*;
-import com.tienda.tienda.repository.ProductoPromocionRepository;
+import com.tienda.tienda.repository.ProductPromotionRepository;
 import org.springframework.stereotype.Service;
 import com.tienda.tienda.dto.mapper.PromotionMapper;
 
@@ -14,12 +14,12 @@ import reactor.core.publisher.Mono;
 public class PromotionService {
     
     private final PromotionRepository promotionRepo;
-    private final ProductoPromocionRepository productoPromocionRepo;
+    private final ProductPromotionRepository productPromotionRepo;
     private final PromotionMapper promotionMapper;
 
-    public PromotionService(PromotionRepository promotionRepo, ProductoPromocionRepository productoPromocionRepo, PromotionMapper promotionMapper){
+    public PromotionService(PromotionRepository promotionRepo, ProductPromotionRepository productPromotionRepo, PromotionMapper promotionMapper){
         this.promotionRepo = promotionRepo;
-        this.productoPromocionRepo = productoPromocionRepo;
+        this.productPromotionRepo = productPromotionRepo;
         this.promotionMapper = promotionMapper;
     }
 
@@ -32,8 +32,8 @@ public class PromotionService {
     public Mono<PromotionDTO> updatePromotion(int id, PromotionDTO dto) {
         return promotionRepo.findById(id)
                 .flatMap(promo -> {
-                    if (dto.getDescripcion() != null) promo.setDescripcion(dto.getDescripcion());
-                    if (dto.getDescuento() >= 0) promo.setDescuento(dto.getDescuento());
+                    if (dto.getDescription() != null) promo.setDescription(dto.getDescription());
+                    if (dto.getDiscount() >= 0) promo.setDiscount(dto.getDiscount());
                     return promotionRepo.save(promo);
                 })
                 .map(promotionMapper::toDTO);
@@ -43,7 +43,7 @@ public class PromotionService {
         return promotionRepo.existsById(id)
                 .flatMap(exists -> {
                     if (!exists) return Mono.just(false);
-                    return productoPromocionRepo.deleteByPromotionId(id)
+                    return productPromotionRepo.deleteByPromotionId(id)
                             .then(promotionRepo.deleteById(id))
                             .thenReturn(true);
                 });

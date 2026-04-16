@@ -11,8 +11,8 @@ public class UserMapper {
     public UserResponseDTO toDTO(User user) {
         UserResponseDTO dto = new UserResponseDTO();
         dto.setId(user.getId());
-        dto.setNombre(user.getNombre());
-        dto.setApellidos(user.getApellidos());
+        dto.setName(user.getName());
+        dto.setLastname(user.getLastname());
         dto.setEmail(user.getEmail());
         dto.setUsername(user.getUsername());
         dto.setCarritoId(user.getCarritoId());
@@ -21,8 +21,8 @@ public class UserMapper {
 
     public User toEntity(UserDTO dto) {
         User user = new User();
-        user.setNombre(dto.getNombre());
-        user.setApellidos(dto.getApellidos());
+        user.setName(dto.getName());
+        user.setLastname(dto.getLastname());
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());

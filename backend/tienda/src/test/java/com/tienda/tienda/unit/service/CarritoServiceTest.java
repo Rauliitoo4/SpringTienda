@@ -36,23 +36,23 @@ public class CarritoServiceTest {
     @InjectMocks
     private CarritoService carritoService;
 
-    private Carrito carritoDePrueba() {
+    private Carrito testingCarrito() {
         Carrito carrito = new Carrito();
         carrito.setId(1);
         carrito.setTotal(0.0);
         return carrito;
     }
 
-    private Product productoDePrueba() {
-        Product producto = new Product();
-        producto.setId(1);
-        producto.setNombre("Camiseta");
-        producto.setPrecio(20.0);
-        producto.setPrecioFinal(20.0);
-        return producto;
+    private Product testingProduct() {
+        Product product = new Product();
+        product.setId(1);
+        product.setName("Camiseta");
+        product.setPrice(20.0);
+        product.setFinalPrice(20.0);
+        return product;
     }
 
-    private CarritoDTO dtoDePrueba(double total) {
+    private CarritoDTO testingDto(double total) {
         CarritoDTO dto = new CarritoDTO();
         dto.setId(1);
         dto.setTotal(total);
@@ -60,11 +60,11 @@ public class CarritoServiceTest {
     }
 
     @Test
-    void obtenerCarritoPorId_deberiaDevolver_elCarrito() {
-        Carrito carrito = carritoDePrueba();
+    void getCarritoById_shouldReturn_Carrito() {
+        Carrito carrito = testingCarrito();
         when(carritoRepo.findById(1)).thenReturn(Mono.just(carrito));
-        when(lineaLoader.cargarLineas(any(Carrito.class))).thenReturn(Mono.just(carrito));
-        when(carritoMapper.toDTO(any(Carrito.class))).thenReturn(dtoDePrueba(0.0));
+        when(lineaLoader.loadLineas(any(Carrito.class))).thenReturn(Mono.just(carrito));
+        when(carritoMapper.toDTO(any(Carrito.class))).thenReturn(testingDto(0.0));
 
         StepVerifier.create(carritoService.getCarritoById(1))
                 .expectNextMatches(dto ->
@@ -74,7 +74,7 @@ public class CarritoServiceTest {
     }
 
     @Test
-    void obtenerCarritoPorId_siNoExiste_deberiaDevolverNull() {
+    void getCarritoById_ifNotExists_shouldReturnNull() {
         when(carritoRepo.findById(999)).thenReturn(Mono.empty());
 
         StepVerifier.create(carritoService.getCarritoById(999))
@@ -82,27 +82,27 @@ public class CarritoServiceTest {
     }
 
     @Test
-    void aniadirProductoAlCarrito_deberiaActualizar_elTotal() {
-         Carrito carrito = carritoDePrueba();
-         Product producto = productoDePrueba();
+    void addProductToCarrito_shouldUpdate_Total() {
+         Carrito carrito = testingCarrito();
+         Product product = testingProduct();
 
-         LineaCarrito lineaGuardada = new LineaCarrito();
-         lineaGuardada.setId(1);
-         lineaGuardada.setCarritoId(1);
-         lineaGuardada.setProductoId(1);
-         lineaGuardada.setSubtotal(40.0);
-         lineaGuardada.setCantidad(2);
+         LineaCarrito linea = new LineaCarrito();
+         linea.setId(1);
+         linea.setCarritoId(1);
+         linea.setProductId(1);
+         linea.setSubtotal(40.0);
+         linea.setQuantity(2);
 
-         Carrito carritoActualizado = carritoDePrueba();
-         carritoActualizado.setTotal(40.0);
+         Carrito updatedCarrito = testingCarrito();
+         updatedCarrito.setTotal(40.0);
 
-         when(carritoRepo.findById(1)).thenReturn(Mono.just(carrito), Mono.just(carritoActualizado));
-         when(productRepo.findById(1)).thenReturn(Mono.just(producto));
-         when(lineaRepo.save(any(LineaCarrito.class))).thenReturn(Mono.just(lineaGuardada));
-         when(lineaRepo.findByCarritoId(1)).thenReturn(Flux.just(lineaGuardada));
-         when(carritoRepo.save(any(Carrito.class))).thenReturn(Mono.just(carritoActualizado));
-         when(lineaLoader.cargarLineas(any(Carrito.class))).thenReturn(Mono.just(carritoActualizado));
-         when(carritoMapper.toDTO(any(Carrito.class))).thenReturn(dtoDePrueba(40.0));
+         when(carritoRepo.findById(1)).thenReturn(Mono.just(carrito), Mono.just(updatedCarrito));
+         when(productRepo.findById(1)).thenReturn(Mono.just(product));
+         when(lineaRepo.save(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
+         when(lineaRepo.findByCarritoId(1)).thenReturn(Flux.just(linea));
+         when(carritoRepo.save(any(Carrito.class))).thenReturn(Mono.just(updatedCarrito));
+         when(lineaLoader.loadLineas(any(Carrito.class))).thenReturn(Mono.just(updatedCarrito));
+         when(carritoMapper.toDTO(any(Carrito.class))).thenReturn(testingDto(40.0));
 
          StepVerifier.create(carritoService.addProductToCarrito(1, 1, 2))
                  .expectNextMatches(dto -> dto.getTotal() == 40.0)
@@ -111,9 +111,9 @@ public class CarritoServiceTest {
     }
 
     @Test
-    void aniadirProductoAlCarrito_siCarritoNoexiste_deberiaDevolverNull() {
+    void addProductToCarrito_ifNotExistsCarrito_shouldReturnNull() {
         when(carritoRepo.findById(999)).thenReturn(Mono.empty());
-        when(productRepo.findById(1)).thenReturn(Mono.just(productoDePrueba()));
+        when(productRepo.findById(1)).thenReturn(Mono.just(testingProduct()));
 
         StepVerifier.create(carritoService.addProductToCarrito(999, 1, 2))
                 .verifyComplete();
@@ -121,8 +121,8 @@ public class CarritoServiceTest {
     }
 
     @Test
-    void aniadirProductoAlCarrito_siProductoNoexiste_deberiaDevolverNull() {
-        when(carritoRepo.findById(1)).thenReturn(Mono.just(carritoDePrueba()));
+    void addProductToCarrito_ifNotExistsProduct_shouldReturnNull() {
+        when(carritoRepo.findById(1)).thenReturn(Mono.just(testingCarrito()));
         when(productRepo.findById(999)).thenReturn(Mono.empty());
 
         StepVerifier.create(carritoService.addProductToCarrito(1, 999, 2))
@@ -131,7 +131,7 @@ public class CarritoServiceTest {
     }
 
     @Test
-    void calcularTotal_deberiaDevolver_laSumaDeSubtotales() {
+    void calculateTotal_shouldReturn_SumOfSubtotals() {
         LineaCarrito linea1 = new LineaCarrito();
         linea1.setSubtotal(40.0);
 
@@ -140,7 +140,7 @@ public class CarritoServiceTest {
 
         when(lineaRepo.findByCarritoId(1)).thenReturn(Flux.just(linea1, linea2));
 
-        StepVerifier.create(carritoService.calcularTotal(1))
+        StepVerifier.create(carritoService.calculateTotal(1))
                 .expectNext(100.0)
                 .verifyComplete();
     }

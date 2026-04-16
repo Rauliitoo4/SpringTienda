@@ -33,13 +33,13 @@ class PromotionControllerTest {
     void setUp() {
         promo = new PromotionDTO();
         promo.setId(1);
-        promo.setDescripcion("Rebajas de verano");
-        promo.setDescuento(10.0);
+        promo.setDescription("Rebajas de verano");
+        promo.setDiscount(10.0);
     }
 
     //GET /promociones
     @Test
-    void getAllPromotions_deberiaRetornarListaYStatus200() {
+    void getAllPromotions_shouldReturnListAndStatus200() {
         when(promotionService.getAllPromotions()).thenReturn(Flux.just(promo));
 
         webTestClient.get().uri("/promociones")
@@ -51,7 +51,7 @@ class PromotionControllerTest {
     }
 
     @Test
-    void getAllPromotions_listaVacia_deberiaRetornarArrayVacioYStatus200() {
+    void getAllPromotions_emptyList_shouldReturnEmptyArrayAndStatus200() {
         when(promotionService.getAllPromotions()).thenReturn(Flux.empty());
 
         webTestClient.get().uri("/promociones")
@@ -63,7 +63,7 @@ class PromotionControllerTest {
 
     //GET /promociones/{id}
     @Test
-    void getPromotionById_existente_deberiaRetornarPromocionyStatus200() {
+    void getPromotionById_shouldReturnPromotionAndStatus200() {
         when(promotionService.getPromotionById(1)).thenReturn(Mono.just(promo));
 
         webTestClient.get().uri("/promociones/1")
@@ -74,7 +74,7 @@ class PromotionControllerTest {
     }
 
     @Test
-    void getPromotionById_noExistente_deberiaRetornar404() {
+    void getPromotionById_ifNotExists_shouldReturn404() {
         when(promotionService.getPromotionById(99)).thenReturn(Mono.empty());
 
         webTestClient.get().uri("/promociones/99")
@@ -84,7 +84,7 @@ class PromotionControllerTest {
 
     //POST /promociones
     @Test
-    void createPromotion_deberiaRetornarPromocionCreadaYStatus201() {
+    void createPromotion_shouldReturnCreatedPromotionAndStatus201() {
         when(promotionService.createPromotion(any(PromotionDTO.class))).thenReturn(Mono.just(promo));
 
         webTestClient.post().uri("/promociones")
@@ -97,7 +97,7 @@ class PromotionControllerTest {
     }
 
     @Test
-    void createPromotion_deberiaDelegarEnServicio() {
+    void createPromotion_shouldCallService() {
         when(promotionService.createPromotion(any(PromotionDTO.class))).thenReturn(Mono.just(promo));
 
         webTestClient.post().uri("/promociones")
@@ -110,8 +110,8 @@ class PromotionControllerTest {
 
     //PUT /promociones/{id}
     @Test
-    void updatePromotion_existente_deberiaRetornarPromocionActualizadaYStatus200() {
-        promo.setDescuento(50.0);
+    void updatePromotion_shouldReturnUpdatedPromotionAndStatus200() {
+        promo.setDiscount(50.0);
         when(promotionService.updatePromotion(eq(1), any(PromotionDTO.class))).thenReturn(Mono.just(promo));
 
         webTestClient.put().uri("/promociones/1")
@@ -124,7 +124,7 @@ class PromotionControllerTest {
     }
 
     @Test
-    void updatePromotion_noExistente_deberiaRetornar404l() {
+    void updatePromotion_ifNotExists_shouldReturn404() {
         when(promotionService.updatePromotion(eq(99), any(PromotionDTO.class))).thenReturn(Mono.empty());
 
         webTestClient.put().uri("/promociones/99")
@@ -135,7 +135,7 @@ class PromotionControllerTest {
     }
     //DELETE /promociones/{id}
     @Test
-    void deletePromotion_existente_deberiaRetornar204() {
+    void deletePromotion_shouldReturn204() {
         when(promotionService.deletePromotion(1)).thenReturn(Mono.just(true));
 
         webTestClient.delete().uri("/promociones/1")
@@ -144,7 +144,7 @@ class PromotionControllerTest {
     }
 
     @Test
-    void deletePromotion_noExistente_deberiaRetornar404() {
+    void deletePromotion_ifNotExists_shouldReturn404() {
         when(promotionService.deletePromotion(99)).thenReturn(Mono.just(false));
 
         webTestClient.delete().uri("/promociones/99")

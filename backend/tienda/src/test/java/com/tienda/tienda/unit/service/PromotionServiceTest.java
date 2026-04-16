@@ -2,11 +2,9 @@ package com.tienda.tienda.unit.service;
 
 import com.tienda.tienda.dto.PromotionDTO;
 import com.tienda.tienda.dto.mapper.PromotionMapper;
-import com.tienda.tienda.model.Product;
 import com.tienda.tienda.model.Promotion;
-import com.tienda.tienda.repository.ProductoPromocionRepository;
+import com.tienda.tienda.repository.ProductPromotionRepository;
 import com.tienda.tienda.repository.PromotionRepository;
-import com.tienda.tienda.repository.ProductRepository;
 import com.tienda.tienda.service.PromotionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,11 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -31,7 +24,7 @@ public class PromotionServiceTest {
     private PromotionRepository promotionRepo;
 
     @Mock
-    private ProductoPromocionRepository productoPromocionRepo;
+    private ProductPromotionRepository productPromotionRepo;
 
     @Mock
     private PromotionMapper promotionMapper;
@@ -39,37 +32,37 @@ public class PromotionServiceTest {
     @InjectMocks
     private PromotionService promotionService;
 
-    private Promotion promoDePrueba() {
+    private Promotion testingPromo() {
         Promotion promo = new Promotion();
         promo.setId(1);
-        promo.setDescripcion("Rebajas verano");
-        promo.setDescuento(20.0);
+        promo.setDescription("Rebajas verano");
+        promo.setDiscount(20.0);
         return promo;
     }
 
-    private PromotionDTO dtoDePrueba() {
+    private PromotionDTO testingDto() {
         PromotionDTO dto = new PromotionDTO();
         dto.setId(1);
-        dto.setDescripcion("Rebajas verano");
-        dto.setDescuento(20.0);
+        dto.setDescription("Rebajas verano");
+        dto.setDiscount(20.0);
         return dto;
     }
 
     @Test
-    void obtenerPromocionPorId_deberiaDevolver_laPromocion() {
-        when(promotionRepo.findById(1)).thenReturn(Mono.just(promoDePrueba()));
-        when(promotionMapper.toDTO(any(Promotion.class))).thenReturn(dtoDePrueba());
+    void getPromotionById_shouldReturn_Promotion() {
+        when(promotionRepo.findById(1)).thenReturn(Mono.just(testingPromo()));
+        when(promotionMapper.toDTO(any(Promotion.class))).thenReturn(testingDto());
 
         StepVerifier.create(promotionService.getPromotionById(1))
                 .expectNextMatches(dto ->
-                        dto.getDescripcion().equals("Rebajas verano") &&
-                        dto.getDescuento() == 20.0)
+                        dto.getDescription().equals("Rebajas verano") &&
+                        dto.getDiscount() == 20.0)
                 .verifyComplete();
 
     }
 
     @Test
-    void obtenerPromocionPorId_siNoExiste_deberiaDevolverNull() {
+    void getPromotionById_ifNotExists_shouldReturnNull() {
         when(promotionRepo.findById(999)).thenReturn(Mono.empty());
 
         StepVerifier.create(promotionService.getPromotionById(999))
@@ -77,28 +70,28 @@ public class PromotionServiceTest {
     }
 
     @Test
-    void crearPromocion_deberiaGuardaryDevolverDTO() {
-        Promotion promo = promoDePrueba();
+    void createPromotion_shouldSaveAndReturnDTO() {
+        Promotion promo = testingPromo();
         when(promotionMapper.toEntity(any(PromotionDTO.class))).thenReturn(promo);
         when(promotionRepo.save(any(Promotion.class))).thenReturn(Mono.just(promo));
-        when(promotionMapper.toDTO(any(Promotion.class))).thenReturn(dtoDePrueba());
+        when(promotionMapper.toDTO(any(Promotion.class))).thenReturn(testingDto());
 
         PromotionDTO dto = new PromotionDTO();
-        dto.setDescripcion("Rebajas verano");
-        dto.setDescuento(20.0);
+        dto.setDescription("Rebajas verano");
+        dto.setDiscount(20.0);
 
         StepVerifier.create(promotionService.createPromotion(dto))
-                .expectNextMatches(resultado ->
-                        resultado.getDescripcion().equals("Rebajas verano") &&
-                        resultado.getDescuento() == 20.0)
+                .expectNextMatches(result ->
+                        result.getDescription().equals("Rebajas verano") &&
+                        result.getDiscount() == 20.0)
                 .verifyComplete();
         verify(promotionRepo, times(1)).save(any(Promotion.class));
     }
 
     @Test
-    void eliminarPromocion_siExiste_deberiaDevolverTrue() {
+    void deletePromotion_shouldReturnTrue() {
         when(promotionRepo.existsById(1)).thenReturn(Mono.just(true));
-        when(productoPromocionRepo.deleteByPromotionId(1)).thenReturn(Mono.empty());
+        when(productPromotionRepo.deleteByPromotionId(1)).thenReturn(Mono.empty());
         when(promotionRepo.deleteById(1)).thenReturn(Mono.empty());
 
         StepVerifier.create(promotionService.deletePromotion(1))
@@ -108,7 +101,7 @@ public class PromotionServiceTest {
     }
 
     @Test
-    void eliminarPromocion_siNoExiste_deberiaDevolverFalse() {
+    void deletePromotion_ifNotExists_shouldReturnFalse() {
         when(promotionRepo.existsById(999)).thenReturn(Mono.just(false));
 
         StepVerifier.create(promotionService.deletePromotion(999))
@@ -118,20 +111,19 @@ public class PromotionServiceTest {
     }
 
     @Test
-    void actualizarPromocion_deberiaModificar_laPromocion() {
-        Promotion promo = promoDePrueba();
-        PromotionDTO dtoActualizado = new PromotionDTO();
-        dtoActualizado.setDescuento(30.0);
-
+    void updatePromotion_shouldUpdate_Promotion() {
+        Promotion promo = testingPromo();
+        PromotionDTO updatedDto = new PromotionDTO();
+        updatedDto.setDiscount(30.0);
         when(promotionRepo.findById(1)).thenReturn(Mono.just(promo));
         when(promotionRepo.save(any(Promotion.class))).thenReturn(Mono.just(promo));
-        when(promotionMapper.toDTO(any(Promotion.class))).thenReturn(dtoActualizado);
+        when(promotionMapper.toDTO(any(Promotion.class))).thenReturn(updatedDto);
 
         PromotionDTO dto = new PromotionDTO();
-        dto.setDescuento(30.0);
+        dto.setDiscount(30.0);
 
         StepVerifier.create(promotionService.updatePromotion(1, dto))
-                .expectNextMatches(resultado -> resultado.getDescuento() == 30.0)
+                .expectNextMatches(result -> result.getDiscount() == 30.0)
                 .verifyComplete();
     }
 }

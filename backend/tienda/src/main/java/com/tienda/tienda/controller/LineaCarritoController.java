@@ -45,7 +45,7 @@ public class LineaCarritoController {
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> deleteLinea(@PathVariable int id) {
         return lineaCarritoService.deleteLinea(id)
-                .map(eliminado -> eliminado
+                .map(d -> d
                         ? ResponseEntity.<Void>noContent().build()
                         : ResponseEntity.<Void>notFound().build());
     }

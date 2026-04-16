@@ -41,7 +41,7 @@ public class PromotionController {
     @PostMapping
     public Mono<ResponseEntity<PromotionDTO>> createPromotion(@RequestBody PromotionDTO dto) {
         return promotionService.createPromotion(dto)
-                .map(creado -> ResponseEntity.status(HttpStatus.CREATED).body(creado));
+                .map(created -> ResponseEntity.status(HttpStatus.CREATED).body(created));
     }
 
     @PutMapping("/{id}")
@@ -54,7 +54,7 @@ public class PromotionController {
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> deletePromotion(@PathVariable int id) {
         return promotionService.deletePromotion(id)
-                .map(eliminado -> eliminado
+                .map(d -> d
                         ? ResponseEntity.<Void>noContent().build()
                         : ResponseEntity.<Void>notFound().build());
     }

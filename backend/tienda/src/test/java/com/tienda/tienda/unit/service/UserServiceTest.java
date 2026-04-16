@@ -39,11 +39,11 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-    private User usuarioDePrueba() {
+    private User testingUser() {
         User user = new User();
         user.setId(1);
-        user.setNombre("Alberto");
-        user.setApellidos("García");
+        user.setName("Alberto");
+        user.setLastname("García");
         user.setUsername("albertog");
         user.setEmail("albertog@gmail.com");
         user.setPassword("1234");
@@ -51,11 +51,11 @@ public class UserServiceTest {
         return user;
     }
 
-    private UserResponseDTO dtoDePrueba() {
+    private UserResponseDTO testingDto() {
         UserResponseDTO dto = new UserResponseDTO();
         dto.setId(1);
-        dto.setNombre("Alberto");
-        dto.setApellidos("García");
+        dto.setName("Alberto");
+        dto.setLastname("García");
         dto.setUsername("albertog");
         dto.setEmail("albertog@gmail.com");
         dto.setCarritoId(1);
@@ -63,19 +63,19 @@ public class UserServiceTest {
     }
 
     @Test
-    void obtenerUsuarioPorId_deberiaDevolver_elUsuario() {
-        when(userRepo.findById(1)).thenReturn(Mono.just(usuarioDePrueba()));
-        when(userMapper.toDTO(any(User.class))).thenReturn(dtoDePrueba());
+    void getUserById_shouldReturn_User() {
+        when(userRepo.findById(1)).thenReturn(Mono.just(testingUser()));
+        when(userMapper.toDTO(any(User.class))).thenReturn(testingDto());
 
         StepVerifier.create(userService.getUserById(1))
                 .expectNextMatches(dto ->
-                        dto.getNombre().equals("Alberto") &&
-                        dto.getApellidos().equals("García"))
+                        dto.getName().equals("Alberto") &&
+                        dto.getLastname().equals("García"))
                 .verifyComplete();
     }
 
     @Test
-    void obtenerUsuarioPorId_siNoExiste_deberiaDevolverNull() {
+    void getUserById_ifNotExists_shouldReturnNull() {
         when(userRepo.findById(999)).thenReturn(Mono.empty());
 
         StepVerifier.create(userService.getUserById(999))
@@ -83,33 +83,33 @@ public class UserServiceTest {
     }
 
     @Test
-    void crearUsuario_deberiaGuardaryDevolverDTO() {
+    void createUser_shouldReturnAndSaveDTO() {
         Carrito carrito = new Carrito();
         carrito.setId(1);
         carrito.setTotal(0.0);
 
-        User userGuardado = usuarioDePrueba();
+        User savedUser = testingUser();
 
         when(carritoService.createCarrito()).thenReturn(Mono.just(carrito));
-        when(userMapper.toEntity(any(UserDTO.class))).thenReturn(userGuardado);
-        when(userRepo.save(any(User.class))).thenReturn(Mono.just(userGuardado));
-        when(userMapper.toDTO(any(User.class))).thenReturn(dtoDePrueba());
+        when(userMapper.toEntity(any(UserDTO.class))).thenReturn(savedUser);
+        when(userRepo.save(any(User.class))).thenReturn(Mono.just(savedUser));
+        when(userMapper.toDTO(any(User.class))).thenReturn(testingDto());
 
         UserDTO dto = new UserDTO();
-        dto.setNombre("Alberto");
-        dto.setApellidos("García");
+        dto.setName("Alberto");
+        dto.setLastname("García");
         dto.setUsername("albertog");
         dto.setEmail("albertog@gmail.com");
         dto.setPassword("1234");
 
         StepVerifier.create(userService.createUser(dto))
-                .expectNextMatches(resultado -> resultado.getNombre().equals("Alberto"))
+                .expectNextMatches(result -> result.getName().equals("Alberto"))
                 .verifyComplete();
         verify(userRepo, times(1)).save(any(User.class));
     }
 
     @Test
-    void eliminarUsuario_siExiste_deberiaDevolverTrue() {
+    void deleteUser_shouldReturnTrue() {
         when(userRepo.existsById(1)).thenReturn(Mono.just(true));
         when(userRepo.deleteById(1)).thenReturn(Mono.empty());
 
@@ -120,7 +120,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void eliminarUsuario_siNoExiste_deberiaDevolverFalse() {
+    void deleteUser_ifNotExists_shouldReturnFalse() {
         when(userRepo.existsById(999)).thenReturn(Mono.just(false));
 
         StepVerifier.create(userService.deleteUser(999))
@@ -130,20 +130,20 @@ public class UserServiceTest {
     }
 
     @Test
-    void actualizarUsuario_deberiaModificar_elUsuario() {
-        User user = usuarioDePrueba();
-        UserResponseDTO dtoActualizado = dtoDePrueba();
-        dtoActualizado.setUsername("albertitog");
+    void updateUser_shouldUpdate_User() {
+        User user = testingUser();
+        UserResponseDTO updatedDto = testingDto();
+        updatedDto.setUsername("albertitog");
 
         when(userRepo.findById(1)).thenReturn(Mono.just(user));
         when(userRepo.save(any(User.class))).thenReturn(Mono.just(user));
-        when(userMapper.toDTO(any(User.class))).thenReturn(dtoActualizado);
+        when(userMapper.toDTO(any(User.class))).thenReturn(updatedDto);
 
         UserDTO dto = new UserDTO();
         dto.setUsername("albertitog");
 
         StepVerifier.create(userService.updateUser(1, dto))
-                .expectNextMatches(resultado -> resultado.getUsername().equals("albertitog"))
+                .expectNextMatches(result -> result.getUsername().equals("albertitog"))
                 .verifyComplete();
     }
 }

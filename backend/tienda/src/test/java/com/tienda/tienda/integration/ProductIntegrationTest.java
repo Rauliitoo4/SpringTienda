@@ -46,100 +46,100 @@ class ProductIntegrationTest {
     @Autowired
     private PromotionService promotionService;
 
-    private ProductDTO crearProductoTest() {
+    private ProductDTO createProductTest() {
         ProductDTO dto = new ProductDTO();
-        dto.setNombre("Camiseta Test");
-        dto.setPrecio(20.00);
-        dto.setDescripcion("Descripción test");
-        dto.setConsideraciones("Lavar a 30 grados");
+        dto.setName("Camiseta Test");
+        dto.setPrice(20.00);
+        dto.setDescription("Descripción test");
+        dto.setConsiderations("Lavar a 30 grados");
         return productService.createProduct(dto).block();
     }
 
     @Test
-    void crearProducto_deberiaGuardarloEnBD() {
-        ProductDTO resultado = crearProductoTest();
+    void createProduct_shouldSaveInDB() {
+        ProductDTO result = createProductTest();
 
-        assertNotNull(resultado);
-        assertEquals("Camiseta Test", resultado.getNombre());
-        assertEquals(20.00, resultado.getPrecio());
-        assertEquals(20.00, resultado.getPrecioFinal());
+        assertNotNull(result);
+        assertEquals("Camiseta Test", result.getName());
+        assertEquals(20.00, result.getPrice());
+        assertEquals(20.00, result.getFinalPrice());
     }
 
     @Test
-    void obtenerTodosLosProductos_deberiaDevolver_losProductosDeBD() {
-        crearProductoTest();
-        var productos = productService.getAllProducts().collectList().block();
+    void getAllProducts_shouldReturn_theProductsFromDB() {
+        createProductTest();
+        var products = productService.getAllProducts().collectList().block();
 
-        assertNotNull(productos);
-        assertFalse(productos.isEmpty());
+        assertNotNull(products);
+        assertFalse(products.isEmpty());
     }
 
     @Test
-    void obtenerProductoPorID_deberiaDevolver_elProductoDeBD() {
-        ProductDTO creado = crearProductoTest();
-        ProductDTO resultado = productService.getProductById(creado.getId()).block();
+    void getProductById_shouldReturn_theProductFromDB() {
+        ProductDTO created = createProductTest();
+        ProductDTO result = productService.getProductById(created.getId()).block();
 
-        assertNotNull(resultado);
-        assertEquals(creado.getId(), resultado.getId());
+        assertNotNull(result);
+        assertEquals(created.getId(), result.getId());
     }
 
     @Test
-    void obtenerProductoPorID_siNoExiste_deberiaDevolverNull() {
-        ProductDTO resultado = productService.getProductById(9999).block();
-        assertNull(resultado);
+    void getProductById_ifNotExists_shouldReturnNull() {
+        ProductDTO result = productService.getProductById(9999).block();
+        assertNull(result);
     }
 
     @Test
-    void actualizarProducto_deberiaModificarLosDatosEnBD() {
-        ProductDTO creado = crearProductoTest();
+    void updateProduct_shouldUpdate_DataInDB() {
+        ProductDTO created = createProductTest();
         
-        ProductDTO cambios = new ProductDTO();
-        cambios.setPrecio(29.99);
+        ProductDTO changes = new ProductDTO();
+        changes.setPrice(29.99);
 
-        ProductDTO actualizado = productService.updateProduct(creado.getId(), cambios).block();
+        ProductDTO updated = productService.updateProduct(created.getId(), changes).block();
 
-        assertNotNull(actualizado);
-        assertEquals(29.99, actualizado.getPrecio());
-        assertEquals(29.99, actualizado.getPrecioFinal());
+        assertNotNull(updated);
+        assertEquals(29.99, updated.getPrice());
+        assertEquals(29.99, updated.getFinalPrice());
     }
 
     @Test
-    void eliminarProducto_deberiaEliminarloEnBD() {
-        ProductDTO creado = crearProductoTest();
-        boolean eliminado = productService.deleteProduct(creado.getId()).block();
+    void deleteProduct_shouldDeleteInDB() {
+        ProductDTO created = createProductTest();
+        boolean deleted = productService.deleteProduct(created.getId()).block();
 
-        assertTrue(eliminado);
-        assertNull(productService.getProductById(creado.getId()).block());
+        assertTrue(deleted);
+        assertNull(productService.getProductById(created.getId()).block());
     }
 
     @Test
-    void aniadirPromocion_deberiaRecalcularPrecioFinal() {
-        ProductDTO producto = crearProductoTest();
+    void addPromotion_shouldRecalculateFinalPrice() {
+        ProductDTO product = createProductTest();
 
         PromotionDTO promoDTO = new PromotionDTO();
-        promoDTO.setDescripcion("Descuento Test");
-        promoDTO.setDescuento(10.0);
+        promoDTO.setDescription("Descuento Test");
+        promoDTO.setDiscount(10.0);
         PromotionDTO promo = promotionService.createPromotion(promoDTO).block();
 
-        ProductDTO resultado = productService.addPromotion(producto.getId(), promo.getId()).block();
+        ProductDTO result = productService.addPromotion(product.getId(), promo.getId()).block();
 
-        assertNotNull(resultado);
-        assertEquals(18.00, resultado.getPrecioFinal());
+        assertNotNull(result);
+        assertEquals(18.00, result.getFinalPrice());
     }
 
     @Test
-    void eliminarPromocion_deberiaRecalcularPrecioFinal() {
-        ProductDTO producto = crearProductoTest();
+    void deletePromotion_shouldRecalculateFinalPrice() {
+        ProductDTO product = createProductTest();
 
         PromotionDTO promoDTO = new PromotionDTO();
-        promoDTO.setDescripcion("Descuento Test");
-        promoDTO.setDescuento(10.0);
+        promoDTO.setDescription("Descuento Test");
+        promoDTO.setDiscount(10.0);
         PromotionDTO promo = promotionService.createPromotion(promoDTO).block();
 
-        productService.addPromotion(producto.getId(), promo.getId()).block();
-        ProductDTO resultado = productService.removePromotion(producto.getId(), promo.getId()).block();
+        productService.addPromotion(product.getId(), promo.getId()).block();
+        ProductDTO result = productService.removePromotion(product.getId(), promo.getId()).block();
 
-        assertNotNull(resultado);
-        assertEquals(20.00, resultado.getPrecioFinal());
+        assertNotNull(result);
+        assertEquals(20.00, result.getFinalPrice());
     }
 }

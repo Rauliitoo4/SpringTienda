@@ -38,7 +38,7 @@ public class ProductController {
     @PostMapping
     public Mono<ResponseEntity<ProductDTO>> createProduct(@RequestBody ProductDTO dto) {
         return productService.createProduct(dto)
-                .map(creado -> ResponseEntity.status(HttpStatus.CREATED).body(creado));
+                .map(created -> ResponseEntity.status(HttpStatus.CREATED).body(created));
     }
 
     @PutMapping("/{id}")
@@ -51,7 +51,7 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> deleteProduct(@PathVariable int id) {
         return productService.deleteProduct(id)
-                .map(eliminado -> eliminado
+                .map(d -> d
                         ? ResponseEntity.<Void>noContent().build()
                         : ResponseEntity.<Void>notFound().build());
     }

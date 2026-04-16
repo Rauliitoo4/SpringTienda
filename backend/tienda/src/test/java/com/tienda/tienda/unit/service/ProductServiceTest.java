@@ -6,14 +6,13 @@ import com.tienda.tienda.model.Product;
 import com.tienda.tienda.repository.*;
 import com.tienda.tienda.service.LineaCarritoService;
 import com.tienda.tienda.service.ProductService;
-import com.tienda.tienda.service.helper.PrecioCalculator;
+import com.tienda.tienda.service.helper.PriceCalculator;
 import com.tienda.tienda.service.helper.PromotionLoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -27,55 +26,52 @@ import static org.mockito.Mockito.*;
 class ProductServiceTest {
 
     @Mock private ProductRepository productRepo;
-    @Mock private PromotionRepository promotionRepo;
-    @Mock private ProductoPromocionRepository productoPromocionRepo;
     @Mock private ProductMapper productMapper;
     @Mock private PromotionLoader promotionLoader;
-    @Mock private LineaCarritoService lineaCarritoService;
-    @Mock private PrecioCalculator precioCalculator;
+    @Mock private PriceCalculator priceCalculator;
 
     @InjectMocks
     private ProductService productService;
 
-    private Product productoDePrueba() {
-        Product producto = new Product();
-        producto.setId(1);
-        producto.setNombre("Camiseta");
-        producto.setPrecio(20.0);
-        producto.setPrecioFinal(20.0);
-        producto.setPromociones(List.of());
-        return producto;
+    private Product testingProduct() {
+        Product product = new Product();
+        product.setId(1);
+        product.setName("Camiseta");
+        product.setPrice(20.0);
+        product.setFinalPrice(20.0);
+        product.setPromotions(List.of());
+        return product;
     }
 
-    private ProductDTO dtoDePrueba() {
+    private ProductDTO testingDto() {
         ProductDTO dto = new ProductDTO();
         dto.setId(1);
-        dto.setNombre("Camiseta");
-        dto.setPrecio(20.0);
-        dto.setPrecioFinal(20.0);
+        dto.setName("Camiseta");
+        dto.setPrice(20.0);
+        dto.setFinalPrice(20.0);
         return dto;
     }
 
-    private void mockCargarPromociones() {
-        when(promotionLoader.cargarPromociones(any(Product.class)))
-                .thenReturn(Mono.just(productoDePrueba()));
+    private void mockLoadPromotions() {
+        when(promotionLoader.loadPromotions(any(Product.class)))
+                .thenReturn(Mono.just(testingProduct()));
     }
 
     @Test
-    void obtenerProductoPorId_deberiaDevolver_elProducto() {
-        when(productRepo.findById(1)).thenReturn(Mono.just(productoDePrueba()));
-        mockCargarPromociones();
-        when(productMapper.toDTO(any(Product.class))).thenReturn(dtoDePrueba());
+    void getProductById_shouldReturn_Product() {
+        when(productRepo.findById(1)).thenReturn(Mono.just(testingProduct()));
+        mockLoadPromotions();
+        when(productMapper.toDTO(any(Product.class))).thenReturn(testingDto());
 
         StepVerifier.create(productService.getProductById(1))
                 .expectNextMatches(dto ->
-                        dto.getNombre().equals("Camiseta") &&
-                        dto.getPrecio() == 20.0)
+                        dto.getName().equals("Camiseta") &&
+                        dto.getPrice() == 20.0)
                 .verifyComplete();
     }
 
     @Test
-    void obtenerProductoPorId_siNoExiste_deberiaDevolverNull() {
+    void getProductById_ifNotExists_shouldReturnNull() {
         when(productRepo.findById(999)).thenReturn(Mono.empty());
 
         StepVerifier.create(productService.getProductById(999))
@@ -83,25 +79,25 @@ class ProductServiceTest {
     }
 
     @Test
-    void crearProducto_deberiaGuardaryDevolverDTO() {
-        Product productoGuardado = productoDePrueba();
-        when(productMapper.toEntity(any(ProductDTO.class))).thenReturn(productoGuardado);
-        when(productRepo.save(any(Product.class))).thenReturn(Mono.just(productoGuardado));
-        mockCargarPromociones();
-        when(productMapper.toDTO(any(Product.class))).thenReturn(dtoDePrueba());
+    void createProduct_shouldSaveAndReturnDTO() {
+        Product savedProduct = testingProduct();
+        when(productMapper.toEntity(any(ProductDTO.class))).thenReturn(savedProduct);
+        when(productRepo.save(any(Product.class))).thenReturn(Mono.just(savedProduct));
+        mockLoadPromotions();
+        when(productMapper.toDTO(any(Product.class))).thenReturn(testingDto());
 
         ProductDTO dto = new ProductDTO();
-        dto.setNombre("Camiseta");
-        dto.setPrecio(20.0);
+        dto.setName("Camiseta");
+        dto.setPrice(20.0);
 
         StepVerifier.create(productService.createProduct(dto))
-                .expectNextMatches(resultado -> resultado.getNombre().equals("Camiseta"))
+                .expectNextMatches(result -> result.getName().equals("Camiseta"))
                 .verifyComplete();
         verify(productRepo, times(1)).save(any(Product.class));
     }
 
     @Test
-    void eliminarProducto_siExiste_deberiaDevolverTrue() {
+    void deleteProduct_ifExists_shouldReturnTrue() {
         when(productRepo.existsById(1)).thenReturn(Mono.just(true));
         when(productRepo.deleteById(1)).thenReturn(Mono.empty());
 
@@ -112,7 +108,7 @@ class ProductServiceTest {
     }
 
     @Test
-    void eliminarProducto_siNoExiste_deberiaDevolverFalse() {
+    void deleteProduct_ifNotExists_shouldReturnFalse() {
         when(productRepo.existsById(999)).thenReturn(Mono.just(false));
 
         StepVerifier.create(productService.deleteProduct(999))
@@ -122,24 +118,24 @@ class ProductServiceTest {
     }
 
     @Test
-    void actualizarProducto_deberiaModificar_elProducto() {
-        Product producto = productoDePrueba();
-        when(productRepo.findById(1)).thenReturn(Mono.just(producto));
-        mockCargarPromociones();
-        when(productRepo.save(any(Product.class))).thenReturn(Mono.just(producto));
+    void updateProduct_shouldUpdate_Product() {
+        Product product = testingProduct();
+        when(productRepo.findById(1)).thenReturn(Mono.just(product));
+        mockLoadPromotions();
+        when(productRepo.save(any(Product.class))).thenReturn(Mono.just(product));
 
-        ProductDTO dtoActualizado = new ProductDTO();
-        dtoActualizado.setId(1);
-        dtoActualizado.setNombre("Camiseta");
-        dtoActualizado.setPrecio(200.0);
-        dtoActualizado.setPrecioFinal(200.0);
-        when(productMapper.toDTO(any(Product.class))).thenReturn(dtoActualizado);
+        ProductDTO updatedDto = new ProductDTO();
+        updatedDto.setId(1);
+        updatedDto.setName("Camiseta");
+        updatedDto.setPrice(200.0);
+        updatedDto.setFinalPrice(200.0);
+        when(productMapper.toDTO(any(Product.class))).thenReturn(updatedDto);
 
         ProductDTO dto = new ProductDTO();
-        dto.setPrecio(200.0);
+        dto.setPrice(200.0);
 
         StepVerifier.create(productService.updateProduct(1, dto))
-                .expectNextMatches(resultado -> resultado.getPrecio() == 200.00)
+                .expectNextMatches(result -> result.getPrice() == 200.00)
                 .verifyComplete();
     }
 }

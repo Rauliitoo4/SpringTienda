@@ -15,30 +15,28 @@ import java.util.stream.Collectors;
 public class LineaCarritoService {
 
     private final LineaCarritoRepository lineaRepo;
-    private final CarritoRepository carritoRepo;
     private final LineaCarritoMapper lineaCarritoMapper;
     private final ProductLoader productLoader;
     private final CarritoService carritoService;
 
-    public LineaCarritoService(LineaCarritoRepository lineaRepo, CarritoRepository carritoRepo, LineaCarritoMapper lineaCarritoMapper, ProductLoader productLoader, CarritoService carritoService){
+    public LineaCarritoService(LineaCarritoRepository lineaRepo, LineaCarritoMapper lineaCarritoMapper, ProductLoader productLoader, CarritoService carritoService){
         this.lineaRepo = lineaRepo;
-        this.carritoRepo = carritoRepo;
         this.lineaCarritoMapper = lineaCarritoMapper;
         this.productLoader = productLoader;
         this.carritoService = carritoService;
     }
 
-    public Mono<LineaCarritoDTO> updateLinea(int id, int cantidad) {
+    public Mono<LineaCarritoDTO> updateLinea(int id, int quantity) {
         return lineaRepo.findById(id)
                 .flatMap(linea -> {
-                    if (cantidad <= 0) return Mono.empty();
-                    linea.setCantidad(cantidad);
-                    return productLoader.cargarProducto(linea)
-                            .flatMap(lineaConProducto -> {
-                                lineaConProducto.setSubtotal(lineaConProducto.getProducto().getPrecioFinal() * cantidad);
+                    if (quantity <= 0) return Mono.empty();
+                    linea.setQuantity(quantity);
+                    return productLoader.loadProduct(linea)
+                            .flatMap(lineaWithProduct -> {
+                                lineaWithProduct.setSubtotal(lineaWithProduct.getProduct().getFinalPrice() * quantity);
                                 return lineaRepo.save(linea)
-                                        .then(carritoService.recalcularTotal(linea.getCarritoId()))
-                                        .then(productLoader.cargarProducto(linea));
+                                        .then(carritoService.recalculateTotal(linea.getCarritoId()))
+                                        .then(productLoader.loadProduct(linea));
                             });
                 })
                 .map(lineaCarritoMapper::toDTO);
@@ -49,7 +47,7 @@ public class LineaCarritoService {
                 .flatMap(linea -> {
                     Integer carritoId = linea.getCarritoId();
                     return lineaRepo.deleteById(id)
-                            .then(carritoService.recalcularTotal(carritoId))
+                            .then(carritoService.recalculateTotal(carritoId))
                             .thenReturn(true);
                 })
                 .defaultIfEmpty(false);
@@ -57,28 +55,28 @@ public class LineaCarritoService {
 
     public Mono<LineaCarritoDTO> getLineaById (int id){
         return lineaRepo.findById(id)
-                .flatMap(productLoader::cargarProducto)
+                .flatMap(productLoader::loadProduct)
                 .map(lineaCarritoMapper::toDTO);
     }
 
     public Flux<LineaCarritoDTO> getAllLineas() {
         return lineaRepo.findAll()
-                .flatMap(productLoader::cargarProducto)
+                .flatMap(productLoader::loadProduct)
                 .map(lineaCarritoMapper::toDTO);
     }
 
-    public Mono<Void> actualizarLineasCarrito(Product producto) {
+    public Mono<Void> updateLineasCarrito(Product product) {
         return lineaRepo.findAll()
-                .filter(linea -> linea.getProductoId().equals(producto.getId()))
+                .filter(linea -> linea.getProductId().equals(product.getId()))
                 .flatMap(linea -> {
-                    linea.setSubtotal(producto.getPrecioFinal() * linea.getCantidad());
+                    linea.setSubtotal(product.getFinalPrice() * linea.getQuantity());
                     return lineaRepo.save(linea);
                 })
                 .collectList()
-                .flatMap(lineasActualizadas -> {
-                    if (lineasActualizadas.isEmpty()) return Mono.empty();
-                    Integer carritoId = lineasActualizadas.get(0).getCarritoId();
-                    return carritoService.recalcularTotal(carritoId);
+                .flatMap(updatedLineas -> {
+                    if (updatedLineas.isEmpty()) return Mono.empty();
+                    Integer carritoId = updatedLineas.get(0).getCarritoId();
+                    return carritoService.recalculateTotal(carritoId);
                 })
                 .then();
     }

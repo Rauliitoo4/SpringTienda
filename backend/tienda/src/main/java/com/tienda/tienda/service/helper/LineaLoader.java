@@ -16,9 +16,9 @@ public class LineaLoader {
         this.productLoader = productLoader;
     }
 
-    public Mono<Carrito> cargarLineas(Carrito carrito) {
+    public Mono<Carrito> loadLineas(Carrito carrito) {
         return lineaCarritoRepo.findByCarritoId(carrito.getId())
-                .flatMap(productLoader::cargarProducto)
+                .flatMap(productLoader::loadProduct)
                 .collectList()
                 .doOnNext(carrito::setLineas)
                 .thenReturn(carrito);

@@ -7,12 +7,16 @@ import lombok.Data;
 @Data
 public class ProductDTO {
     private int id;
-    private String nombre;
-    private double precio;
-    private double precioFinal;
-    private String descripcion;
+    private String name;
+    private double price;
+    private double finalPrice;
+    private String description;
     private String material;
-    private String consideraciones;
-    private String imagenUrl;
-    private List<PromotionDTO> promociones;
+    private String considerations;
+    private String imageUrl;
+    private List<PromotionDTO> promotions;
+
+    public void setPrrice(double v) {
+
+    }
 }
