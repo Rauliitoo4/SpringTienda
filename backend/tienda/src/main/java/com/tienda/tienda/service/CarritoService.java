@@ -4,6 +4,9 @@ import com.tienda.tienda.dto.mapper.CarritoMapper;
 import com.tienda.tienda.model.*;
 import com.tienda.tienda.dto.*;
 import com.tienda.tienda.repository.*;
+import com.tienda.tienda.repository.port.CarritoRepositoryPort;
+import com.tienda.tienda.repository.port.LineaCarritoRepositoryPort;
+import com.tienda.tienda.repository.port.ProductRepositoryPort;
 import com.tienda.tienda.service.helper.LineaLoader;
 import com.tienda.tienda.service.helper.ProductLoader;
 import org.springframework.stereotype.Service;
@@ -16,13 +19,13 @@ import java.util.stream.Collectors;
 @Service
 public class CarritoService {
     
-    private final CarritoRepository carritoRepo;
-    private final ProductRepository productRepo;
-    private final LineaCarritoRepository lineaRepo;
+    private final CarritoRepositoryPort carritoRepo;
+    private final ProductRepositoryPort productRepo;
+    private final LineaCarritoRepositoryPort lineaRepo;
     private final CarritoMapper carritoMapper;
     private final LineaLoader lineaLoader;
 
-    public CarritoService(ProductRepository productRepo, CarritoRepository carritoRepo, LineaCarritoRepository lineaRepo, CarritoMapper carritoMapper, LineaLoader lineaLoader) {
+    public CarritoService(ProductRepositoryPort productRepo, CarritoRepositoryPort carritoRepo, LineaCarritoRepositoryPort lineaRepo, CarritoMapper carritoMapper, LineaLoader lineaLoader) {
         this.productRepo = productRepo;
         this.carritoRepo = carritoRepo;
         this.lineaRepo = lineaRepo;

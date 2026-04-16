@@ -5,6 +5,9 @@ import com.tienda.tienda.dto.mapper.ProductMapper;
 import com.tienda.tienda.model.Product;
 import com.tienda.tienda.repository.*;
 
+import com.tienda.tienda.repository.port.ProductPromotionRepositoryPort;
+import com.tienda.tienda.repository.port.ProductRepositoryPort;
+import com.tienda.tienda.repository.port.PromotionRepositoryPort;
 import com.tienda.tienda.service.helper.PriceCalculator;
 import com.tienda.tienda.service.helper.PromotionLoader;
 import org.springframework.stereotype.Service;
@@ -14,15 +17,15 @@ import reactor.core.publisher.Mono;
 @Service
 public class ProductService {
 
-    private final ProductRepository productRepo;
-    private final PromotionRepository promotionRepo;
-    private final ProductPromotionRepository productPromotionRepo;
+    private final ProductRepositoryPort productRepo;
+    private final PromotionRepositoryPort promotionRepo;
+    private final ProductPromotionRepositoryPort productPromotionRepo;
     private final ProductMapper productMapper;
     private final PromotionLoader promotionLoader;
     private final LineaCarritoService lineaCarritoService;
     private final PriceCalculator priceCalculator;
     
-    public ProductService(ProductRepository productRepo, PromotionRepository promotionRepo, ProductPromotionRepository productPromotionRepo, ProductMapper productMapper, PromotionLoader promotionLoader, LineaCarritoService lineaCarritoService, PriceCalculator priceCalculator) {
+    public ProductService(ProductRepositoryPort productRepo, PromotionRepositoryPort promotionRepo, ProductPromotionRepositoryPort productPromotionRepo, ProductMapper productMapper, PromotionLoader promotionLoader, LineaCarritoService lineaCarritoService, PriceCalculator priceCalculator) {
         this.productRepo = productRepo;
         this.promotionRepo = promotionRepo;
         this.productPromotionRepo = productPromotionRepo;

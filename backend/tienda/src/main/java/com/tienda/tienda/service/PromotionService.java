@@ -3,6 +3,8 @@ package com.tienda.tienda.service;
 import com.tienda.tienda.dto.*;
 import com.tienda.tienda.model.*;
 import com.tienda.tienda.repository.ProductPromotionRepository;
+import com.tienda.tienda.repository.port.ProductPromotionRepositoryPort;
+import com.tienda.tienda.repository.port.PromotionRepositoryPort;
 import org.springframework.stereotype.Service;
 import com.tienda.tienda.dto.mapper.PromotionMapper;
 
@@ -13,11 +15,11 @@ import reactor.core.publisher.Mono;
 @Service
 public class PromotionService {
     
-    private final PromotionRepository promotionRepo;
-    private final ProductPromotionRepository productPromotionRepo;
+    private final PromotionRepositoryPort promotionRepo;
+    private final ProductPromotionRepositoryPort productPromotionRepo;
     private final PromotionMapper promotionMapper;
 
-    public PromotionService(PromotionRepository promotionRepo, ProductPromotionRepository productPromotionRepo, PromotionMapper promotionMapper){
+    public PromotionService(PromotionRepositoryPort promotionRepo, ProductPromotionRepositoryPort productPromotionRepo, PromotionMapper promotionMapper){
         this.promotionRepo = promotionRepo;
         this.productPromotionRepo = productPromotionRepo;
         this.promotionMapper = promotionMapper;

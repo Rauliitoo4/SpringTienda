@@ -1,5 +1,6 @@
 package com.tienda.tienda.repository;
 
+import com.tienda.tienda.repository.port.ProductPromotionRepositoryPort;
 import lombok.Data;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.relational.core.mapping.Column;
@@ -8,7 +9,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface ProductPromotionRepository extends ReactiveCrudRepository<ProductPromotionRepository.ProductPromotion, Integer> {
+public interface ProductPromotionRepository extends ReactiveCrudRepository<ProductPromotionRepository.ProductPromotion, Integer> , ProductPromotionRepositoryPort {
 
     @Query("SELECT promotion_id FROM producto_promocion WHERE product_id = :productId")
     Flux<Integer> findPromotionIdsByProductId(int productId);

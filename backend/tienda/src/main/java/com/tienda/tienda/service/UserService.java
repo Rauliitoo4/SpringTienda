@@ -5,6 +5,7 @@ import com.tienda.tienda.model.*;
 import com.tienda.tienda.dto.*;
 import com.tienda.tienda.repository.CarritoRepository;
 import com.tienda.tienda.repository.UserRepository;
+import com.tienda.tienda.repository.port.UserRepositoryPort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -12,11 +13,11 @@ import reactor.core.publisher.Mono;
 @Service
 public class UserService {
     
-    private final UserRepository userRepo;
+    private final UserRepositoryPort userRepo;
     private final CarritoService carritoService;
     private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepo, CarritoService carritoService, UserMapper userMapper) {
+    public UserService(UserRepositoryPort userRepo, CarritoService carritoService, UserMapper userMapper) {
         this.userRepo = userRepo;
         this.carritoService = carritoService;
         this.userMapper = userMapper;
