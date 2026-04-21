@@ -3,9 +3,9 @@ package com.tienda.tienda.unit.service;
 import com.tienda.tienda.dto.ProductDTO;
 import com.tienda.tienda.dto.mapper.ProductMapper;
 import com.tienda.tienda.model.Product;
-import com.tienda.tienda.repository.*;
+import com.tienda.tienda.repository.port.*;
 import com.tienda.tienda.service.LineaCarritoService;
-import com.tienda.tienda.service.ProductService;
+import com.tienda.tienda.service.ProductServiceImpl;
 import com.tienda.tienda.service.helper.PriceCalculator;
 import com.tienda.tienda.service.helper.PromotionLoader;
 import org.junit.jupiter.api.Test;
@@ -23,15 +23,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ProductServiceTest {
+class ProductServiceImplTest {
 
-    @Mock private ProductRepository productRepo;
+    @Mock private ProductRepositoryPort productRepo;
+    @Mock private PromotionRepositoryPort promotionRepo;
+    @Mock private ProductPromotionRepositoryPort productPromotionRepo;
     @Mock private ProductMapper productMapper;
     @Mock private PromotionLoader promotionLoader;
+    @Mock private LineaCarritoService lineaCarritoService;
     @Mock private PriceCalculator priceCalculator;
 
     @InjectMocks
-    private ProductService productService;
+    private ProductServiceImpl productServiceImpl;
 
     private Product testingProduct() {
         Product product = new Product();
@@ -63,7 +66,7 @@ class ProductServiceTest {
         mockLoadPromotions();
         when(productMapper.toDTO(any(Product.class))).thenReturn(testingDto());
 
-        StepVerifier.create(productService.getProductById(1))
+        StepVerifier.create(productServiceImpl.getProductById(1))
                 .expectNextMatches(dto ->
                         dto.getName().equals("Camiseta") &&
                         dto.getPrice() == 20.0)
@@ -74,7 +77,7 @@ class ProductServiceTest {
     void getProductById_ifNotExists_shouldReturnNull() {
         when(productRepo.findById(999)).thenReturn(Mono.empty());
 
-        StepVerifier.create(productService.getProductById(999))
+        StepVerifier.create(productServiceImpl.getProductById(999))
                 .verifyComplete();
     }
 
@@ -90,7 +93,7 @@ class ProductServiceTest {
         dto.setName("Camiseta");
         dto.setPrice(20.0);
 
-        StepVerifier.create(productService.createProduct(dto))
+        StepVerifier.create(productServiceImpl.createProduct(dto))
                 .expectNextMatches(result -> result.getName().equals("Camiseta"))
                 .verifyComplete();
         verify(productRepo, times(1)).save(any(Product.class));
@@ -101,7 +104,7 @@ class ProductServiceTest {
         when(productRepo.existsById(1)).thenReturn(Mono.just(true));
         when(productRepo.deleteById(1)).thenReturn(Mono.empty());
 
-        StepVerifier.create(productService.deleteProduct(1))
+        StepVerifier.create(productServiceImpl.deleteProduct(1))
                 .expectNext(true)
                 .verifyComplete();
         verify(productRepo, times(1)).deleteById(1);
@@ -111,7 +114,7 @@ class ProductServiceTest {
     void deleteProduct_ifNotExists_shouldReturnFalse() {
         when(productRepo.existsById(999)).thenReturn(Mono.just(false));
 
-        StepVerifier.create(productService.deleteProduct(999))
+        StepVerifier.create(productServiceImpl.deleteProduct(999))
                 .expectNext(false)
                 .verifyComplete();
         verify(productRepo, never()).deleteById(anyInt());
@@ -134,7 +137,7 @@ class ProductServiceTest {
         ProductDTO dto = new ProductDTO();
         dto.setPrice(200.0);
 
-        StepVerifier.create(productService.updateProduct(1, dto))
+        StepVerifier.create(productServiceImpl.updateProduct(1, dto))
                 .expectNextMatches(result -> result.getPrice() == 200.00)
                 .verifyComplete();
     }

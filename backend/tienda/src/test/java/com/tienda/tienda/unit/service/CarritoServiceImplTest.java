@@ -5,8 +5,8 @@ import com.tienda.tienda.dto.mapper.CarritoMapper;
 import com.tienda.tienda.model.Carrito;
 import com.tienda.tienda.model.LineaCarrito;
 import com.tienda.tienda.model.Product;
-import com.tienda.tienda.repository.*;
-import com.tienda.tienda.service.CarritoService;
+import com.tienda.tienda.repository.port.*;
+import com.tienda.tienda.service.CarritoServiceImpl;
 import com.tienda.tienda.service.helper.LineaLoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,24 +17,20 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.ArrayList;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class CarritoServiceTest {
+public class CarritoServiceImplTest {
     
-    @Mock private CarritoRepository carritoRepo;
-    @Mock private ProductRepository productRepo;
-    @Mock private LineaCarritoRepository lineaRepo;
+    @Mock private CarritoRepositoryPort carritoRepo;
+    @Mock private ProductRepositoryPort productRepo;
+    @Mock private LineaCarritoRepositoryPort lineaRepo;
     @Mock private CarritoMapper carritoMapper;
     @Mock private LineaLoader lineaLoader;
 
     @InjectMocks
-    private CarritoService carritoService;
+    private CarritoServiceImpl carritoServiceImpl;
 
     private Carrito testingCarrito() {
         Carrito carrito = new Carrito();
@@ -66,7 +62,7 @@ public class CarritoServiceTest {
         when(lineaLoader.loadLineas(any(Carrito.class))).thenReturn(Mono.just(carrito));
         when(carritoMapper.toDTO(any(Carrito.class))).thenReturn(testingDto(0.0));
 
-        StepVerifier.create(carritoService.getCarritoById(1))
+        StepVerifier.create(carritoServiceImpl.getCarritoById(1))
                 .expectNextMatches(dto ->
                         dto.getId() == 1 &&
                         dto.getTotal() == 0.0)
@@ -77,7 +73,7 @@ public class CarritoServiceTest {
     void getCarritoById_ifNotExists_shouldReturnNull() {
         when(carritoRepo.findById(999)).thenReturn(Mono.empty());
 
-        StepVerifier.create(carritoService.getCarritoById(999))
+        StepVerifier.create(carritoServiceImpl.getCarritoById(999))
                 .verifyComplete();
     }
 
@@ -104,7 +100,7 @@ public class CarritoServiceTest {
          when(lineaLoader.loadLineas(any(Carrito.class))).thenReturn(Mono.just(updatedCarrito));
          when(carritoMapper.toDTO(any(Carrito.class))).thenReturn(testingDto(40.0));
 
-         StepVerifier.create(carritoService.addProductToCarrito(1, 1, 2))
+         StepVerifier.create(carritoServiceImpl.addProductToCarrito(1, 1, 2))
                  .expectNextMatches(dto -> dto.getTotal() == 40.0)
                  .verifyComplete();
          verify(lineaRepo, times(1)).save(any(LineaCarrito.class));
@@ -115,7 +111,7 @@ public class CarritoServiceTest {
         when(carritoRepo.findById(999)).thenReturn(Mono.empty());
         when(productRepo.findById(1)).thenReturn(Mono.just(testingProduct()));
 
-        StepVerifier.create(carritoService.addProductToCarrito(999, 1, 2))
+        StepVerifier.create(carritoServiceImpl.addProductToCarrito(999, 1, 2))
                 .verifyComplete();
         verify(lineaRepo, never()).save(any(LineaCarrito.class));
     }
@@ -125,7 +121,7 @@ public class CarritoServiceTest {
         when(carritoRepo.findById(1)).thenReturn(Mono.just(testingCarrito()));
         when(productRepo.findById(999)).thenReturn(Mono.empty());
 
-        StepVerifier.create(carritoService.addProductToCarrito(1, 999, 2))
+        StepVerifier.create(carritoServiceImpl.addProductToCarrito(1, 999, 2))
                 .verifyComplete();
         verify(lineaRepo, never()).save(any(LineaCarrito.class));
     }
@@ -140,7 +136,7 @@ public class CarritoServiceTest {
 
         when(lineaRepo.findByCarritoId(1)).thenReturn(Flux.just(linea1, linea2));
 
-        StepVerifier.create(carritoService.calculateTotal(1))
+        StepVerifier.create(carritoServiceImpl.calculateTotal(1))
                 .expectNext(100.0)
                 .verifyComplete();
     }

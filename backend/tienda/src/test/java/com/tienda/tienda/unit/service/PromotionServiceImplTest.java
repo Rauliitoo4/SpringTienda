@@ -3,9 +3,9 @@ package com.tienda.tienda.unit.service;
 import com.tienda.tienda.dto.PromotionDTO;
 import com.tienda.tienda.dto.mapper.PromotionMapper;
 import com.tienda.tienda.model.Promotion;
-import com.tienda.tienda.repository.ProductPromotionRepository;
-import com.tienda.tienda.repository.PromotionRepository;
-import com.tienda.tienda.service.PromotionService;
+import com.tienda.tienda.repository.port.ProductPromotionRepositoryPort;
+import com.tienda.tienda.repository.port.PromotionRepositoryPort;
+import com.tienda.tienda.service.PromotionServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,19 +18,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class PromotionServiceTest {
+public class PromotionServiceImplTest {
     
     @Mock
-    private PromotionRepository promotionRepo;
+    private PromotionRepositoryPort promotionRepo;
 
     @Mock
-    private ProductPromotionRepository productPromotionRepo;
+    private ProductPromotionRepositoryPort productPromotionRepo;
 
     @Mock
     private PromotionMapper promotionMapper;
 
     @InjectMocks
-    private PromotionService promotionService;
+    private PromotionServiceImpl promotionServiceImpl;
 
     private Promotion testingPromo() {
         Promotion promo = new Promotion();
@@ -53,7 +53,7 @@ public class PromotionServiceTest {
         when(promotionRepo.findById(1)).thenReturn(Mono.just(testingPromo()));
         when(promotionMapper.toDTO(any(Promotion.class))).thenReturn(testingDto());
 
-        StepVerifier.create(promotionService.getPromotionById(1))
+        StepVerifier.create(promotionServiceImpl.getPromotionById(1))
                 .expectNextMatches(dto ->
                         dto.getDescription().equals("Rebajas verano") &&
                         dto.getDiscount() == 20.0)
@@ -65,7 +65,7 @@ public class PromotionServiceTest {
     void getPromotionById_ifNotExists_shouldReturnNull() {
         when(promotionRepo.findById(999)).thenReturn(Mono.empty());
 
-        StepVerifier.create(promotionService.getPromotionById(999))
+        StepVerifier.create(promotionServiceImpl.getPromotionById(999))
                 .verifyComplete();
     }
 
@@ -80,7 +80,7 @@ public class PromotionServiceTest {
         dto.setDescription("Rebajas verano");
         dto.setDiscount(20.0);
 
-        StepVerifier.create(promotionService.createPromotion(dto))
+        StepVerifier.create(promotionServiceImpl.createPromotion(dto))
                 .expectNextMatches(result ->
                         result.getDescription().equals("Rebajas verano") &&
                         result.getDiscount() == 20.0)
@@ -94,7 +94,7 @@ public class PromotionServiceTest {
         when(productPromotionRepo.deleteByPromotionId(1)).thenReturn(Mono.empty());
         when(promotionRepo.deleteById(1)).thenReturn(Mono.empty());
 
-        StepVerifier.create(promotionService.deletePromotion(1))
+        StepVerifier.create(promotionServiceImpl.deletePromotion(1))
                 .expectNext(true)
                 .verifyComplete();
         verify(promotionRepo, times(1)).deleteById(1);
@@ -104,7 +104,7 @@ public class PromotionServiceTest {
     void deletePromotion_ifNotExists_shouldReturnFalse() {
         when(promotionRepo.existsById(999)).thenReturn(Mono.just(false));
 
-        StepVerifier.create(promotionService.deletePromotion(999))
+        StepVerifier.create(promotionServiceImpl.deletePromotion(999))
                 .expectNext(false)
                 .verifyComplete();
         verify(promotionRepo, never()).deleteById(anyInt());
@@ -122,7 +122,7 @@ public class PromotionServiceTest {
         PromotionDTO dto = new PromotionDTO();
         dto.setDiscount(30.0);
 
-        StepVerifier.create(promotionService.updatePromotion(1, dto))
+        StepVerifier.create(promotionServiceImpl.updatePromotion(1, dto))
                 .expectNextMatches(result -> result.getDiscount() == 30.0)
                 .verifyComplete();
     }

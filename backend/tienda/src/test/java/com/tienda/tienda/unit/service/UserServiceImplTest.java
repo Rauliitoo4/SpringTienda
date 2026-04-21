@@ -5,10 +5,9 @@ import com.tienda.tienda.dto.UserDTO;
 import com.tienda.tienda.dto.mapper.UserMapper;
 import com.tienda.tienda.model.User;
 import com.tienda.tienda.model.Carrito;
-import com.tienda.tienda.repository.CarritoRepository;
-import com.tienda.tienda.repository.UserRepository;
+import com.tienda.tienda.repository.port.UserRepositoryPort;
 import com.tienda.tienda.service.CarritoService;
-import com.tienda.tienda.service.UserService;
+import com.tienda.tienda.service.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,18 +16,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.ArrayList;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+public class UserServiceImplTest {
     
     @Mock
-    private UserRepository userRepo;
+    private UserRepositoryPort userRepo;
 
     @Mock
     private CarritoService carritoService;
@@ -37,7 +32,7 @@ public class UserServiceTest {
     private UserMapper userMapper;
 
     @InjectMocks
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     private User testingUser() {
         User user = new User();
@@ -67,7 +62,7 @@ public class UserServiceTest {
         when(userRepo.findById(1)).thenReturn(Mono.just(testingUser()));
         when(userMapper.toDTO(any(User.class))).thenReturn(testingDto());
 
-        StepVerifier.create(userService.getUserById(1))
+        StepVerifier.create(userServiceImpl.getUserById(1))
                 .expectNextMatches(dto ->
                         dto.getName().equals("Alberto") &&
                         dto.getLastname().equals("García"))
@@ -78,7 +73,7 @@ public class UserServiceTest {
     void getUserById_ifNotExists_shouldReturnNull() {
         when(userRepo.findById(999)).thenReturn(Mono.empty());
 
-        StepVerifier.create(userService.getUserById(999))
+        StepVerifier.create(userServiceImpl.getUserById(999))
                 .verifyComplete();
     }
 
@@ -102,7 +97,7 @@ public class UserServiceTest {
         dto.setEmail("albertog@gmail.com");
         dto.setPassword("1234");
 
-        StepVerifier.create(userService.createUser(dto))
+        StepVerifier.create(userServiceImpl.createUser(dto))
                 .expectNextMatches(result -> result.getName().equals("Alberto"))
                 .verifyComplete();
         verify(userRepo, times(1)).save(any(User.class));
@@ -113,7 +108,7 @@ public class UserServiceTest {
         when(userRepo.existsById(1)).thenReturn(Mono.just(true));
         when(userRepo.deleteById(1)).thenReturn(Mono.empty());
 
-        StepVerifier.create(userService.deleteUser(1))
+        StepVerifier.create(userServiceImpl.deleteUser(1))
                 .expectNext(true)
                 .verifyComplete();
         verify(userRepo, times(1)).deleteById(1);
@@ -123,7 +118,7 @@ public class UserServiceTest {
     void deleteUser_ifNotExists_shouldReturnFalse() {
         when(userRepo.existsById(999)).thenReturn(Mono.just(false));
 
-        StepVerifier.create(userService.deleteUser(999))
+        StepVerifier.create(userServiceImpl.deleteUser(999))
                 .expectNext(false)
                 .verifyComplete();
         verify(userRepo, never()).deleteById(anyInt());
@@ -142,7 +137,7 @@ public class UserServiceTest {
         UserDTO dto = new UserDTO();
         dto.setUsername("albertitog");
 
-        StepVerifier.create(userService.updateUser(1, dto))
+        StepVerifier.create(userServiceImpl.updateUser(1, dto))
                 .expectNextMatches(result -> result.getUsername().equals("albertitog"))
                 .verifyComplete();
     }
