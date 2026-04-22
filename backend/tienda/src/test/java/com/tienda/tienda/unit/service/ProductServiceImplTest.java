@@ -1,13 +1,15 @@
 package com.tienda.tienda.unit.service;
 
-import com.tienda.tienda.dto.ProductDTO;
-import com.tienda.tienda.dto.mapper.ProductMapper;
-import com.tienda.tienda.model.Product;
-import com.tienda.tienda.repository.port.*;
-import com.tienda.tienda.service.LineaCarritoService;
-import com.tienda.tienda.service.ProductServiceImpl;
-import com.tienda.tienda.service.helper.PriceCalculator;
-import com.tienda.tienda.service.helper.PromotionLoader;
+import com.tienda.tienda.product.dto.ProductDTO;
+import com.tienda.tienda.product.dto.mapper.ProductMapper;
+import com.tienda.tienda.product.model.Product;
+import com.tienda.tienda.product.repository.port.ProductPromotionRepositoryPort;
+import com.tienda.tienda.product.repository.port.ProductRepositoryPort;
+import com.tienda.tienda.promotion.repository.port.PromotionRepositoryPort;
+import com.tienda.tienda.lineacarrito.service.LineaCarritoService;
+import com.tienda.tienda.product.service.ProductServiceImpl;
+import com.tienda.tienda.product.service.helper.PriceCalculator;
+import com.tienda.tienda.product.service.helper.PromotionLoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,11 +1,11 @@
 package com.tienda.tienda.unit.service;
 
-import com.tienda.tienda.dto.PromotionDTO;
-import com.tienda.tienda.dto.mapper.PromotionMapper;
-import com.tienda.tienda.model.Promotion;
-import com.tienda.tienda.repository.port.ProductPromotionRepositoryPort;
-import com.tienda.tienda.repository.port.PromotionRepositoryPort;
-import com.tienda.tienda.service.PromotionServiceImpl;
+import com.tienda.tienda.promotion.dto.PromotionDTO;
+import com.tienda.tienda.promotion.dto.mapper.PromotionMapper;
+import com.tienda.tienda.promotion.model.Promotion;
+import com.tienda.tienda.product.repository.port.ProductPromotionRepositoryPort;
+import com.tienda.tienda.promotion.repository.port.PromotionRepositoryPort;
+import com.tienda.tienda.promotion.service.PromotionServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

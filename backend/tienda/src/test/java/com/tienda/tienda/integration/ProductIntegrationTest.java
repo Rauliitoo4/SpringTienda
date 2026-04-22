@@ -1,9 +1,9 @@
 package com.tienda.tienda.integration;
 
-import com.tienda.tienda.dto.PromotionDTO;
-import com.tienda.tienda.dto.ProductDTO;
-import com.tienda.tienda.service.ProductService;
-import com.tienda.tienda.service.PromotionService;
+import com.tienda.tienda.promotion.dto.PromotionDTO;
+import com.tienda.tienda.product.dto.ProductDTO;
+import com.tienda.tienda.product.service.ProductService;
+import com.tienda.tienda.promotion.service.PromotionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

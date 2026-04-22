@@ -1,13 +1,14 @@
 package com.tienda.tienda.unit.service;
 
-import com.tienda.tienda.dto.LineaCarritoDTO;
-import com.tienda.tienda.dto.mapper.LineaCarritoMapper;
-import com.tienda.tienda.model.LineaCarrito;
-import com.tienda.tienda.model.Product;
-import com.tienda.tienda.repository.port.*;
-import com.tienda.tienda.service.CarritoService;
-import com.tienda.tienda.service.LineaCarritoServiceImpl;
-import com.tienda.tienda.service.helper.ProductLoader;
+import com.tienda.tienda.carrito.repository.port.CarritoRepositoryPort;
+import com.tienda.tienda.lineacarrito.dto.LineaCarritoDTO;
+import com.tienda.tienda.lineacarrito.dto.mapper.LineaCarritoMapper;
+import com.tienda.tienda.lineacarrito.model.LineaCarrito;
+import com.tienda.tienda.lineacarrito.repository.port.LineaCarritoRepositoryPort;
+import com.tienda.tienda.product.model.Product;
+import com.tienda.tienda.carrito.service.CarritoService;
+import com.tienda.tienda.lineacarrito.service.LineaCarritoServiceImpl;
+import com.tienda.tienda.lineacarrito.service.helper.ProductLoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

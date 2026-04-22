@@ -1,8 +1,8 @@
 package com.tienda.tienda.integration;
 
-import com.tienda.tienda.dto.UserDTO;
-import com.tienda.tienda.dto.UserResponseDTO;
-import com.tienda.tienda.service.UserService;
+import com.tienda.tienda.user.dto.UserDTO;
+import com.tienda.tienda.user.dto.UserResponseDTO;
+import com.tienda.tienda.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
