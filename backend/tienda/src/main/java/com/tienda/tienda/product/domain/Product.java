@@ -1,0 +1,39 @@
+package com.tienda.tienda.product.domain;
+
+import com.tienda.tienda.promotion.domain.Promotion;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Table("productos")
+public class Product {
+
+    @Id
+    private Integer id;
+
+    private String name;
+    private double price;
+
+    @Column("final_price")
+    private double finalPrice;
+
+    private String description;
+    private String material;
+    private String considerations;
+
+    @Column("image_url")
+    private String imageUrl;
+
+    @Transient
+    private List<Promotion> promotions;
+
+}

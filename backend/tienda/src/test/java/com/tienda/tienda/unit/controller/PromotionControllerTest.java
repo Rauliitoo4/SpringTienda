@@ -1,8 +1,8 @@
 package com.tienda.tienda.unit.controller;
 
-import com.tienda.tienda.promotion.dto.PromotionDTO;
-import com.tienda.tienda.promotion.service.PromotionService;
-import com.tienda.tienda.promotion.controller.PromotionController;
+import com.tienda.tienda.promotion.application.dto.PromotionDTO;
+import com.tienda.tienda.promotion.application.service.PromotionService;
+import com.tienda.tienda.promotion.infraestructure.controller.PromotionController;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

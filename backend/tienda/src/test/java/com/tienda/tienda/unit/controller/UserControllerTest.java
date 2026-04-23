@@ -1,9 +1,9 @@
 package com.tienda.tienda.unit.controller;
 
-import com.tienda.tienda.user.dto.UserResponseDTO;
-import com.tienda.tienda.user.dto.UserDTO;
-import com.tienda.tienda.user.service.UserService;
-import com.tienda.tienda.user.controller.UserController;
+import com.tienda.tienda.user.application.dto.UserResponseDTO;
+import com.tienda.tienda.user.application.dto.UserDTO;
+import com.tienda.tienda.user.application.service.UserService;
+import com.tienda.tienda.user.infraestructure.controller.UserController;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

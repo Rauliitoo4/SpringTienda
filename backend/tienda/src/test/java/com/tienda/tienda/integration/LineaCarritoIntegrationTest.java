@@ -1,14 +1,14 @@
 package com.tienda.tienda.integration;
 
-import com.tienda.tienda.carrito.dto.CarritoDTO;
-import com.tienda.tienda.product.dto.ProductDTO;
-import com.tienda.tienda.user.dto.UserDTO;
-import com.tienda.tienda.user.dto.UserResponseDTO;
-import com.tienda.tienda.lineacarrito.dto.LineaCarritoDTO;
-import com.tienda.tienda.carrito.service.CarritoService;
-import com.tienda.tienda.product.service.ProductService;
-import com.tienda.tienda.user.service.UserService;
-import com.tienda.tienda.lineacarrito.service.LineaCarritoService;
+import com.tienda.tienda.carrito.application.dto.CarritoDTO;
+import com.tienda.tienda.product.application.dto.ProductDTO;
+import com.tienda.tienda.user.application.dto.UserDTO;
+import com.tienda.tienda.user.application.dto.UserResponseDTO;
+import com.tienda.tienda.lineacarrito.application.dto.LineaCarritoDTO;
+import com.tienda.tienda.carrito.application.service.CarritoService;
+import com.tienda.tienda.product.application.service.ProductService;
+import com.tienda.tienda.user.application.service.UserService;
+import com.tienda.tienda.lineacarrito.application.service.LineaCarritoService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,10 +1,10 @@
 package com.tienda.tienda.unit.controller;
 
-import com.tienda.tienda.carrito.dto.CarritoDTO;
-import com.tienda.tienda.lineacarrito.dto.LineaCarritoDTO;
-import com.tienda.tienda.product.dto.ProductDTO;
-import com.tienda.tienda.carrito.service.CarritoService;
-import com.tienda.tienda.carrito.controller.CarritoController;
+import com.tienda.tienda.carrito.application.dto.CarritoDTO;
+import com.tienda.tienda.lineacarrito.application.dto.LineaCarritoDTO;
+import com.tienda.tienda.product.application.dto.ProductDTO;
+import com.tienda.tienda.carrito.application.service.CarritoService;
+import com.tienda.tienda.carrito.infraestructure.controller.CarritoController;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
