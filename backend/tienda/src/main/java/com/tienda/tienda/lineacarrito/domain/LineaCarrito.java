@@ -1,6 +1,6 @@
 package com.tienda.tienda.lineacarrito.domain;
 
-import com.tienda.tienda.product.infraestructure.output.persistence.entity.ProductEntity;
+import com.tienda.tienda.product.infrastructure.adapter.output.persistence.entity.ProductEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;

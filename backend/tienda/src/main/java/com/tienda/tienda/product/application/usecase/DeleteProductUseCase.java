@@ -1,23 +1,23 @@
 package com.tienda.tienda.product.application.usecase;
 
-import com.tienda.tienda.product.domain.repository.ProductRepository;
+import com.tienda.tienda.product.domain.repository.DeleteProductRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
 public class DeleteProductUseCase {
 
-    private final ProductRepository productRepository;
+    private final DeleteProductRepository deleteProductRepository;
 
-    public DeleteProductUseCase(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public DeleteProductUseCase(DeleteProductRepository deleteProductRepository) {
+        this.deleteProductRepository = deleteProductRepository;
     }
 
     public Mono<Boolean> execute(int id) {
-        return productRepository.existsById(id)
+        return deleteProductRepository.existsById(id)
                 .flatMap(exists -> {
                     if (!exists) return Mono.just(false);
-                    return productRepository.deleteById(id).thenReturn(true);
+                    return deleteProductRepository.deleteById(id).thenReturn(true);
                 });
     }
 }

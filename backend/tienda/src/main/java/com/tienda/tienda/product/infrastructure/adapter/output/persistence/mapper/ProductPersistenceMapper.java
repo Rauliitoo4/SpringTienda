@@ -1,13 +1,13 @@
-package com.tienda.tienda.product.infraestructure.output.persistence.mapper;
+package com.tienda.tienda.product.infrastructure.adapter.output.persistence.mapper;
 
 import com.tienda.tienda.product.domain.model.Product;
-import com.tienda.tienda.product.infraestructure.output.persistence.entity.ProductEntity;
+import com.tienda.tienda.product.infrastructure.adapter.output.persistence.entity.ProductEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProductEntityMapper {
+public class ProductPersistenceMapper {
 
-    public ProductEntity fromDomain(Product p) {
+    public ProductEntity toEntity(Product p) {
         ProductEntity entity = new ProductEntity();
         entity.setId(p.getId());
         entity.setName(p.getName());

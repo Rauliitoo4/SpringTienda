@@ -3,7 +3,7 @@ package com.tienda.tienda.unit.controller;
 import com.tienda.tienda.product.application.dto.ProductResponse;
 import com.tienda.tienda.promotion.application.dto.PromotionResponse;
 import com.tienda.tienda.product.application.service.ProductService;
-import com.tienda.tienda.product.infraestructure.input.rest.ProductController;
+import com.tienda.tienda.product.infrastructure.adapter.input.rest.ProductController;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

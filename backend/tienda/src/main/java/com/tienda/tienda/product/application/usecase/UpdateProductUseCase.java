@@ -1,9 +1,8 @@
 package com.tienda.tienda.product.application.usecase;
 
-import com.tienda.tienda.product.domain.repository.ProductRepository;
-import com.tienda.tienda.product.application.dto.ProductRequest;
-import com.tienda.tienda.product.application.dto.ProductResponse;
-import com.tienda.tienda.product.application.mapper.ProductResponseMapper;
+import com.tienda.tienda.product.domain.model.Product;
+import com.tienda.tienda.product.domain.repository.UpdateProductRepository;
+import com.tienda.tienda.product.domain.repository.GetProductRepository;
 import com.tienda.tienda.product.application.helper.PromotionLoader;
 import com.tienda.tienda.product.domain.service.PriceCalculator;
 import org.springframework.stereotype.Service;
@@ -12,33 +11,32 @@ import reactor.core.publisher.Mono;
 @Service
 public class UpdateProductUseCase {
 
-    private final ProductRepository productRepository;
+    private final UpdateProductRepository updateProductRepository;
+    private final GetProductRepository getProductRepository;
     private final PromotionLoader promotionLoader;
-    private final ProductResponseMapper mapper;
     private final PriceCalculator priceCalculator;
 
-    public UpdateProductUseCase (ProductRepository productRepository, PromotionLoader promotionLoader, ProductResponseMapper mapper, PriceCalculator priceCalculator) {
-        this.productRepository = productRepository;
+    public UpdateProductUseCase (UpdateProductRepository updateProductRepository, GetProductRepository getProductRepository, PromotionLoader promotionLoader, PriceCalculator priceCalculator) {
+        this.updateProductRepository = updateProductRepository;
         this.promotionLoader = promotionLoader;
-        this.mapper = mapper;
         this.priceCalculator = priceCalculator;
+        this.getProductRepository = getProductRepository;
     }
 
-    public Mono<ProductResponse> execute(int id, ProductRequest request) {
-        return productRepository.findById(id)
+    public Mono<Product> execute(int id, Product updatedProduct) {
+        return getProductRepository.findById(id)
                 .flatMap(promotionLoader::loadPromotions)
                 .flatMap(product -> {
-                    if (request.getName() != null) product.setName(request.getName());
-                    if (request.getPrice() > 0) {
-                        product.setPrice(request.getPrice());
+                    if (updatedProduct.getName() != null) product.setName(updatedProduct.getName());
+                    if (updatedProduct.getPrice() > 0) {
+                        product.setPrice(updatedProduct.getPrice());
                         priceCalculator.recalculateFinalPrice(product);
                     }
-                    if (request.getDescription() != null) product.setDescription(request.getDescription());
-                    if (request.getMaterial() != null) product.setMaterial(request.getMaterial());
-                    if (request.getConsiderations() != null) product.setConsiderations(request.getConsiderations());
-                    if (request.getImageUrl() != null) product.setImageUrl(request.getImageUrl());
-                    return productRepository.save(product);
-                })
-                .map(mapper::toResponse);
+                    if (updatedProduct.getDescription() != null) product.setDescription(updatedProduct.getDescription());
+                    if (updatedProduct.getMaterial() != null) product.setMaterial(updatedProduct.getMaterial());
+                    if (updatedProduct.getConsiderations() != null) product.setConsiderations(updatedProduct.getConsiderations());
+                    if (updatedProduct.getImageUrl() != null) product.setImageUrl(updatedProduct.getImageUrl());
+                    return updateProductRepository.save(product);
+                });
     }
 }

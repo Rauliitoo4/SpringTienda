@@ -1,17 +1,17 @@
-package com.tienda.tienda.product.infraestructure.output.persistence;
+package com.tienda.tienda.product.infrastructure.adapter.output.persistence;
 
 import com.tienda.tienda.product.domain.repository.ProductPromotionRepository;
-import com.tienda.tienda.product.infraestructure.output.persistence.repository.ProductPromotionJpaRepository;
+import com.tienda.tienda.product.infrastructure.adapter.output.persistence.repository.ProductPromotionJpaRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
-public class ProductPromotionRepositoryAdapter implements ProductPromotionRepository {
+public class ProductPromotionPersistenceAdapter implements ProductPromotionRepository {
 
     private final ProductPromotionJpaRepository jpaRepository;
 
-    public ProductPromotionRepositoryAdapter (ProductPromotionJpaRepository jpaRepository) {
+    public ProductPromotionPersistenceAdapter(ProductPromotionJpaRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
     }
 

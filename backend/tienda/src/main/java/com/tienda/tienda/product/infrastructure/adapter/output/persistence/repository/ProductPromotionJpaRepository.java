@@ -1,4 +1,4 @@
-package com.tienda.tienda.product.infraestructure.output.persistence.repository;
+package com.tienda.tienda.product.infrastructure.adapter.output.persistence.repository;
 
 import lombok.Getter;
 import lombok.Setter;

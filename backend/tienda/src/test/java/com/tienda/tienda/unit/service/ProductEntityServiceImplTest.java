@@ -2,7 +2,7 @@ package com.tienda.tienda.unit.service;
 
 import com.tienda.tienda.product.application.dto.ProductResponse;
 import com.tienda.tienda.product.application.mapper.ProductResponseMapper;
-import com.tienda.tienda.product.infraestructure.output.persistence.entity.ProductEntity;
+import com.tienda.tienda.product.infrastructure.adapter.output.persistence.entity.ProductEntity;
 import com.tienda.tienda.product.domain.repository.ProductPromotionRepository;
 import com.tienda.tienda.product.domain.repository.ProductRepository;
 import com.tienda.tienda.promotion.application.port.PromotionRepositoryPort;

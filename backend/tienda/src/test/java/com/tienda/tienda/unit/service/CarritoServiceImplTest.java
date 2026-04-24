@@ -6,7 +6,7 @@ import com.tienda.tienda.carrito.domain.Carrito;
 import com.tienda.tienda.carrito.application.port.CarritoRepositoryPort;
 import com.tienda.tienda.lineacarrito.domain.LineaCarrito;
 import com.tienda.tienda.lineacarrito.application.port.LineaCarritoRepositoryPort;
-import com.tienda.tienda.product.infraestructure.output.persistence.entity.ProductEntity;
+import com.tienda.tienda.product.infrastructure.adapter.output.persistence.entity.ProductEntity;
 import com.tienda.tienda.product.domain.repository.ProductRepository;
 import com.tienda.tienda.carrito.application.service.CarritoServiceImpl;
 import com.tienda.tienda.carrito.application.service.helper.LineaLoader;
