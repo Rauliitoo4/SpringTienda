@@ -5,7 +5,7 @@ import com.tienda.tienda.lineacarrito.application.dto.LineaCarritoDTO;
 import com.tienda.tienda.lineacarrito.application.dto.mapper.LineaCarritoMapper;
 import com.tienda.tienda.lineacarrito.domain.LineaCarrito;
 import com.tienda.tienda.lineacarrito.application.port.LineaCarritoRepositoryPort;
-import com.tienda.tienda.product.domain.Product;
+import com.tienda.tienda.product.infraestructure.output.persistence.entity.ProductEntity;
 import com.tienda.tienda.carrito.application.service.CarritoService;
 import com.tienda.tienda.lineacarrito.application.service.LineaCarritoServiceImpl;
 import com.tienda.tienda.lineacarrito.application.service.helper.ProductLoader;
@@ -33,11 +33,11 @@ public class LineaCarritoServiceImplImplTest {
     private LineaCarritoServiceImpl lineaCarritoServiceImpl;
 
     private LineaCarrito testingLinea() {
-        Product product = new Product();
-        product.setId(1);
-        product.setName("Camiseta");
-        product.setPrice(20.0);
-        product.setFinalPrice(20.0);
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setId(1);
+        productEntity.setName("Camiseta");
+        productEntity.setPrice(20.0);
+        productEntity.setFinalPrice(20.0);
 
         LineaCarrito linea = new LineaCarrito();
         linea.setId(1);
@@ -45,7 +45,7 @@ public class LineaCarritoServiceImplImplTest {
         linea.setSubtotal(40.0);
         linea.setProductId(1);
         linea.setCarritoId(1);
-        linea.setProduct(product);
+        linea.setProductEntity(productEntity);
         return linea;
     }
 

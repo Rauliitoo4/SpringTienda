@@ -1,9 +1,9 @@
 package com.tienda.tienda.unit.controller;
 
-import com.tienda.tienda.product.application.dto.ProductDTO;
-import com.tienda.tienda.promotion.application.dto.PromotionDTO;
+import com.tienda.tienda.product.application.dto.ProductResponse;
+import com.tienda.tienda.promotion.application.dto.PromotionResponse;
 import com.tienda.tienda.product.application.service.ProductService;
-import com.tienda.tienda.product.infraestructure.controller.ProductController;
+import com.tienda.tienda.product.infraestructure.input.rest.ProductController;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @WebFluxTest(ProductController.class)
-class ProductControllerTest {
+class ProductEntityControllerTest {
     
     @Autowired
     private WebTestClient webTestClient;
@@ -30,12 +30,12 @@ class ProductControllerTest {
     @MockitoBean
     private ProductService productService;
 
-    private ProductDTO basicProduct;
-    private ProductDTO productWithPromo;
+    private ProductResponse basicProduct;
+    private ProductResponse productWithPromo;
 
     @BeforeEach
     void setUp() {
-        basicProduct = new ProductDTO();
+        basicProduct = new ProductResponse();
         basicProduct.setId(1);
         basicProduct.setName("Camiseta");
         basicProduct.setPrice(20.0);
@@ -46,12 +46,12 @@ class ProductControllerTest {
         basicProduct.setImageUrl("http://img.com/camiseta.jpg");
         basicProduct.setPromotions(List.of());
 
-        PromotionDTO promo = new PromotionDTO();
+        PromotionResponse promo = new PromotionResponse();
         promo.setId(1);
         promo.setDescription("10% de descuento");
         promo.setDiscount(10.0);
 
-        productWithPromo = new ProductDTO();
+        productWithPromo = new ProductResponse();
         productWithPromo.setId(1);
         productWithPromo.setName("Camiseta");
         productWithPromo.setPrice(20.0);
@@ -67,7 +67,7 @@ class ProductControllerTest {
         webTestClient.get().uri("/productos")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(ProductDTO.class)
+                .expectBodyList(ProductResponse.class)
                 .hasSize(1)
                 .contains(basicProduct);
     }
@@ -79,7 +79,7 @@ class ProductControllerTest {
         webTestClient.get().uri("/productos")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(ProductDTO.class)
+                .expectBodyList(ProductResponse.class)
                 .hasSize(0);
     }
 
@@ -91,7 +91,7 @@ class ProductControllerTest {
         webTestClient.get().uri("/productos/1")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(ProductDTO.class)
+                .expectBody(ProductResponse.class)
                 .isEqualTo(basicProduct);
     }
 
@@ -107,20 +107,20 @@ class ProductControllerTest {
     //POST /productos
     @Test
     void createProduct_shouldReturnCreatedProductAndStatus201() {
-        when(productService.createProduct(any(ProductDTO.class))).thenReturn(Mono.just(basicProduct));
+        when(productService.createProduct(any(ProductResponse.class))).thenReturn(Mono.just(basicProduct));
 
         webTestClient.post().uri("/productos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(basicProduct)
                 .exchange()
                 .expectStatus().isCreated()
-                .expectBody(ProductDTO.class)
+                .expectBody(ProductResponse.class)
                 .isEqualTo(basicProduct);
     }
 
     @Test
     void createProduct_shouldCallService() {
-        when(productService.createProduct(any(ProductDTO.class))).thenReturn(Mono.just(basicProduct));
+        when(productService.createProduct(any(ProductResponse.class))).thenReturn(Mono.just(basicProduct));
 
         webTestClient.post().uri("/productos")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -128,27 +128,27 @@ class ProductControllerTest {
                 .exchange()
                 .expectStatus().isCreated();
 
-        verify(productService, times(1)).createProduct(any(ProductDTO.class));
+        verify(productService, times(1)).createProduct(any(ProductResponse.class));
     }
 
     //PUT /productos/{id}
     @Test
     void updateProduct_shouldReturnUpdatedProductAndStatus200() {
         basicProduct.setName("Camiseta Actualizada");
-        when(productService.updateProduct(eq(1), any(ProductDTO.class))).thenReturn(Mono.just(basicProduct));
+        when(productService.updateProduct(eq(1), any(ProductResponse.class))).thenReturn(Mono.just(basicProduct));
 
         webTestClient.put().uri("/productos/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(basicProduct)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(ProductDTO.class)
+                .expectBody(ProductResponse.class)
                 .isEqualTo(basicProduct);
     }
 
     @Test
     void updateProduct_ifNotExists_shouldReturn404() {
-        when(productService.updateProduct(eq(99), any(ProductDTO.class))).thenReturn(Mono.empty());
+        when(productService.updateProduct(eq(99), any(ProductResponse.class))).thenReturn(Mono.empty());
 
         webTestClient.put().uri("/productos/99")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -184,7 +184,7 @@ class ProductControllerTest {
         webTestClient.post().uri("/productos/1/promociones/1")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(ProductDTO.class)
+                .expectBody(ProductResponse.class)
                 .isEqualTo(productWithPromo);
     }
 
@@ -214,7 +214,7 @@ class ProductControllerTest {
         webTestClient.delete().uri("/productos/1/promociones/1")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(ProductDTO.class)
+                .expectBody(ProductResponse.class)
                 .isEqualTo(basicProduct);
     }
 

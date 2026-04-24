@@ -1,6 +1,6 @@
-package com.tienda.tienda.product.application.service.helper;
+package com.tienda.tienda.product.domain.service;
 
-import com.tienda.tienda.product.domain.Product;
+import com.tienda.tienda.product.domain.model.Product;
 import com.tienda.tienda.promotion.domain.Promotion;
 import org.springframework.stereotype.Component;
 

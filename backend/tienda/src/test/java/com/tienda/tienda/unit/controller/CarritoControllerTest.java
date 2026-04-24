@@ -2,7 +2,7 @@ package com.tienda.tienda.unit.controller;
 
 import com.tienda.tienda.carrito.application.dto.CarritoDTO;
 import com.tienda.tienda.lineacarrito.application.dto.LineaCarritoDTO;
-import com.tienda.tienda.product.application.dto.ProductDTO;
+import com.tienda.tienda.product.application.dto.ProductResponse;
 import com.tienda.tienda.carrito.application.service.CarritoService;
 import com.tienda.tienda.carrito.infraestructure.controller.CarritoController;
 
@@ -37,7 +37,7 @@ class CarritoControllerTest {
         carritoEmpty.setTotal(0.0);
         carritoEmpty.setLineas(List.of());
 
-        ProductDTO product = new ProductDTO();
+        ProductResponse product = new ProductResponse();
         product.setId(1);
         product.setName("Camiseta");
         product.setPrice(20.0);

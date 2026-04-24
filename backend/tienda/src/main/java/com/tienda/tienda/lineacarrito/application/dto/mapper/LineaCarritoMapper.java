@@ -1,16 +1,16 @@
 package com.tienda.tienda.lineacarrito.application.dto.mapper;
 import com.tienda.tienda.lineacarrito.domain.LineaCarrito;
 import com.tienda.tienda.lineacarrito.application.dto.LineaCarritoDTO;
-import com.tienda.tienda.product.application.dto.mapper.ProductMapper;
+import com.tienda.tienda.product.application.mapper.ProductResponseMapper;
 import org.springframework.stereotype.Component;
 
 @Component
 public class LineaCarritoMapper {
 
-    private final ProductMapper productMapper;
+    private final ProductResponseMapper productResponseMapper;
 
-    public LineaCarritoMapper(ProductMapper productMapper){
-        this.productMapper = productMapper;
+    public LineaCarritoMapper(ProductResponseMapper productResponseMapper){
+        this.productResponseMapper = productResponseMapper;
     }
 
     public LineaCarritoDTO toDTO (LineaCarrito linea) {
@@ -20,8 +20,8 @@ public class LineaCarritoMapper {
         dto.setSubtotal(linea.getSubtotal());
         dto.setCarritoId(linea.getCarritoId());
 
-        if (linea.getProduct() != null){
-            dto.setProduct(productMapper.toDTO(linea.getProduct()));
+        if (linea.getProductEntity() != null){
+            dto.setProduct(productResponseMapper.toDTO(linea.getProductEntity()));
         }
         return dto;
     }

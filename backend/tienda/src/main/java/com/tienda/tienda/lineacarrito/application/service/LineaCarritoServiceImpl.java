@@ -4,7 +4,7 @@ import com.tienda.tienda.carrito.application.service.CarritoService;
 import com.tienda.tienda.lineacarrito.application.dto.LineaCarritoDTO;
 import com.tienda.tienda.lineacarrito.application.dto.mapper.LineaCarritoMapper;
 import com.tienda.tienda.lineacarrito.application.port.LineaCarritoRepositoryPort;
-import com.tienda.tienda.product.domain.Product;
+import com.tienda.tienda.product.infraestructure.output.persistence.entity.ProductEntity;
 import com.tienda.tienda.lineacarrito.application.service.helper.ProductLoader;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -32,7 +32,7 @@ public class LineaCarritoServiceImpl implements LineaCarritoService{
                     linea.setQuantity(quantity);
                     return productLoader.loadProduct(linea)
                             .flatMap(lineaWithProduct -> {
-                                lineaWithProduct.setSubtotal(lineaWithProduct.getProduct().getFinalPrice() * quantity);
+                                lineaWithProduct.setSubtotal(lineaWithProduct.getProductEntity().getFinalPrice() * quantity);
                                 return lineaRepo.save(linea)
                                         .then(carritoService.recalculateTotal(linea.getCarritoId()))
                                         .then(productLoader.loadProduct(linea));
@@ -64,11 +64,11 @@ public class LineaCarritoServiceImpl implements LineaCarritoService{
                 .map(lineaCarritoMapper::toDTO);
     }
 
-    public Mono<Void> updateLineasCarrito(Product product) {
+    public Mono<Void> updateLineasCarrito(ProductEntity productEntity) {
         return lineaRepo.findAll()
-                .filter(linea -> linea.getProductId().equals(product.getId()))
+                .filter(linea -> linea.getProductId().equals(productEntity.getId()))
                 .flatMap(linea -> {
-                    linea.setSubtotal(product.getFinalPrice() * linea.getQuantity());
+                    linea.setSubtotal(productEntity.getFinalPrice() * linea.getQuantity());
                     return lineaRepo.save(linea);
                 })
                 .collectList()

@@ -1,9 +1,9 @@
-package com.tienda.tienda.product.application.port;
+package com.tienda.tienda.product.domain.repository;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface ProductPromotionRepositoryPort {
+public interface ProductPromotionRepository {
     Flux<Integer> findPromotionIdsByProductId(int productId);
     Mono<Void> deleteByProductIdAndPromotionId(int productId, int promotionId);
     Mono<Integer> existsRelation(int productId, int promotionId);

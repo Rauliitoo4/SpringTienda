@@ -1,7 +1,7 @@
 package com.tienda.tienda.lineacarrito.application.service;
 
 import com.tienda.tienda.lineacarrito.application.dto.LineaCarritoDTO;
-import com.tienda.tienda.product.domain.Product;
+import com.tienda.tienda.product.domain.model.Product;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

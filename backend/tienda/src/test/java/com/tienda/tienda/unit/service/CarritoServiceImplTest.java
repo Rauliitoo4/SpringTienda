@@ -6,8 +6,8 @@ import com.tienda.tienda.carrito.domain.Carrito;
 import com.tienda.tienda.carrito.application.port.CarritoRepositoryPort;
 import com.tienda.tienda.lineacarrito.domain.LineaCarrito;
 import com.tienda.tienda.lineacarrito.application.port.LineaCarritoRepositoryPort;
-import com.tienda.tienda.product.domain.Product;
-import com.tienda.tienda.product.application.port.ProductRepositoryPort;
+import com.tienda.tienda.product.infraestructure.output.persistence.entity.ProductEntity;
+import com.tienda.tienda.product.domain.repository.ProductRepository;
 import com.tienda.tienda.carrito.application.service.CarritoServiceImpl;
 import com.tienda.tienda.carrito.application.service.helper.LineaLoader;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 public class CarritoServiceImplTest {
     
     @Mock private CarritoRepositoryPort carritoRepo;
-    @Mock private ProductRepositoryPort productRepo;
+    @Mock private ProductRepository productRepo;
     @Mock private LineaCarritoRepositoryPort lineaRepo;
     @Mock private CarritoMapper carritoMapper;
     @Mock private LineaLoader lineaLoader;
@@ -41,13 +41,13 @@ public class CarritoServiceImplTest {
         return carrito;
     }
 
-    private Product testingProduct() {
-        Product product = new Product();
-        product.setId(1);
-        product.setName("Camiseta");
-        product.setPrice(20.0);
-        product.setFinalPrice(20.0);
-        return product;
+    private ProductEntity testingProduct() {
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setId(1);
+        productEntity.setName("Camiseta");
+        productEntity.setPrice(20.0);
+        productEntity.setFinalPrice(20.0);
+        return productEntity;
     }
 
     private CarritoDTO testingDto(double total) {
@@ -82,7 +82,7 @@ public class CarritoServiceImplTest {
     @Test
     void addProductToCarrito_shouldUpdate_Total() {
          Carrito carrito = testingCarrito();
-         Product product = testingProduct();
+         ProductEntity productEntity = testingProduct();
 
          LineaCarrito linea = new LineaCarrito();
          linea.setId(1);
@@ -95,7 +95,7 @@ public class CarritoServiceImplTest {
          updatedCarrito.setTotal(40.0);
 
          when(carritoRepo.findById(1)).thenReturn(Mono.just(carrito), Mono.just(updatedCarrito));
-         when(productRepo.findById(1)).thenReturn(Mono.just(product));
+         when(productRepo.findById(1)).thenReturn(Mono.just(productEntity));
          when(lineaRepo.save(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
          when(lineaRepo.findByCarritoId(1)).thenReturn(Flux.just(linea));
          when(carritoRepo.save(any(Carrito.class))).thenReturn(Mono.just(updatedCarrito));

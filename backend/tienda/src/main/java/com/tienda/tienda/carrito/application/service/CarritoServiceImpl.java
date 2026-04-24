@@ -4,10 +4,10 @@ import com.tienda.tienda.carrito.application.dto.CarritoDTO;
 import com.tienda.tienda.carrito.application.dto.mapper.CarritoMapper;
 import com.tienda.tienda.carrito.domain.Carrito;
 import com.tienda.tienda.lineacarrito.domain.LineaCarrito;
-import com.tienda.tienda.product.domain.Product;
+import com.tienda.tienda.product.infraestructure.output.persistence.entity.ProductEntity;
 import com.tienda.tienda.carrito.application.port.CarritoRepositoryPort;
 import com.tienda.tienda.lineacarrito.application.port.LineaCarritoRepositoryPort;
-import com.tienda.tienda.product.application.port.ProductRepositoryPort;
+import com.tienda.tienda.product.domain.repository.ProductRepository;
 import com.tienda.tienda.carrito.application.service.helper.LineaLoader;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -16,12 +16,12 @@ import reactor.core.publisher.Mono;
 public class CarritoServiceImpl implements CarritoService{
     
     private final CarritoRepositoryPort carritoRepo;
-    private final ProductRepositoryPort productRepo;
+    private final ProductRepository productRepo;
     private final LineaCarritoRepositoryPort lineaRepo;
     private final CarritoMapper carritoMapper;
     private final LineaLoader lineaLoader;
 
-    public CarritoServiceImpl(ProductRepositoryPort productRepo, CarritoRepositoryPort carritoRepo, LineaCarritoRepositoryPort lineaRepo, CarritoMapper carritoMapper, LineaLoader lineaLoader) {
+    public CarritoServiceImpl(ProductRepository productRepo, CarritoRepositoryPort carritoRepo, LineaCarritoRepositoryPort lineaRepo, CarritoMapper carritoMapper, LineaLoader lineaLoader) {
         this.productRepo = productRepo;
         this.carritoRepo = carritoRepo;
         this.lineaRepo = lineaRepo;
@@ -40,14 +40,14 @@ public class CarritoServiceImpl implements CarritoService{
                 .zipWith(productRepo.findById(productID))
                 .flatMap(tuple -> {
                     Carrito carrito = tuple.getT1();
-                    Product product = tuple.getT2();
+                    ProductEntity productEntity = tuple.getT2();
 
                     LineaCarrito linea = new LineaCarrito();
                     linea.setQuantity(quantity);
-                    linea.setProductId(product.getId());
+                    linea.setProductId(productEntity.getId());
                     linea.setCarritoId(carrito.getId());
-                    linea.setSubtotal(product.getFinalPrice() * quantity);
-                    linea.setProduct(product);
+                    linea.setSubtotal(productEntity.getFinalPrice() * quantity);
+                    linea.setProductEntity(productEntity);
 
                     return lineaRepo.save(linea)
                             .then(recalculateTotal(carritoID))

@@ -1,7 +1,7 @@
 package com.tienda.tienda.integration;
 
 import com.tienda.tienda.carrito.application.dto.CarritoDTO;
-import com.tienda.tienda.product.application.dto.ProductDTO;
+import com.tienda.tienda.product.application.dto.ProductResponse;
 import com.tienda.tienda.user.application.dto.UserDTO;
 import com.tienda.tienda.user.application.dto.UserResponseDTO;
 import com.tienda.tienda.carrito.application.service.CarritoService;
@@ -61,8 +61,8 @@ class CarritoIntegrationTest {
         return userService.createUser(dto).block();
     }
 
-    private ProductDTO createProductTest() {
-        ProductDTO dto = new ProductDTO();
+    private ProductResponse createProductTest() {
+        ProductResponse dto = new ProductResponse();
         dto.setName("Camiseta Test");
         dto.setPrice(20.00);
         dto.setDescription("Descripción test");
@@ -88,7 +88,7 @@ class CarritoIntegrationTest {
     @Test
     void addProductToCarrito_shouldUpdateTotal() {
         UserResponseDTO user = createUserTest();
-        ProductDTO product = createProductTest();
+        ProductResponse product = createProductTest();
 
         CarritoDTO result = carritoService.addProductToCarrito(user.getCarritoId(), product.getId(), 2).block();
 
@@ -99,7 +99,7 @@ class CarritoIntegrationTest {
 
     @Test
     void addProductToCarrito_ifCarritoDoesntExists_shouldReturnNull() {
-        ProductDTO product = createProductTest();
+        ProductResponse product = createProductTest();
         CarritoDTO result = carritoService.addProductToCarrito(9999, product.getId(), 2).block();
         assertNull(result);
     }
@@ -114,7 +114,7 @@ class CarritoIntegrationTest {
     @Test
     void calculateTotal_shouldReturn_theSumOfSubtotals() {
         UserResponseDTO user = createUserTest();
-        ProductDTO product = createProductTest();
+        ProductResponse product = createProductTest();
 
         carritoService.addProductToCarrito(user.getCarritoId(), product.getId(), 3).block();
        

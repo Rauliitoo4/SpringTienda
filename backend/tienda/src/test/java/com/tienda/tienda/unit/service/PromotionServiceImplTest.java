@@ -1,9 +1,9 @@
 package com.tienda.tienda.unit.service;
 
-import com.tienda.tienda.promotion.application.dto.PromotionDTO;
+import com.tienda.tienda.promotion.application.dto.PromotionResponse;
 import com.tienda.tienda.promotion.application.dto.mapper.PromotionMapper;
 import com.tienda.tienda.promotion.domain.Promotion;
-import com.tienda.tienda.product.application.port.ProductPromotionRepositoryPort;
+import com.tienda.tienda.product.domain.repository.ProductPromotionRepository;
 import com.tienda.tienda.promotion.application.port.PromotionRepositoryPort;
 import com.tienda.tienda.promotion.application.service.PromotionServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ public class PromotionServiceImplTest {
     private PromotionRepositoryPort promotionRepo;
 
     @Mock
-    private ProductPromotionRepositoryPort productPromotionRepo;
+    private ProductPromotionRepository productPromotionRepo;
 
     @Mock
     private PromotionMapper promotionMapper;
@@ -40,8 +40,8 @@ public class PromotionServiceImplTest {
         return promo;
     }
 
-    private PromotionDTO testingDto() {
-        PromotionDTO dto = new PromotionDTO();
+    private PromotionResponse testingDto() {
+        PromotionResponse dto = new PromotionResponse();
         dto.setId(1);
         dto.setDescription("Rebajas verano");
         dto.setDiscount(20.0);
@@ -72,11 +72,11 @@ public class PromotionServiceImplTest {
     @Test
     void createPromotion_shouldSaveAndReturnDTO() {
         Promotion promo = testingPromo();
-        when(promotionMapper.toEntity(any(PromotionDTO.class))).thenReturn(promo);
+        when(promotionMapper.toEntity(any(PromotionResponse.class))).thenReturn(promo);
         when(promotionRepo.save(any(Promotion.class))).thenReturn(Mono.just(promo));
         when(promotionMapper.toDTO(any(Promotion.class))).thenReturn(testingDto());
 
-        PromotionDTO dto = new PromotionDTO();
+        PromotionResponse dto = new PromotionResponse();
         dto.setDescription("Rebajas verano");
         dto.setDiscount(20.0);
 
@@ -113,13 +113,13 @@ public class PromotionServiceImplTest {
     @Test
     void updatePromotion_shouldUpdate_Promotion() {
         Promotion promo = testingPromo();
-        PromotionDTO updatedDto = new PromotionDTO();
+        PromotionResponse updatedDto = new PromotionResponse();
         updatedDto.setDiscount(30.0);
         when(promotionRepo.findById(1)).thenReturn(Mono.just(promo));
         when(promotionRepo.save(any(Promotion.class))).thenReturn(Mono.just(promo));
         when(promotionMapper.toDTO(any(Promotion.class))).thenReturn(updatedDto);
 
-        PromotionDTO dto = new PromotionDTO();
+        PromotionResponse dto = new PromotionResponse();
         dto.setDiscount(30.0);
 
         StepVerifier.create(promotionServiceImpl.updatePromotion(1, dto))

@@ -1,6 +1,6 @@
 package com.tienda.tienda.integration;
 
-import com.tienda.tienda.promotion.application.dto.PromotionDTO;
+import com.tienda.tienda.promotion.application.dto.PromotionResponse;
 import com.tienda.tienda.promotion.application.service.PromotionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +41,8 @@ class PromotionIntegrationTest {
     @Autowired
     private PromotionService promotionService;
 
-    private PromotionDTO createPromocionTest() {
-        PromotionDTO dto = new PromotionDTO();
+    private PromotionResponse createPromocionTest() {
+        PromotionResponse dto = new PromotionResponse();
         dto.setDescription("Descuento de verano");
         dto.setDiscount(10.0);
         return promotionService.createPromotion(dto).block();
@@ -50,7 +50,7 @@ class PromotionIntegrationTest {
 
     @Test
     void createPromotion_shouldSaveInDB() {
-        PromotionDTO result = createPromocionTest();
+        PromotionResponse result = createPromocionTest();
 
         assertNotNull(result);
         assertNotNull(result.getId());
@@ -61,7 +61,7 @@ class PromotionIntegrationTest {
     @Test
     void getAllPromotions_shouldReturn_PromotionsFromDB() {
         createPromocionTest();
-        List<PromotionDTO> promotions = promotionService.getAllPromotions().collectList().block();
+        List<PromotionResponse> promotions = promotionService.getAllPromotions().collectList().block();
 
         assertNotNull(promotions);
         assertFalse(promotions.isEmpty());
@@ -69,8 +69,8 @@ class PromotionIntegrationTest {
 
     @Test
     void getPromotionById_shouldReturn_PromotionFromDB() {
-        PromotionDTO created = createPromocionTest();
-        PromotionDTO result = promotionService.getPromotionById(created.getId()).block();
+        PromotionResponse created = createPromocionTest();
+        PromotionResponse result = promotionService.getPromotionById(created.getId()).block();
 
         assertNotNull(result);
         assertEquals(created.getId(), result.getId());
@@ -78,18 +78,18 @@ class PromotionIntegrationTest {
 
     @Test
     void getPromotionById_ifNotExists_shouldReturnNull() {
-        PromotionDTO result = promotionService.getPromotionById(9999).block();
+        PromotionResponse result = promotionService.getPromotionById(9999).block();
         assertNull(result);
     }
 
     @Test
     void updatePromotion_shouldUpdateDataInDB() {
-        PromotionDTO created = createPromocionTest();
+        PromotionResponse created = createPromocionTest();
 
-        PromotionDTO changes = new PromotionDTO();
+        PromotionResponse changes = new PromotionResponse();
         changes.setDiscount(20.0);
 
-        PromotionDTO updated = promotionService.updatePromotion(created.getId(), changes).block();
+        PromotionResponse updated = promotionService.updatePromotion(created.getId(), changes).block();
 
         assertNotNull(updated);
         assertEquals(20.0, updated.getDiscount());
@@ -97,7 +97,7 @@ class PromotionIntegrationTest {
 
     @Test
     void deletePromotion_shouldDeleteFromDB() {
-        PromotionDTO created = createPromocionTest();
+        PromotionResponse created = createPromocionTest();
         boolean deleted = promotionService.deletePromotion(created.getId()).block();
 
         assertTrue(deleted);

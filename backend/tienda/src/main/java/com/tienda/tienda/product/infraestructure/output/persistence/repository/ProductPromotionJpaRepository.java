@@ -1,7 +1,7 @@
-package com.tienda.tienda.product.infraestructure.repository;
+package com.tienda.tienda.product.infraestructure.output.persistence.repository;
 
-import com.tienda.tienda.product.application.port.ProductPromotionRepositoryPort;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
@@ -9,7 +9,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface ProductPromotionRepository extends ReactiveCrudRepository<ProductPromotionRepository.ProductPromotion, Integer> , ProductPromotionRepositoryPort {
+public interface ProductPromotionJpaRepository extends ReactiveCrudRepository<ProductPromotionJpaRepository.ProductPromotionEntity, Integer> {
 
     @Query("SELECT promotion_id FROM producto_promocion WHERE product_id = :productId")
     Flux<Integer> findPromotionIdsByProductId(int productId);
@@ -26,9 +26,10 @@ public interface ProductPromotionRepository extends ReactiveCrudRepository<Produ
     @Query("INSERT INTO producto_promocion (product_id, promotion_id) VALUES (:productId, :promotionId)")
     Mono<Void> insertRelation(int productId, int promotionId);
 
-    @Data
+    @Getter
+    @Setter
     @Table("producto_promocion")
-    class ProductPromotion {
+    class ProductPromotionEntity {
         @Column("product_id")
         private Integer productId;
 

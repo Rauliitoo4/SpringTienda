@@ -1,7 +1,7 @@
 package com.tienda.tienda.integration;
 
-import com.tienda.tienda.promotion.application.dto.PromotionDTO;
-import com.tienda.tienda.product.application.dto.ProductDTO;
+import com.tienda.tienda.promotion.application.dto.PromotionResponse;
+import com.tienda.tienda.product.application.dto.ProductResponse;
 import com.tienda.tienda.product.application.service.ProductService;
 import com.tienda.tienda.promotion.application.service.PromotionService;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Testcontainers
-class ProductIntegrationTest {
+class ProductEntityIntegrationTest {
     
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17")
@@ -44,8 +44,8 @@ class ProductIntegrationTest {
     @Autowired
     private PromotionService promotionService;
 
-    private ProductDTO createProductTest() {
-        ProductDTO dto = new ProductDTO();
+    private ProductResponse createProductTest() {
+        ProductResponse dto = new ProductResponse();
         dto.setName("Camiseta Test");
         dto.setPrice(20.00);
         dto.setDescription("Descripción test");
@@ -55,7 +55,7 @@ class ProductIntegrationTest {
 
     @Test
     void createProduct_shouldSaveInDB() {
-        ProductDTO result = createProductTest();
+        ProductResponse result = createProductTest();
 
         assertNotNull(result);
         assertEquals("Camiseta Test", result.getName());
@@ -74,8 +74,8 @@ class ProductIntegrationTest {
 
     @Test
     void getProductById_shouldReturn_theProductFromDB() {
-        ProductDTO created = createProductTest();
-        ProductDTO result = productService.getProductById(created.getId()).block();
+        ProductResponse created = createProductTest();
+        ProductResponse result = productService.getProductById(created.getId()).block();
 
         assertNotNull(result);
         assertEquals(created.getId(), result.getId());
@@ -83,18 +83,18 @@ class ProductIntegrationTest {
 
     @Test
     void getProductById_ifNotExists_shouldReturnNull() {
-        ProductDTO result = productService.getProductById(9999).block();
+        ProductResponse result = productService.getProductById(9999).block();
         assertNull(result);
     }
 
     @Test
     void updateProduct_shouldUpdate_DataInDB() {
-        ProductDTO created = createProductTest();
+        ProductResponse created = createProductTest();
         
-        ProductDTO changes = new ProductDTO();
+        ProductResponse changes = new ProductResponse();
         changes.setPrice(29.99);
 
-        ProductDTO updated = productService.updateProduct(created.getId(), changes).block();
+        ProductResponse updated = productService.updateProduct(created.getId(), changes).block();
 
         assertNotNull(updated);
         assertEquals(29.99, updated.getPrice());
@@ -103,7 +103,7 @@ class ProductIntegrationTest {
 
     @Test
     void deleteProduct_shouldDeleteInDB() {
-        ProductDTO created = createProductTest();
+        ProductResponse created = createProductTest();
         boolean deleted = productService.deleteProduct(created.getId()).block();
 
         assertTrue(deleted);
@@ -112,14 +112,14 @@ class ProductIntegrationTest {
 
     @Test
     void addPromotion_shouldRecalculateFinalPrice() {
-        ProductDTO product = createProductTest();
+        ProductResponse product = createProductTest();
 
-        PromotionDTO promoDTO = new PromotionDTO();
+        PromotionResponse promoDTO = new PromotionResponse();
         promoDTO.setDescription("Descuento Test");
         promoDTO.setDiscount(10.0);
-        PromotionDTO promo = promotionService.createPromotion(promoDTO).block();
+        PromotionResponse promo = promotionService.createPromotion(promoDTO).block();
 
-        ProductDTO result = productService.addPromotion(product.getId(), promo.getId()).block();
+        ProductResponse result = productService.addPromotion(product.getId(), promo.getId()).block();
 
         assertNotNull(result);
         assertEquals(18.00, result.getFinalPrice());
@@ -127,15 +127,15 @@ class ProductIntegrationTest {
 
     @Test
     void deletePromotion_shouldRecalculateFinalPrice() {
-        ProductDTO product = createProductTest();
+        ProductResponse product = createProductTest();
 
-        PromotionDTO promoDTO = new PromotionDTO();
+        PromotionResponse promoDTO = new PromotionResponse();
         promoDTO.setDescription("Descuento Test");
         promoDTO.setDiscount(10.0);
-        PromotionDTO promo = promotionService.createPromotion(promoDTO).block();
+        PromotionResponse promo = promotionService.createPromotion(promoDTO).block();
 
         productService.addPromotion(product.getId(), promo.getId()).block();
-        ProductDTO result = productService.removePromotion(product.getId(), promo.getId()).block();
+        ProductResponse result = productService.removePromotion(product.getId(), promo.getId()).block();
 
         assertNotNull(result);
         assertEquals(20.00, result.getFinalPrice());

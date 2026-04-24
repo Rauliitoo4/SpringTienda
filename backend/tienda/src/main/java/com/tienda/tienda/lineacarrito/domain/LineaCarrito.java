@@ -1,6 +1,6 @@
 package com.tienda.tienda.lineacarrito.domain;
 
-import com.tienda.tienda.product.domain.Product;
+import com.tienda.tienda.product.infraestructure.output.persistence.entity.ProductEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -28,6 +28,6 @@ public class LineaCarrito {
     private Integer productId;
 
     @Transient
-    private Product product;
+    private ProductEntity productEntity;
 
 }

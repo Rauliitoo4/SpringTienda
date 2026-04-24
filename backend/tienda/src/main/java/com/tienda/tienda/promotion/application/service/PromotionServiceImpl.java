@@ -1,10 +1,10 @@
 package com.tienda.tienda.promotion.application.service;
 
-import com.tienda.tienda.promotion.application.dto.PromotionDTO;
+import com.tienda.tienda.promotion.application.dto.PromotionResponse;
 import com.tienda.tienda.promotion.application.dto.mapper.PromotionMapper;
 import com.tienda.tienda.promotion.domain.Promotion;
 import com.tienda.tienda.promotion.application.port.PromotionRepositoryPort;
-import com.tienda.tienda.product.application.port.ProductPromotionRepositoryPort;
+import com.tienda.tienda.product.domain.repository.ProductPromotionRepository;
 import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Flux;
@@ -14,22 +14,22 @@ import reactor.core.publisher.Mono;
 public class PromotionServiceImpl implements PromotionService {
     
     private final PromotionRepositoryPort promotionRepo;
-    private final ProductPromotionRepositoryPort productPromotionRepo;
+    private final ProductPromotionRepository productPromotionRepo;
     private final PromotionMapper promotionMapper;
 
-    public PromotionServiceImpl(PromotionRepositoryPort promotionRepo, ProductPromotionRepositoryPort productPromotionRepo, PromotionMapper promotionMapper){
+    public PromotionServiceImpl(PromotionRepositoryPort promotionRepo, ProductPromotionRepository productPromotionRepo, PromotionMapper promotionMapper){
         this.promotionRepo = promotionRepo;
         this.productPromotionRepo = productPromotionRepo;
         this.promotionMapper = promotionMapper;
     }
 
-    public Mono<PromotionDTO> createPromotion(PromotionDTO dto) {
+    public Mono<PromotionResponse> createPromotion(PromotionResponse dto) {
         Promotion promocion = promotionMapper.toEntity(dto);
         return promotionRepo.save(promocion)
                 .map(promotionMapper::toDTO);
     }
 
-    public Mono<PromotionDTO> updatePromotion(int id, PromotionDTO dto) {
+    public Mono<PromotionResponse> updatePromotion(int id, PromotionResponse dto) {
         return promotionRepo.findById(id)
                 .flatMap(promo -> {
                     if (dto.getDescription() != null) promo.setDescription(dto.getDescription());
@@ -49,12 +49,12 @@ public class PromotionServiceImpl implements PromotionService {
                 });
     }
 
-    public Mono<PromotionDTO> getPromotionById (int id){
+    public Mono<PromotionResponse> getPromotionById (int id){
         return promotionRepo.findById(id)
                     .map(promotionMapper::toDTO);
     }
 
-    public Flux<PromotionDTO> getAllPromotions() {
+    public Flux<PromotionResponse> getAllPromotions() {
         return promotionRepo.findAll()
                 .map(promotionMapper::toDTO);
     }

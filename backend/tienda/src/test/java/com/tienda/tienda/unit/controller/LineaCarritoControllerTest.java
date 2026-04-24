@@ -1,7 +1,7 @@
 package com.tienda.tienda.unit.controller;
 
 import com.tienda.tienda.lineacarrito.application.dto.LineaCarritoDTO;
-import com.tienda.tienda.product.application.dto.ProductDTO;
+import com.tienda.tienda.product.application.dto.ProductResponse;
 import com.tienda.tienda.lineacarrito.application.service.LineaCarritoService;
 import com.tienda.tienda.lineacarrito.infraestructure.controller.LineaCarritoController;
 
@@ -30,7 +30,7 @@ class LineaCarritoControllerTest {
 
     @BeforeEach
     void setUp() {
-        ProductDTO product = new ProductDTO();
+        ProductResponse product = new ProductResponse();
         product.setId(1);
         product.setName("Camiseta");
         product.setPrice(20.0);

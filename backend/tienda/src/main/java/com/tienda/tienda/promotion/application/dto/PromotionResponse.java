@@ -3,12 +3,8 @@ package com.tienda.tienda.promotion.application.dto;
 import lombok.Data;
 
 @Data
-public class PromotionDTO {
+public class PromotionResponse {
     private int id;
     private double discount;
     private String description;
-
-    public void setDiscounç(double v) {
-
-    }
 }

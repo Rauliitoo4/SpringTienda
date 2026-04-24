@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.controller;
 
-import com.tienda.tienda.promotion.application.dto.PromotionDTO;
+import com.tienda.tienda.promotion.application.dto.PromotionResponse;
 import com.tienda.tienda.promotion.application.service.PromotionService;
 import com.tienda.tienda.promotion.infraestructure.controller.PromotionController;
 
@@ -27,11 +27,11 @@ class PromotionControllerTest {
     @MockitoBean
     private PromotionService promotionService;
 
-    private PromotionDTO promo;
+    private PromotionResponse promo;
 
     @BeforeEach
     void setUp() {
-        promo = new PromotionDTO();
+        promo = new PromotionResponse();
         promo.setId(1);
         promo.setDescription("Rebajas de verano");
         promo.setDiscount(10.0);
@@ -45,7 +45,7 @@ class PromotionControllerTest {
         webTestClient.get().uri("/promociones")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(PromotionDTO.class)
+                .expectBodyList(PromotionResponse.class)
                 .hasSize(1);
 
     }
@@ -57,7 +57,7 @@ class PromotionControllerTest {
         webTestClient.get().uri("/promociones")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(PromotionDTO.class)
+                .expectBodyList(PromotionResponse.class)
                 .hasSize(0);
     }
 
@@ -69,7 +69,7 @@ class PromotionControllerTest {
         webTestClient.get().uri("/promociones/1")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(PromotionDTO.class)
+                .expectBody(PromotionResponse.class)
                 .isEqualTo(promo);
     }
 
@@ -85,47 +85,47 @@ class PromotionControllerTest {
     //POST /promociones
     @Test
     void createPromotion_shouldReturnCreatedPromotionAndStatus201() {
-        when(promotionService.createPromotion(any(PromotionDTO.class))).thenReturn(Mono.just(promo));
+        when(promotionService.createPromotion(any(PromotionResponse.class))).thenReturn(Mono.just(promo));
 
         webTestClient.post().uri("/promociones")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(promo)
                 .exchange()
                 .expectStatus().isCreated()
-                .expectBody(PromotionDTO.class)
+                .expectBody(PromotionResponse.class)
                 .isEqualTo(promo);
     }
 
     @Test
     void createPromotion_shouldCallService() {
-        when(promotionService.createPromotion(any(PromotionDTO.class))).thenReturn(Mono.just(promo));
+        when(promotionService.createPromotion(any(PromotionResponse.class))).thenReturn(Mono.just(promo));
 
         webTestClient.post().uri("/promociones")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(promo)
                 .exchange()
                 .expectStatus().isCreated();
-        verify(promotionService, times(1)).createPromotion(any(PromotionDTO.class));
+        verify(promotionService, times(1)).createPromotion(any(PromotionResponse.class));
     }
 
     //PUT /promociones/{id}
     @Test
     void updatePromotion_shouldReturnUpdatedPromotionAndStatus200() {
         promo.setDiscount(50.0);
-        when(promotionService.updatePromotion(eq(1), any(PromotionDTO.class))).thenReturn(Mono.just(promo));
+        when(promotionService.updatePromotion(eq(1), any(PromotionResponse.class))).thenReturn(Mono.just(promo));
 
         webTestClient.put().uri("/promociones/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(promo)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(PromotionDTO.class)
+                .expectBody(PromotionResponse.class)
                 .isEqualTo(promo);
     }
 
     @Test
     void updatePromotion_ifNotExists_shouldReturn404() {
-        when(promotionService.updatePromotion(eq(99), any(PromotionDTO.class))).thenReturn(Mono.empty());
+        when(promotionService.updatePromotion(eq(99), any(PromotionResponse.class))).thenReturn(Mono.empty());
 
         webTestClient.put().uri("/promociones/99")
                 .contentType(MediaType.APPLICATION_JSON)

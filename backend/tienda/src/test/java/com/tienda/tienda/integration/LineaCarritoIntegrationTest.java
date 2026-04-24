@@ -1,7 +1,7 @@
 package com.tienda.tienda.integration;
 
 import com.tienda.tienda.carrito.application.dto.CarritoDTO;
-import com.tienda.tienda.product.application.dto.ProductDTO;
+import com.tienda.tienda.product.application.dto.ProductResponse;
 import com.tienda.tienda.user.application.dto.UserDTO;
 import com.tienda.tienda.user.application.dto.UserResponseDTO;
 import com.tienda.tienda.lineacarrito.application.dto.LineaCarritoDTO;
@@ -66,13 +66,13 @@ class LineaCarritoIntegrationTest {
         userDTO.setPassword("1234");
         UserResponseDTO user = userService.createUser(userDTO).block();
 
-        ProductDTO productDTO = new ProductDTO();
-        productDTO.setName("Camiseta Test");
-        productDTO.setPrice(20.00);
-        productDTO.setDescription("Descripción test");
-        productDTO.setMaterial("Algodón");
-        productDTO.setConsiderations("Lavar a 30 grados");
-        ProductDTO product = productService.createProduct(productDTO).block();
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setName("Camiseta Test");
+        productResponse.setPrice(20.00);
+        productResponse.setDescription("Descripción test");
+        productResponse.setMaterial("Algodón");
+        productResponse.setConsiderations("Lavar a 30 grados");
+        ProductResponse product = productService.createProduct(productResponse).block();
 
         CarritoDTO carrito = carritoService.addProductToCarrito(user.getCarritoId(), product.getId(), 2).block();
 

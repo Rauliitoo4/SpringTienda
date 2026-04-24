@@ -1,10 +1,10 @@
-package com.tienda.tienda.product.application.port;
+package com.tienda.tienda.product.domain.repository;
 
-import com.tienda.tienda.product.domain.Product;
+import com.tienda.tienda.product.domain.model.Product;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface ProductRepositoryPort {
+public interface ProductRepository {
     Mono<Product> findById(int id);
     Mono<Product> save(Product product);
     Flux<Product> findAll();

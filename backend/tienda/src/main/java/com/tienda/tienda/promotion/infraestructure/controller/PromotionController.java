@@ -1,6 +1,6 @@
 package com.tienda.tienda.promotion.infraestructure.controller;
 
-import com.tienda.tienda.promotion.application.dto.PromotionDTO;
+import com.tienda.tienda.promotion.application.dto.PromotionResponse;
 import com.tienda.tienda.promotion.application.service.PromotionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,25 +25,25 @@ public class PromotionController {
     }
 
     @GetMapping
-    public ResponseEntity<Flux<PromotionDTO>> getAllUsers() {
+    public ResponseEntity<Flux<PromotionResponse>> getAllUsers() {
         return ResponseEntity.ok(promotionService.getAllPromotions());
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<PromotionDTO>> getPromotionById(@PathVariable int id) {
+    public Mono<ResponseEntity<PromotionResponse>> getPromotionById(@PathVariable int id) {
         return promotionService.getPromotionById(id)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Mono<ResponseEntity<PromotionDTO>> createPromotion(@RequestBody PromotionDTO dto) {
+    public Mono<ResponseEntity<PromotionResponse>> createPromotion(@RequestBody PromotionResponse dto) {
         return promotionService.createPromotion(dto)
                 .map(created -> ResponseEntity.status(HttpStatus.CREATED).body(created));
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<PromotionDTO>> updatePromotion(@PathVariable int id, @RequestBody PromotionDTO dto) {
+    public Mono<ResponseEntity<PromotionResponse>> updatePromotion(@PathVariable int id, @RequestBody PromotionResponse dto) {
         return promotionService.updatePromotion(id, dto)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
