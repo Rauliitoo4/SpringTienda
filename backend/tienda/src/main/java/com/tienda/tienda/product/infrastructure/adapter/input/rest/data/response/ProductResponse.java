@@ -1,6 +1,6 @@
 package com.tienda.tienda.product.infrastructure.adapter.input.rest.data.response;
 
-import com.tienda.tienda.promotion.application.dto.PromotionResponse;
+import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.data.response.PromotionResponse;
 import lombok.Getter;
 import lombok.Setter;
 

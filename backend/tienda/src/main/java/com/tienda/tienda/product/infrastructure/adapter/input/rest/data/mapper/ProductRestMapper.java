@@ -3,7 +3,7 @@ package com.tienda.tienda.product.infrastructure.adapter.input.rest.data.mapper;
 import com.tienda.tienda.product.domain.model.Product;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.request.ProductRequest;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.response.ProductResponse;
-import com.tienda.tienda.promotion.application.dto.PromotionResponse;
+import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.data.response.PromotionResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;

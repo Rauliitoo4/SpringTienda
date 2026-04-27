@@ -1,6 +1,6 @@
 package com.tienda.tienda.product.domain.model;
 
-import com.tienda.tienda.promotion.domain.Promotion;
+import com.tienda.tienda.promotion.domain.model.Promotion;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Getter;

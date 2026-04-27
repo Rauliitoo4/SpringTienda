@@ -22,7 +22,7 @@ public class PromotionLoader {
                 .findPromotionIdsByProductId(product.getId())
                 .flatMap(promotionRepo::findById)
                 .collectList()
-                .doOnNext(product::setPromotions)
+                .doOnNext(product::setPromotionEntities)
                 .thenReturn(product);
     }
 }

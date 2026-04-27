@@ -1,20 +1,17 @@
-package com.tienda.tienda.promotion.domain;
+package com.tienda.tienda.promotion.domain.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("promociones")
 public class Promotion {
 
-    @Id
     private Integer id;
-
     private double discount;
     private String description;
 }

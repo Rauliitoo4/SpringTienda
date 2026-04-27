@@ -2,7 +2,7 @@ package com.tienda.tienda.unit.controller;
 
 import com.tienda.tienda.promotion.application.dto.PromotionResponse;
 import com.tienda.tienda.promotion.application.service.PromotionService;
-import com.tienda.tienda.promotion.infraestructure.controller.PromotionController;
+import com.tienda.tienda.promotion.infraestructure.adapter.controller.PromotionController;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @WebFluxTest(PromotionController.class)
-class PromotionControllerTest {
+class PromotionEntityControllerTest {
     
     @Autowired
     private WebTestClient webTestClient;
