@@ -66,7 +66,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="01-create-table-lineas-carrito" author="raul.redondochicano">
+    <changeSet id="01-create-table-lineas-carritoEntity" author="raul.redondochicano">
         <createTable tableName="lineas_carrito">
             <column name="id" type="SERIAL">
                 <constraints primaryKey="true" nullable="false"/>

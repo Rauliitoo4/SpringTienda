@@ -6,7 +6,7 @@ import com.tienda.tienda.product.domain.repository.UpdateProductRepository;
 import com.tienda.tienda.product.domain.repository.ProductPromotionRepository;
 import com.tienda.tienda.product.domain.service.PriceCalculator;
 import com.tienda.tienda.product.application.helper.PromotionLoader;
-import com.tienda.tienda.lineacarrito.application.service.LineaCarritoService;
+import com.tienda.tienda.carrito.application.helper.LineasCarritoUpdater;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -17,19 +17,15 @@ public class RemovePromotionUseCase {
     private final UpdateProductRepository updateProductRepository;
     private final ProductPromotionRepository productPromotionRepository;
     private final PromotionLoader promotionLoader;
-    private final LineaCarritoService lineaCarritoService;
+    private final LineasCarritoUpdater lineasCarritoUpdater;
     private final PriceCalculator priceCalculator = new PriceCalculator();
 
-    public RemovePromotionUseCase(GetProductRepository getProductRepository,
-                                  UpdateProductRepository updateProductRepository,
-                                  ProductPromotionRepository productPromotionRepository,
-                                  PromotionLoader promotionLoader,
-                                  LineaCarritoService lineaCarritoService) {
+    public RemovePromotionUseCase(GetProductRepository getProductRepository, UpdateProductRepository updateProductRepository, ProductPromotionRepository productPromotionRepository, PromotionLoader promotionLoader, LineasCarritoUpdater lineasCarritoUpdater) {
         this.getProductRepository = getProductRepository;
         this.updateProductRepository = updateProductRepository;
         this.productPromotionRepository = productPromotionRepository;
         this.promotionLoader = promotionLoader;
-        this.lineaCarritoService = lineaCarritoService;
+        this.lineasCarritoUpdater = lineasCarritoUpdater;
     }
 
     public Mono<Product> execute(int productId, int promotionId) {
@@ -40,7 +36,7 @@ public class RemovePromotionUseCase {
                                 .flatMap(p -> {
                                     priceCalculator.recalculateFinalPrice(p);
                                     return updateProductRepository.save(p)
-                                            .then(lineaCarritoService.updateLineasCarrito(p))
+                                            .then(lineasCarritoUpdater.updateLineas(p))
                                             .thenReturn(p);
                                 })
                 );
