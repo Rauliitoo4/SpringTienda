@@ -1,7 +1,7 @@
 package com.tienda.tienda.integration;
 
-import com.tienda.tienda.promotion.application.dto.PromotionResponse;
-import com.tienda.tienda.promotion.application.service.PromotionService;
+import com.tienda.tienda.promotion.domain.model.Promotion;
+import com.tienda.tienda.promotion.application.usecase.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Testcontainers
-class PromotionEntityIntegrationTest {
+class PromotionIntegrationTest {
     
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17")
@@ -39,18 +39,27 @@ class PromotionEntityIntegrationTest {
     }
 
     @Autowired
-    private PromotionService promotionService;
+    private CreatePromotionUseCase createPromotionUseCase;
 
-    private PromotionResponse createPromocionTest() {
-        PromotionResponse dto = new PromotionResponse();
-        dto.setDescription("Descuento de verano");
-        dto.setDiscount(10.0);
-        return promotionService.createPromotion(dto).block();
+    @Autowired
+    private GetPromotionUseCase getPromotionUseCase;
+
+    @Autowired
+    private UpdatePromotionUseCase updatePromotionUseCase;
+
+    @Autowired
+    private DeletePromotionUseCase deletePromotionUseCase;
+
+    private Promotion createPromocionTest() {
+        Promotion promotion = new Promotion();
+        promotion.setDescription("Descuento de verano");
+        promotion.setDiscount(10.0);
+        return createPromotionUseCase.execute(promotion).block();
     }
 
     @Test
     void createPromotion_shouldSaveInDB() {
-        PromotionResponse result = createPromocionTest();
+        Promotion result = createPromocionTest();
 
         assertNotNull(result);
         assertNotNull(result.getId());
@@ -61,7 +70,7 @@ class PromotionEntityIntegrationTest {
     @Test
     void getAllPromotions_shouldReturn_PromotionsFromDB() {
         createPromocionTest();
-        List<PromotionResponse> promotions = promotionService.getAllPromotions().collectList().block();
+        List<Promotion> promotions = getPromotionUseCase.executeAll().collectList().block();
 
         assertNotNull(promotions);
         assertFalse(promotions.isEmpty());
@@ -69,8 +78,8 @@ class PromotionEntityIntegrationTest {
 
     @Test
     void getPromotionById_shouldReturn_PromotionFromDB() {
-        PromotionResponse created = createPromocionTest();
-        PromotionResponse result = promotionService.getPromotionById(created.getId()).block();
+        Promotion created = createPromocionTest();
+        Promotion result = getPromotionUseCase.execute(created.getId()).block();
 
         assertNotNull(result);
         assertEquals(created.getId(), result.getId());
@@ -78,18 +87,18 @@ class PromotionEntityIntegrationTest {
 
     @Test
     void getPromotionById_ifNotExists_shouldReturnNull() {
-        PromotionResponse result = promotionService.getPromotionById(9999).block();
+        Promotion result = getPromotionUseCase.execute(9999).block();
         assertNull(result);
     }
 
     @Test
     void updatePromotion_shouldUpdateDataInDB() {
-        PromotionResponse created = createPromocionTest();
+        Promotion created = createPromocionTest();
 
-        PromotionResponse changes = new PromotionResponse();
+        Promotion changes = new Promotion();
         changes.setDiscount(20.0);
 
-        PromotionResponse updated = promotionService.updatePromotion(created.getId(), changes).block();
+        Promotion updated = updatePromotionUseCase.execute(created.getId(), changes).block();
 
         assertNotNull(updated);
         assertEquals(20.0, updated.getDiscount());
@@ -97,11 +106,11 @@ class PromotionEntityIntegrationTest {
 
     @Test
     void deletePromotion_shouldDeleteFromDB() {
-        PromotionResponse created = createPromocionTest();
-        boolean deleted = promotionService.deletePromotion(created.getId()).block();
+        Promotion created = createPromocionTest();
+        boolean deleted = deletePromotionUseCase.execute(created.getId()).block();
 
         assertTrue(deleted);
-        assertNull(promotionService.getPromotionById(created.getId()).block());
+        assertNull(getPromotionUseCase.execute(created.getId()).block());
     }
 
 }

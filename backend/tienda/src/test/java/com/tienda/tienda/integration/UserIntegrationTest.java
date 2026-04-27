@@ -1,8 +1,7 @@
 package com.tienda.tienda.integration;
 
-import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.request.UserRequest;
-import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.response.UserResponse;
-import com.tienda.tienda.user.application.service.UserService;
+import com.tienda.tienda.user.domain.model.User;
+import com.tienda.tienda.user.application.usecase.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Testcontainers
-class UserEntityIntegrationTest {
+class UserIntegrationTest {
     
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17")
@@ -40,21 +39,30 @@ class UserEntityIntegrationTest {
     }
 
     @Autowired
-    private UserService userService;
+    private CreateUserUseCase createUserUseCase;
 
-    private UserResponse createUserTest() {
-        UserRequest dto = new UserRequest();
-        dto.setName("Alberto");
-        dto.setLastname("García");
-        dto.setUsername("albertog");
-        dto.setEmail("albertog@gmail.com");
-        dto.setPassword("1234");
-        return userService.createUser(dto).block();
+    @Autowired
+    private GetUserUseCase getUserUseCase;
+
+    @Autowired
+    private UpdateUserUseCase updateUserUseCase;
+
+    @Autowired
+    private DeleteUserUseCase deleteUserUseCase;
+
+    private User createUserTest() {
+        User user = new User();
+        user.setName("Alberto");
+        user.setLastname("García");
+        user.setUsername("albertog");
+        user.setEmail("albertog@gmail.com");
+        user.setPassword("1234");
+        return createUserUseCase.execute(user).block();
     }
 
     @Test
     void createUser_shouldSaveInDB() {
-        UserResponse result = createUserTest();
+        User result = createUserTest();
 
         assertNotNull(result);
         assertNotNull(result.getId());
@@ -67,14 +75,14 @@ class UserEntityIntegrationTest {
 
     @Test
     void createUser_shouldCreateCarrito() {
-        UserResponse result = createUserTest();
+        User result = createUserTest();
         assertTrue(result.getCarritoId() > 0);
     }
 
     @Test
     void getAllUsers_shouldReturn_usersFromDB() {
         createUserTest();
-        List<UserResponse> users = userService.getAllUsers().collectList().block();
+        List<User> users = getUserUseCase.executeAll().collectList().block();
 
         assertNotNull(users);
         assertFalse(users.isEmpty());
@@ -82,8 +90,8 @@ class UserEntityIntegrationTest {
 
     @Test
     void getUserById_shouldReturn_userFromDB() {
-        UserResponse created = createUserTest();
-        UserResponse result = userService.getUserById(created.getId()).block();
+        User created = createUserTest();
+        User result = getUserUseCase.execute(created.getId()).block();
 
         assertNotNull(result);
         assertEquals(created.getId(), result.getId());
@@ -91,18 +99,18 @@ class UserEntityIntegrationTest {
 
     @Test
     void getUserById_ifNotExists_shouldReturnNull() {
-        UserResponse result = userService.getUserById(9999).block();
+        User result = getUserUseCase.execute(9999).block();
         assertNull(result);
     }
 
     @Test
     void updateUser_shouldUpdateDataInDB() {
-        UserResponse created = createUserTest();
+        User created = createUserTest();
 
-        UserRequest changes = new UserRequest();
+        User changes = new User();
         changes.setUsername("albertitog");
 
-        UserResponse updated = userService.updateUser(created.getId(), changes).block();
+        User updated = updateUserUseCase.execute(created.getId(), changes).block();
 
         assertNotNull(updated);
         assertEquals("albertitog", updated.getUsername());
@@ -110,11 +118,11 @@ class UserEntityIntegrationTest {
 
     @Test
     void deleteUser_shouldDeleteInDB() {
-        UserResponse created = createUserTest();
-        boolean deleted = userService.deleteUser(created.getId()).block();
+        User created = createUserTest();
+        boolean deleted = deleteUserUseCase.execute(created.getId()).block();
 
         assertTrue(deleted);
-        assertNull(userService.getUserById(created.getId()).block());
+        assertNull(getUserUseCase.execute(created.getId()).block());
     }
 
 }
