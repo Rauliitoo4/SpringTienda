@@ -4,7 +4,7 @@ import com.tienda.tienda.product.domain.model.Product;
 import com.tienda.tienda.product.domain.repository.UpdateProductRepository;
 import com.tienda.tienda.product.domain.repository.GetProductRepository;
 import com.tienda.tienda.product.application.helper.PromotionLoader;
-import com.tienda.tienda.product.domain.service.PriceCalculator;
+import com.tienda.tienda.product.application.helper.PriceCalculator;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 

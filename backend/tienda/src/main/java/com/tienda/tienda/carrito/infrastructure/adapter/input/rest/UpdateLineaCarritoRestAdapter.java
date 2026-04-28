@@ -21,8 +21,8 @@ public class UpdateLineaCarritoRestAdapter {
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<LineaCarritoResponse>> updateLinea(@PathVariable int id, @RequestParam int quantity) {
-        return updateLineaCarritoUseCase.execute(id, quantity)
+    public Mono<ResponseEntity<LineaCarritoResponse>> updateLinea(@PathVariable int id, @RequestParam int cantidad) {
+        return updateLineaCarritoUseCase.execute(id, cantidad)
                 .map(linea -> ResponseEntity.ok(mapper.toResponse(linea)))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }

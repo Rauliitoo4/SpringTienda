@@ -20,8 +20,8 @@ public class AddProductToCarritoRestAdapter {
     }
 
     @PostMapping("/{carritoId}/productos/{productId}")
-    public Mono<ResponseEntity<CarritoResponse>> addProduct(@PathVariable int carritoId, @PathVariable int productId, @RequestParam int quantity) {
-        return addProductToCarritoUseCase.execute(carritoId, productId, quantity)
+    public Mono<ResponseEntity<CarritoResponse>> addProduct(@PathVariable int carritoId, @PathVariable int productId, @RequestParam int cantidad) {
+        return addProductToCarritoUseCase.execute(carritoId, productId, cantidad)
                 .map(carrito -> ResponseEntity.ok(mapper.toResponse(carrito)))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
