@@ -9,7 +9,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface ProductPromotionJpaRepository extends ReactiveCrudRepository<ProductPromotionJpaRepository.ProductPromotionEntity, Integer> {
+public interface ProductPromotionR2dbcRepository extends ReactiveCrudRepository<ProductPromotionR2dbcRepository.ProductPromotionEntity, Integer> {
 
     @Query("SELECT promotion_id FROM producto_promocion WHERE product_id = :productId")
     Flux<Integer> findPromotionIdsByProductId(int productId);

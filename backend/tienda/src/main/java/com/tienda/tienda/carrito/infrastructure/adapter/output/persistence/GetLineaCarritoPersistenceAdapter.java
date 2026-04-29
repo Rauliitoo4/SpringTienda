@@ -3,7 +3,7 @@ package com.tienda.tienda.carrito.infrastructure.adapter.output.persistence;
 import com.tienda.tienda.carrito.domain.model.LineaCarrito;
 import com.tienda.tienda.carrito.domain.repository.GetLineaCarritoRepository;
 import com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.mapper.LineaCarritoPersistenceMapper;
-import com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.repository.LineaCarritoJpaRepository;
+import com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.repository.LineaCarritoR2dbcRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -11,10 +11,10 @@ import reactor.core.publisher.Mono;
 @Repository
 public class GetLineaCarritoPersistenceAdapter implements GetLineaCarritoRepository {
 
-    private final LineaCarritoJpaRepository jpaRepository;
+    private final LineaCarritoR2dbcRepository jpaRepository;
     private final LineaCarritoPersistenceMapper mapper;
 
-    public GetLineaCarritoPersistenceAdapter(LineaCarritoJpaRepository jpaRepository,
+    public GetLineaCarritoPersistenceAdapter(LineaCarritoR2dbcRepository jpaRepository,
                                              LineaCarritoPersistenceMapper mapper) {
         this.jpaRepository = jpaRepository;
         this.mapper = mapper;

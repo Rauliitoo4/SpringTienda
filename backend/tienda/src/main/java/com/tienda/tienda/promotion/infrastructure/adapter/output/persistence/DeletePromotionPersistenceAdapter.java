@@ -1,16 +1,16 @@
 package com.tienda.tienda.promotion.infrastructure.adapter.output.persistence;
 
 import com.tienda.tienda.promotion.domain.repository.DeletePromotionRepository;
-import com.tienda.tienda.promotion.infrastructure.adapter.output.persistence.repository.PromotionJpaRepository;
+import com.tienda.tienda.promotion.infrastructure.adapter.output.persistence.repository.PromotionR2dbcRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
 public class DeletePromotionPersistenceAdapter implements DeletePromotionRepository {
 
-    private final PromotionJpaRepository jpaRepository;
+    private final PromotionR2dbcRepository jpaRepository;
 
-    public DeletePromotionPersistenceAdapter(PromotionJpaRepository jpaRepository) {
+    public DeletePromotionPersistenceAdapter(PromotionR2dbcRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
     }
 
