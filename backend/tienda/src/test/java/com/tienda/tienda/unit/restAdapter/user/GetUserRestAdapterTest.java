@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.user;
 
-import com.tienda.tienda.user.application.usecase.GetUserUseCase;
+import com.tienda.tienda.user.application.port.input.GetUserInputPort;
 import com.tienda.tienda.user.domain.model.User;
 import com.tienda.tienda.user.infrastructure.adapter.input.rest.GetUserRestAdapter;
 import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.mapper.UserRestMapper;
@@ -23,7 +23,7 @@ class GetUserRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private GetUserUseCase getUserUseCase;
+    private GetUserInputPort getUserInputPort;
 
     @MockitoBean
     private UserRestMapper userRestMapper;
@@ -52,7 +52,7 @@ class GetUserRestAdapterTest {
 
     @Test
     void getAllUsers_shouldReturnListAndStatus200() {
-        when(getUserUseCase.executeAll()).thenReturn(Flux.just(basicUser));
+        when(getUserInputPort.executeAll()).thenReturn(Flux.just(basicUser));
         when(userRestMapper.toResponse(basicUser)).thenReturn(basicUserResponse);
 
         webTestClient.get().uri("/usuarios")
@@ -64,7 +64,7 @@ class GetUserRestAdapterTest {
 
     @Test
     void getAllUsers_emptyList_shouldReturnEmptyArrayAndStatus200() {
-        when(getUserUseCase.executeAll()).thenReturn(Flux.empty());
+        when(getUserInputPort.executeAll()).thenReturn(Flux.empty());
 
         webTestClient.get().uri("/usuarios")
                 .exchange()
@@ -75,7 +75,7 @@ class GetUserRestAdapterTest {
 
     @Test
     void getUserById_shouldReturnUserAndStatus200() {
-        when(getUserUseCase.execute(1)).thenReturn(Mono.just(basicUser));
+        when(getUserInputPort.execute(1)).thenReturn(Mono.just(basicUser));
         when(userRestMapper.toResponse(basicUser)).thenReturn(basicUserResponse);
 
         webTestClient.get().uri("/usuarios/1")
@@ -87,7 +87,7 @@ class GetUserRestAdapterTest {
 
     @Test
     void getUserById_ifNotExists_shouldReturn404() {
-        when(getUserUseCase.execute(99)).thenReturn(Mono.empty());
+        when(getUserInputPort.execute(99)).thenReturn(Mono.empty());
 
         webTestClient.get().uri("/usuarios/99")
                 .exchange()

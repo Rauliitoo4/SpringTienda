@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.user;
 
-import com.tienda.tienda.user.application.usecase.CreateUserUseCase;
+import com.tienda.tienda.user.application.port.input.CreateUserInputPort;
 import com.tienda.tienda.user.domain.model.User;
 import com.tienda.tienda.user.infrastructure.adapter.input.rest.CreateUserRestAdapter;
 import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.mapper.UserRestMapper;
@@ -25,7 +25,7 @@ class CreateUserRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private CreateUserUseCase createUserUseCase;
+    private CreateUserInputPort createUserInputPort;
 
     @MockitoBean
     private UserRestMapper userRestMapper;
@@ -63,7 +63,7 @@ class CreateUserRestAdapterTest {
     @Test
     void createUser_shouldReturnCreatedUserAndStatus201() {
         when(userRestMapper.toDomain(any(UserRequest.class))).thenReturn(basicUser);
-        when(createUserUseCase.execute(any(User.class))).thenReturn(Mono.just(basicUser));
+        when(createUserInputPort.execute(any(User.class))).thenReturn(Mono.just(basicUser));
         when(userRestMapper.toResponse(any(User.class))).thenReturn(basicUserResponse);
 
         webTestClient.post().uri("/usuarios")
@@ -74,6 +74,6 @@ class CreateUserRestAdapterTest {
                 .expectBody(UserResponse.class)
                 .isEqualTo(basicUserResponse);
 
-        verify(createUserUseCase, times(1)).execute(any(User.class));
+        verify(createUserInputPort, times(1)).execute(any(User.class));
     }
 }

@@ -2,7 +2,7 @@ package com.tienda.tienda.unit.usecase.user;
 
 import com.tienda.tienda.user.application.usecase.GetUserUseCase;
 import com.tienda.tienda.user.domain.model.User;
-import com.tienda.tienda.user.domain.repository.GetUserRepository;
+import com.tienda.tienda.user.application.port.output.GetUserOutputPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class GetUserUseCaseTest {
 
-    @Mock private GetUserRepository getUserRepository;
+    @Mock private GetUserOutputPort getUserOutputPort;
 
     @InjectMocks
     private GetUserUseCase getUserUseCase;
@@ -36,7 +36,7 @@ class GetUserUseCaseTest {
     @Test
     void execute_shouldReturnUser() {
         User user = testUser();
-        when(getUserRepository.findById(1)).thenReturn(Mono.just(user));
+        when(getUserOutputPort.findById(1)).thenReturn(Mono.just(user));
 
         StepVerifier.create(getUserUseCase.execute(1))
                 .expectNextMatches(result ->
@@ -47,7 +47,7 @@ class GetUserUseCaseTest {
 
     @Test
     void execute_ifNotExists_shouldReturnEmpty() {
-        when(getUserRepository.findById(999)).thenReturn(Mono.empty());
+        when(getUserOutputPort.findById(999)).thenReturn(Mono.empty());
 
         StepVerifier.create(getUserUseCase.execute(999))
                 .verifyComplete();
@@ -56,7 +56,7 @@ class GetUserUseCaseTest {
     @Test
     void executeAll_shouldReturnAllUsers() {
         User user = testUser();
-        when(getUserRepository.findAll()).thenReturn(Flux.just(user));
+        when(getUserOutputPort.findAll()).thenReturn(Flux.just(user));
 
         StepVerifier.create(getUserUseCase.executeAll())
                 .expectNextMatches(result -> result.getName().equals("Alberto"))

@@ -1,25 +1,26 @@
 package com.tienda.tienda.user.application.usecase;
 
+import com.tienda.tienda.user.application.port.input.GetUserInputPort;
 import com.tienda.tienda.user.domain.model.User;
-import com.tienda.tienda.user.domain.repository.GetUserRepository;
+import com.tienda.tienda.user.application.port.output.GetUserOutputPort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
-public class GetUserUseCase {
+public class GetUserUseCase implements GetUserInputPort {
 
-    private final GetUserRepository getUserRepository;
+    private final GetUserOutputPort getUserOutputPort;
 
-    public GetUserUseCase(GetUserRepository getUserRepository) {
-        this.getUserRepository = getUserRepository;
+    public GetUserUseCase(GetUserOutputPort getUserOutputPort) {
+        this.getUserOutputPort = getUserOutputPort;
     }
 
     public Mono<User> execute(int id) {
-        return getUserRepository.findById(id);
+        return getUserOutputPort.findById(id);
     }
 
     public Flux<User> executeAll() {
-        return getUserRepository.findAll();
+        return getUserOutputPort.findAll();
     }
 }

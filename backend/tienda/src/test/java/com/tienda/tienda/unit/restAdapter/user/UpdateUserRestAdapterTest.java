@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.user;
 
-import com.tienda.tienda.user.application.usecase.UpdateUserUseCase;
+import com.tienda.tienda.user.application.port.input.UpdateUserInputPort;
 import com.tienda.tienda.user.domain.model.User;
 import com.tienda.tienda.user.infrastructure.adapter.input.rest.UpdateUserRestAdapter;
 import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.mapper.UserRestMapper;
@@ -26,7 +26,7 @@ class UpdateUserRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private UpdateUserUseCase updateUserUseCase;
+    private UpdateUserInputPort updateUserInputPort;
 
     @MockitoBean
     private UserRestMapper userRestMapper;
@@ -60,7 +60,7 @@ class UpdateUserRestAdapterTest {
     @Test
     void updateUser_shouldReturnUpdatedUserAndStatus200() {
         when(userRestMapper.toDomain(any(UserRequest.class))).thenReturn(basicUser);
-        when(updateUserUseCase.execute(eq(1), any(User.class))).thenReturn(Mono.just(basicUser));
+        when(updateUserInputPort.execute(eq(1), any(User.class))).thenReturn(Mono.just(basicUser));
         when(userRestMapper.toResponse(any(User.class))).thenReturn(basicUserResponse);
 
         webTestClient.put().uri("/usuarios/1")
@@ -75,7 +75,7 @@ class UpdateUserRestAdapterTest {
     @Test
     void updateUser_ifNotExists_shouldReturn404() {
         when(userRestMapper.toDomain(any(UserRequest.class))).thenReturn(basicUser);
-        when(updateUserUseCase.execute(eq(99), any(User.class))).thenReturn(Mono.empty());
+        when(updateUserInputPort.execute(eq(99), any(User.class))).thenReturn(Mono.empty());
 
         webTestClient.put().uri("/usuarios/99")
                 .contentType(MediaType.APPLICATION_JSON)

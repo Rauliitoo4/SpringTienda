@@ -2,8 +2,8 @@ package com.tienda.tienda.unit.usecase.user;
 
 import com.tienda.tienda.user.application.usecase.UpdateUserUseCase;
 import com.tienda.tienda.user.domain.model.User;
-import com.tienda.tienda.user.domain.repository.GetUserRepository;
-import com.tienda.tienda.user.domain.repository.UpdateUserRepository;
+import com.tienda.tienda.user.application.port.output.GetUserOutputPort;
+import com.tienda.tienda.user.application.port.output.UpdateUserOutputPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,8 +18,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UpdateUserUseCaseTest {
 
-    @Mock private GetUserRepository getUserRepository;
-    @Mock private UpdateUserRepository updateUserRepository;
+    @Mock private GetUserOutputPort getUserOutputPort;
+    @Mock private UpdateUserOutputPort updateUserOutputPort;
 
     @InjectMocks
     private UpdateUserUseCase updateUserUseCase;
@@ -38,8 +38,8 @@ class UpdateUserUseCaseTest {
     @Test
     void execute_shouldUpdateAndReturnUser() {
         User user = testUser();
-        when(getUserRepository.findById(1)).thenReturn(Mono.just(user));
-        when(updateUserRepository.save(any(User.class))).thenReturn(Mono.just(user));
+        when(getUserOutputPort.findById(1)).thenReturn(Mono.just(user));
+        when(updateUserOutputPort.save(any(User.class))).thenReturn(Mono.just(user));
 
         User changes = new User();
         changes.setUsername("albertitog");
@@ -48,12 +48,12 @@ class UpdateUserUseCaseTest {
                 .expectNextMatches(result -> result.getUsername().equals("albertitog"))
                 .verifyComplete();
 
-        verify(updateUserRepository, times(1)).save(any(User.class));
+        verify(updateUserOutputPort, times(1)).save(any(User.class));
     }
 
     @Test
     void execute_ifNotExists_shouldReturnEmpty() {
-        when(getUserRepository.findById(999)).thenReturn(Mono.empty());
+        when(getUserOutputPort.findById(999)).thenReturn(Mono.empty());
 
         User changes = new User();
         changes.setUsername("albertitog");

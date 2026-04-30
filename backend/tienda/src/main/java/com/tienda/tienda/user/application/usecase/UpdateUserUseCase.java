@@ -1,31 +1,32 @@
 package com.tienda.tienda.user.application.usecase;
 
+import com.tienda.tienda.user.application.port.input.UpdateUserInputPort;
+import com.tienda.tienda.user.application.port.output.GetUserOutputPort;
+import com.tienda.tienda.user.application.port.output.UpdateUserOutputPort;
 import com.tienda.tienda.user.domain.model.User;
-import com.tienda.tienda.user.domain.repository.GetUserRepository;
-import com.tienda.tienda.user.domain.repository.UpdateUserRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
-public class UpdateUserUseCase {
+public class UpdateUserUseCase implements UpdateUserInputPort {
 
-    private final GetUserRepository getUserRepository;
-    private final UpdateUserRepository updateUserRepository;
+    private final GetUserOutputPort getUserOutputPort;
+    private final UpdateUserOutputPort updateUserOutputPort;
 
-    public UpdateUserUseCase(GetUserRepository getUserRepository, UpdateUserRepository updateUserRepository) {
-        this.getUserRepository = getUserRepository;
-        this.updateUserRepository = updateUserRepository;
+    public UpdateUserUseCase(GetUserOutputPort getUserOutputPort, UpdateUserOutputPort updateUserOutputPort) {
+        this.getUserOutputPort = getUserOutputPort;
+        this.updateUserOutputPort = updateUserOutputPort;
     }
 
     public Mono<User> execute(int id, User updatedUser) {
-        return getUserRepository.findById(id)
+        return getUserOutputPort.findById(id)
                 .flatMap(user -> {
                     if (updatedUser.getName() != null) user.setName(updatedUser.getName());
                     if (updatedUser.getLastname() != null) user.setLastname(updatedUser.getLastname());
                     if (updatedUser.getUsername() != null) user.setUsername(updatedUser.getUsername());
                     if (updatedUser.getEmail() != null) user.setEmail(updatedUser.getEmail());
                     if (updatedUser.getPassword() != null) user.setPassword(updatedUser.getPassword());
-                    return updateUserRepository.save(user);
+                    return updateUserOutputPort.save(user);
                 });
     }
 }

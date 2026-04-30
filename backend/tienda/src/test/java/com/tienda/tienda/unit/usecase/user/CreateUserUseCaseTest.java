@@ -4,7 +4,7 @@ import com.tienda.tienda.carrito.application.usecase.CreateCarritoUseCase;
 import com.tienda.tienda.carrito.domain.model.Carrito;
 import com.tienda.tienda.user.application.usecase.CreateUserUseCase;
 import com.tienda.tienda.user.domain.model.User;
-import com.tienda.tienda.user.domain.repository.CreateUserRepository;
+import com.tienda.tienda.user.application.port.output.CreateUserOutputPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class CreateUserUseCaseTest {
 
-    @Mock private CreateUserRepository createUserRepository;
+    @Mock private CreateUserOutputPort createUserOutputPort;
     @Mock private CreateCarritoUseCase createCarritoUseCase;
 
     @InjectMocks
@@ -48,7 +48,7 @@ class CreateUserUseCaseTest {
     void execute_shouldCreateCarritoAndSaveUser() {
         User user = testUser();
         when(createCarritoUseCase.execute()).thenReturn(Mono.just(testCarrito()));
-        when(createUserRepository.save(any(User.class))).thenReturn(Mono.just(user));
+        when(createUserOutputPort.save(any(User.class))).thenReturn(Mono.just(user));
 
         StepVerifier.create(createUserUseCase.execute(user))
                 .expectNextMatches(result ->
@@ -56,7 +56,7 @@ class CreateUserUseCaseTest {
                                 result.getCarritoId() == 1)
                 .verifyComplete();
 
-        verify(createUserRepository, times(1)).save(any(User.class));
+        verify(createUserOutputPort, times(1)).save(any(User.class));
         verify(createCarritoUseCase, times(1)).execute();
     }
 }

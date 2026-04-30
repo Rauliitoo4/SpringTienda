@@ -1,6 +1,6 @@
 package com.tienda.tienda.user.infrastructure.adapter.input.rest;
 
-import com.tienda.tienda.user.application.usecase.UpdateUserUseCase;
+import com.tienda.tienda.user.application.port.input.UpdateUserInputPort;
 import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.mapper.UserRestMapper;
 import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.request.UserRequest;
 import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.response.UserResponse;
@@ -12,10 +12,10 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/usuarios")
 public class UpdateUserRestAdapter {
 
-    private final UpdateUserUseCase updateUserUseCase;
+    private final UpdateUserInputPort updateUserUseCase;
     private final UserRestMapper mapper;
 
-    public UpdateUserRestAdapter(UpdateUserUseCase updateUserUseCase, UserRestMapper mapper) {
+    public UpdateUserRestAdapter(UpdateUserInputPort updateUserUseCase, UserRestMapper mapper) {
         this.updateUserUseCase = updateUserUseCase;
         this.mapper = mapper;
     }
