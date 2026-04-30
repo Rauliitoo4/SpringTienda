@@ -4,8 +4,8 @@ import com.tienda.tienda.product.application.port.input.UpdateProductInputPort;
 import com.tienda.tienda.product.domain.model.Product;
 import com.tienda.tienda.product.application.port.output.GetProductOutputPort;
 import com.tienda.tienda.product.application.port.output.UpdateProductOutputPort;
-import com.tienda.tienda.product.application.helper.PromotionLoader;
-import com.tienda.tienda.product.application.helper.PriceCalculator;
+import com.tienda.tienda.product.application.service.PromotionLoader;
+import com.tienda.tienda.product.application.service.PriceCalculator;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 

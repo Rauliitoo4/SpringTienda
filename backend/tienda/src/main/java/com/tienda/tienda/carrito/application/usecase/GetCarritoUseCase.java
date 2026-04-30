@@ -3,7 +3,7 @@ package com.tienda.tienda.carrito.application.usecase;
 import com.tienda.tienda.carrito.application.port.input.GetCarritoInputPort;
 import com.tienda.tienda.carrito.domain.model.Carrito;
 import com.tienda.tienda.carrito.application.port.output.GetCarritoOutputPort;
-import com.tienda.tienda.carrito.application.helper.LineaLoader;
+import com.tienda.tienda.carrito.application.service.LineaLoader;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 

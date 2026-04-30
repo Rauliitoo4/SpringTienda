@@ -1,7 +1,7 @@
 package com.tienda.tienda.unit.usecase.carrito;
 
-import com.tienda.tienda.carrito.application.helper.LineaLoader;
-import com.tienda.tienda.carrito.application.helper.TotalCalculator;
+import com.tienda.tienda.carrito.application.service.LineaLoader;
+import com.tienda.tienda.carrito.application.service.TotalCalculator;
 import com.tienda.tienda.carrito.application.usecase.AddProductToCarritoUseCase;
 import com.tienda.tienda.carrito.domain.model.Carrito;
 import com.tienda.tienda.carrito.domain.model.LineaCarrito;

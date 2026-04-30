@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.usecase.product;
 
-import com.tienda.tienda.product.application.helper.PromotionLoader;
+import com.tienda.tienda.product.application.service.PromotionLoader;
 import com.tienda.tienda.product.application.usecase.GetProductUseCase;
 import com.tienda.tienda.product.domain.model.Product;
 import com.tienda.tienda.product.application.port.output.GetProductOutputPort;
@@ -12,8 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;

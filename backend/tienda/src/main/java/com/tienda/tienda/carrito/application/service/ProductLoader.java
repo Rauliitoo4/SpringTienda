@@ -1,8 +1,8 @@
-package com.tienda.tienda.carrito.application.helper;
+package com.tienda.tienda.carrito.application.service;
 
 import com.tienda.tienda.carrito.domain.model.LineaCarrito;
 import com.tienda.tienda.product.application.port.output.GetProductOutputPort;
-import com.tienda.tienda.product.application.helper.PromotionLoader;
+import com.tienda.tienda.product.application.service.PromotionLoader;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 

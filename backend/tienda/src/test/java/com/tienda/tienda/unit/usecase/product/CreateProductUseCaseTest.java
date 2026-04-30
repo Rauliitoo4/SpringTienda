@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.usecase.product;
 
-import com.tienda.tienda.product.application.helper.PromotionLoader;
+import com.tienda.tienda.product.application.service.PromotionLoader;
 import com.tienda.tienda.product.application.usecase.CreateProductUseCase;
 import com.tienda.tienda.product.domain.model.Product;
 import com.tienda.tienda.product.application.port.output.CreateProductOutputPort;

@@ -3,7 +3,7 @@ package com.tienda.tienda.product.application.usecase;
 import com.tienda.tienda.product.application.port.input.GetProductInputPort;
 import com.tienda.tienda.product.domain.model.Product;
 import com.tienda.tienda.product.application.port.output.GetProductOutputPort;
-import com.tienda.tienda.product.application.helper.PromotionLoader;
+import com.tienda.tienda.product.application.service.PromotionLoader;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
