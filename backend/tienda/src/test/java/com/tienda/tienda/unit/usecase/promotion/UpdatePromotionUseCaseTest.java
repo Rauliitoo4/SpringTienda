@@ -2,8 +2,8 @@ package com.tienda.tienda.unit.usecase.promotion;
 
 import com.tienda.tienda.promotion.application.usecase.UpdatePromotionUseCase;
 import com.tienda.tienda.promotion.domain.model.Promotion;
-import com.tienda.tienda.promotion.domain.repository.GetPromotionRepository;
-import com.tienda.tienda.promotion.domain.repository.UpdatePromotionRepository;
+import com.tienda.tienda.promotion.application.port.output.GetPromotionOutputPort;
+import com.tienda.tienda.promotion.application.port.output.UpdatePromotionOutputPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,8 +18,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UpdatePromotionUseCaseTest {
 
-    @Mock private GetPromotionRepository getPromotionRepository;
-    @Mock private UpdatePromotionRepository updatePromotionRepository;
+    @Mock private GetPromotionOutputPort getPromotionOutputPort;
+    @Mock private UpdatePromotionOutputPort updatePromotionOutputPort;
 
     @InjectMocks
     private UpdatePromotionUseCase updatePromotionUseCase;
@@ -35,8 +35,8 @@ class UpdatePromotionUseCaseTest {
     @Test
     void execute_shouldUpdateAndReturnPromotion() {
         Promotion promo = testPromotion();
-        when(getPromotionRepository.findById(1)).thenReturn(Mono.just(promo));
-        when(updatePromotionRepository.save(any(Promotion.class))).thenReturn(Mono.just(promo));
+        when(getPromotionOutputPort.findById(1)).thenReturn(Mono.just(promo));
+        when(updatePromotionOutputPort.save(any(Promotion.class))).thenReturn(Mono.just(promo));
 
         Promotion changes = new Promotion();
         changes.setDiscount(30.0);
@@ -45,12 +45,12 @@ class UpdatePromotionUseCaseTest {
                 .expectNextMatches(result -> result.getDiscount() == 30.0)
                 .verifyComplete();
 
-        verify(updatePromotionRepository, times(1)).save(any(Promotion.class));
+        verify(updatePromotionOutputPort, times(1)).save(any(Promotion.class));
     }
 
     @Test
     void execute_ifNotExists_shouldReturnEmpty() {
-        when(getPromotionRepository.findById(999)).thenReturn(Mono.empty());
+        when(getPromotionOutputPort.findById(999)).thenReturn(Mono.empty());
 
         Promotion changes = new Promotion();
         changes.setDiscount(30.0);

@@ -3,7 +3,7 @@ package com.tienda.tienda.unit.usecase.carrito;
 import com.tienda.tienda.carrito.application.helper.ProductLoader;
 import com.tienda.tienda.carrito.application.usecase.GetLineaCarritoUseCase;
 import com.tienda.tienda.carrito.domain.model.LineaCarrito;
-import com.tienda.tienda.carrito.domain.repository.GetLineaCarritoRepository;
+import com.tienda.tienda.carrito.application.port.output.GetLineaCarritoOutputPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class GetLineaCarritoUseCaseTest {
 
-    @Mock private GetLineaCarritoRepository getLineaCarritoRepository;
+    @Mock private GetLineaCarritoOutputPort getLineaCarritoOutputPort;
     @Mock private ProductLoader productLoader;
 
     @InjectMocks
@@ -38,7 +38,7 @@ class GetLineaCarritoUseCaseTest {
     @Test
     void execute_shouldReturnLinea() {
         LineaCarrito linea = testLinea();
-        when(getLineaCarritoRepository.findById(1)).thenReturn(Mono.just(linea));
+        when(getLineaCarritoOutputPort.findById(1)).thenReturn(Mono.just(linea));
         when(productLoader.loadProduct(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
 
         StepVerifier.create(getLineaCarritoUseCase.execute(1))
@@ -51,7 +51,7 @@ class GetLineaCarritoUseCaseTest {
 
     @Test
     void execute_ifNotExists_shouldReturnEmpty() {
-        when(getLineaCarritoRepository.findById(999)).thenReturn(Mono.empty());
+        when(getLineaCarritoOutputPort.findById(999)).thenReturn(Mono.empty());
 
         StepVerifier.create(getLineaCarritoUseCase.execute(999))
                 .verifyComplete();
@@ -60,7 +60,7 @@ class GetLineaCarritoUseCaseTest {
     @Test
     void executeAll_shouldReturnAllLineas() {
         LineaCarrito linea = testLinea();
-        when(getLineaCarritoRepository.findAll()).thenReturn(Flux.just(linea));
+        when(getLineaCarritoOutputPort.findAll()).thenReturn(Flux.just(linea));
         when(productLoader.loadProduct(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
 
         StepVerifier.create(getLineaCarritoUseCase.executeAll())

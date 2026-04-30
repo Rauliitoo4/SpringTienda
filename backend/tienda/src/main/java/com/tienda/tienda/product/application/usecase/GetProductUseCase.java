@@ -1,30 +1,31 @@
 package com.tienda.tienda.product.application.usecase;
 
+import com.tienda.tienda.product.application.port.input.GetProductInputPort;
 import com.tienda.tienda.product.domain.model.Product;
-import com.tienda.tienda.product.domain.repository.GetProductRepository;
+import com.tienda.tienda.product.application.port.output.GetProductOutputPort;
 import com.tienda.tienda.product.application.helper.PromotionLoader;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
-public class GetProductUseCase {
+public class GetProductUseCase implements GetProductInputPort {
 
-    private final GetProductRepository getProductRepository;
+    private final GetProductOutputPort getProductOutputPort;
     private final PromotionLoader promotionLoader;
 
-    public GetProductUseCase (GetProductRepository getProductRepository, PromotionLoader promotionLoader) {
-        this.getProductRepository = getProductRepository;
+    public GetProductUseCase (GetProductOutputPort getProductOutputPort, PromotionLoader promotionLoader) {
+        this.getProductOutputPort = getProductOutputPort;
         this.promotionLoader = promotionLoader;
     }
 
     public Mono<Product> execute(int id) {
-        return getProductRepository.findById(id)
+        return getProductOutputPort.findById(id)
                 .flatMap(promotionLoader::loadPromotions);
     }
 
     public Flux<Product> executeAll() {
-        return getProductRepository.findAll()
+        return getProductOutputPort.findAll()
                 .flatMap(promotionLoader::loadPromotions);
     }
 }

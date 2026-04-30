@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.carrito;
 
-import com.tienda.tienda.carrito.application.usecase.GetCarritoUseCase;
+import com.tienda.tienda.carrito.application.port.input.GetCarritoInputPort;
 import com.tienda.tienda.carrito.domain.model.Carrito;
 import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.GetCarritoRestAdapter;
 import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.mapper.CarritoRestMapper;
@@ -24,7 +24,7 @@ class GetCarritoRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private GetCarritoUseCase getCarritoUseCase;
+    private GetCarritoInputPort getCarritoInputPort;
 
     @MockitoBean
     private CarritoRestMapper carritoRestMapper;
@@ -47,7 +47,7 @@ class GetCarritoRestAdapterTest {
 
     @Test
     void getCarritoById_shouldReturnCarritoAndStatus200() {
-        when(getCarritoUseCase.execute(1)).thenReturn(Mono.just(basicCarrito));
+        when(getCarritoInputPort.execute(1)).thenReturn(Mono.just(basicCarrito));
         when(carritoRestMapper.toResponse(basicCarrito)).thenReturn(basicCarritoResponse);
 
         webTestClient.get().uri("/carritos/1")
@@ -59,7 +59,7 @@ class GetCarritoRestAdapterTest {
 
     @Test
     void getCarritoById_ifNotExists_shouldReturn404() {
-        when(getCarritoUseCase.execute(99)).thenReturn(Mono.empty());
+        when(getCarritoInputPort.execute(99)).thenReturn(Mono.empty());
 
         webTestClient.get().uri("/carritos/99")
                 .exchange()

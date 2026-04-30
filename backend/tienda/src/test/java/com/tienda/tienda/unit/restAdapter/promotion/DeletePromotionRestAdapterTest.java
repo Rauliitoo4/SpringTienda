@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.promotion;
 
-import com.tienda.tienda.promotion.application.usecase.DeletePromotionUseCase;
+import com.tienda.tienda.promotion.application.port.input.DeletePromotionInputPort;
 import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.DeletePromotionRestAdapter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +18,11 @@ class DeletePromotionRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private DeletePromotionUseCase deletePromotionUseCase;
+    private DeletePromotionInputPort deletePromotionInputPort;
 
     @Test
     void deletePromotion_shouldReturn204() {
-        when(deletePromotionUseCase.execute(1)).thenReturn(Mono.just(true));
+        when(deletePromotionInputPort.execute(1)).thenReturn(Mono.just(true));
 
         webTestClient.delete().uri("/promociones/1")
                 .exchange()
@@ -31,7 +31,7 @@ class DeletePromotionRestAdapterTest {
 
     @Test
     void deletePromotion_ifNotExists_shouldReturn404() {
-        when(deletePromotionUseCase.execute(99)).thenReturn(Mono.just(false));
+        when(deletePromotionInputPort.execute(99)).thenReturn(Mono.just(false));
 
         webTestClient.delete().uri("/promociones/99")
                 .exchange()

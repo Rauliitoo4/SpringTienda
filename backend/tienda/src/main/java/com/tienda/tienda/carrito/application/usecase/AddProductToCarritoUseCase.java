@@ -1,35 +1,36 @@
 package com.tienda.tienda.carrito.application.usecase;
 
+import com.tienda.tienda.carrito.application.port.input.AddProductToCarritoInputPort;
 import com.tienda.tienda.carrito.domain.model.Carrito;
 import com.tienda.tienda.carrito.domain.model.LineaCarrito;
-import com.tienda.tienda.carrito.domain.repository.GetCarritoRepository;
-import com.tienda.tienda.carrito.domain.repository.CreateLineaCarritoRepository;
+import com.tienda.tienda.carrito.application.port.output.GetCarritoOutputPort;
+import com.tienda.tienda.carrito.application.port.output.CreateLineaCarritoOutputPort;
 import com.tienda.tienda.carrito.application.helper.LineaLoader;
 import com.tienda.tienda.carrito.application.helper.TotalCalculator;
-import com.tienda.tienda.product.domain.repository.GetProductRepository;
+import com.tienda.tienda.product.application.port.output.GetProductOutputPort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
-public class AddProductToCarritoUseCase {
+public class AddProductToCarritoUseCase implements AddProductToCarritoInputPort {
 
-    private final GetCarritoRepository getCarritoRepository;
-    private final CreateLineaCarritoRepository createLineaCarritoRepository;
-    private final GetProductRepository getProductRepository;
+    private final GetCarritoOutputPort getCarritoOutputPort;
+    private final CreateLineaCarritoOutputPort createLineaCarritoOutputPort;
+    private final GetProductOutputPort getProductOutputPort;
     private final LineaLoader lineaLoader;
     private final TotalCalculator totalCalculator;
 
-    public AddProductToCarritoUseCase(GetCarritoRepository getCarritoRepository, CreateLineaCarritoRepository createLineaCarritoRepository, GetProductRepository getProductRepository, LineaLoader lineaLoader, TotalCalculator totalCalculator) {
-        this.getCarritoRepository = getCarritoRepository;
-        this.createLineaCarritoRepository = createLineaCarritoRepository;
-        this.getProductRepository = getProductRepository;
+    public AddProductToCarritoUseCase(GetCarritoOutputPort getCarritoOutputPort, CreateLineaCarritoOutputPort createLineaCarritoOutputPort, GetProductOutputPort getProductOutputPort, LineaLoader lineaLoader, TotalCalculator totalCalculator) {
+        this.getCarritoOutputPort = getCarritoOutputPort;
+        this.createLineaCarritoOutputPort = createLineaCarritoOutputPort;
+        this.getProductOutputPort = getProductOutputPort;
         this.lineaLoader = lineaLoader;
         this.totalCalculator = totalCalculator;
     }
 
     public Mono<Carrito> execute(int carritoId, int productId, int quantity) {
-        return getCarritoRepository.findById(carritoId)
-                .zipWith(getProductRepository.findById(productId))
+        return getCarritoOutputPort.findById(carritoId)
+                .zipWith(getProductOutputPort.findById(productId))
                 .flatMap(tuple -> {
                     Carrito carrito = tuple.getT1();
                     LineaCarrito linea = new LineaCarrito();
@@ -38,9 +39,9 @@ public class AddProductToCarritoUseCase {
                     linea.setCarritoId(carrito.getId());
                     linea.setSubtotal(tuple.getT2().getFinalPrice() * quantity);
 
-                    return createLineaCarritoRepository.save(linea)
+                    return createLineaCarritoOutputPort.save(linea)
                             .then(totalCalculator.recalculate(carritoId))
-                            .then(getCarritoRepository.findById(carritoId))
+                            .then(getCarritoOutputPort.findById(carritoId))
                             .flatMap(lineaLoader::loadLineas);
                 });
     }

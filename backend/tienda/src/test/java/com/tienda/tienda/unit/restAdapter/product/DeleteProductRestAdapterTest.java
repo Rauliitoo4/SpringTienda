@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.product;
 
-import com.tienda.tienda.product.application.usecase.DeleteProductUseCase;
+import com.tienda.tienda.product.application.port.input.DeleteProductInputPort;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.DeleteProductRestAdapter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +18,11 @@ class DeleteProductRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private DeleteProductUseCase deleteProductUseCase;
+    private DeleteProductInputPort deleteProductInputPort;
 
     @Test
     void deleteProduct_shouldReturn204() {
-        when(deleteProductUseCase.execute(1)).thenReturn(Mono.just(true));
+        when(deleteProductInputPort.execute(1)).thenReturn(Mono.just(true));
 
         webTestClient.delete().uri("/productos/1")
                 .exchange()
@@ -31,7 +31,7 @@ class DeleteProductRestAdapterTest {
 
     @Test
     void deleteProduct_ifNotExists_shouldReturn404() {
-        when(deleteProductUseCase.execute(99)).thenReturn(Mono.just(false));
+        when(deleteProductInputPort.execute(99)).thenReturn(Mono.just(false));
 
         webTestClient.delete().uri("/productos/99")
                 .exchange()

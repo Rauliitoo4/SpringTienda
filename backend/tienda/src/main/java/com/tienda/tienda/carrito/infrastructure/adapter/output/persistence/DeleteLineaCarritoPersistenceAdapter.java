@@ -1,21 +1,21 @@
 package com.tienda.tienda.carrito.infrastructure.adapter.output.persistence;
 
-import com.tienda.tienda.carrito.domain.repository.DeleteLineaCarritoRepository;
+import com.tienda.tienda.carrito.application.port.output.DeleteLineaCarritoOutputPort;
 import com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.repository.LineaCarritoR2dbcRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
-public class DeleteLineaCarritoPersistenceAdapter implements DeleteLineaCarritoRepository {
+public class DeleteLineaCarritoPersistenceAdapter implements DeleteLineaCarritoOutputPort {
 
-    private final LineaCarritoR2dbcRepository jpaRepository;
+    private final LineaCarritoR2dbcRepository r2dbcRepository;
 
-    public DeleteLineaCarritoPersistenceAdapter(LineaCarritoR2dbcRepository jpaRepository) {
-        this.jpaRepository = jpaRepository;
+    public DeleteLineaCarritoPersistenceAdapter(LineaCarritoR2dbcRepository r2dbcRepository) {
+        this.r2dbcRepository = r2dbcRepository;
     }
 
     @Override
     public Mono<Void> deleteById(int id) {
-        return jpaRepository.deleteById(id);
+        return r2dbcRepository.deleteById(id);
     }
 }

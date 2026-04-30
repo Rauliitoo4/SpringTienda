@@ -4,8 +4,8 @@ import com.tienda.tienda.product.application.helper.PriceCalculator;
 import com.tienda.tienda.product.application.helper.PromotionLoader;
 import com.tienda.tienda.product.application.usecase.UpdateProductUseCase;
 import com.tienda.tienda.product.domain.model.Product;
-import com.tienda.tienda.product.domain.repository.GetProductRepository;
-import com.tienda.tienda.product.domain.repository.UpdateProductRepository;
+import com.tienda.tienda.product.application.port.output.GetProductOutputPort;
+import com.tienda.tienda.product.application.port.output.UpdateProductOutputPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,8 +20,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UpdateProductUseCaseTest {
 
-    @Mock private GetProductRepository getProductRepository;
-    @Mock private UpdateProductRepository updateProductRepository;
+    @Mock private GetProductOutputPort getProductOutputPort;
+    @Mock private UpdateProductOutputPort updateProductOutputPort;
     @Mock private PromotionLoader promotionLoader;
     @Mock private PriceCalculator priceCalculator;
 
@@ -40,9 +40,9 @@ class UpdateProductUseCaseTest {
     @Test
     void execute_shouldUpdateAndReturnProduct() {
         Product product = testProduct();
-        when(getProductRepository.findById(1)).thenReturn(Mono.just(product));
+        when(getProductOutputPort.findById(1)).thenReturn(Mono.just(product));
         when(promotionLoader.loadPromotions(any(Product.class))).thenReturn(Mono.just(product));
-        when(updateProductRepository.save(any(Product.class))).thenReturn(Mono.just(product));
+        when(updateProductOutputPort.save(any(Product.class))).thenReturn(Mono.just(product));
 
         Product changes = new Product();
         changes.setPrice(200.0);
@@ -51,12 +51,12 @@ class UpdateProductUseCaseTest {
                 .expectNextMatches(result -> result.getPrice() == 200.0)
                 .verifyComplete();
 
-        verify(updateProductRepository, times(1)).save(any(Product.class));
+        verify(updateProductOutputPort, times(1)).save(any(Product.class));
     }
 
     @Test
     void execute_ifNotExists_shouldReturnEmpty() {
-        when(getProductRepository.findById(999)).thenReturn(Mono.empty());
+        when(getProductOutputPort.findById(999)).thenReturn(Mono.empty());
 
         Product changes = new Product();
         changes.setPrice(200.0);

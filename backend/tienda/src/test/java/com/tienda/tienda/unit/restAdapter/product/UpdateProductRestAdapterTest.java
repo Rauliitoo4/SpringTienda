@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.product;
 
-import com.tienda.tienda.product.application.usecase.UpdateProductUseCase;
+import com.tienda.tienda.product.application.port.input.UpdateProductInputPort;
 import com.tienda.tienda.product.domain.model.Product;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.UpdateProductRestAdapter;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.mapper.ProductRestMapper;
@@ -28,7 +28,7 @@ class UpdateProductRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private UpdateProductUseCase updateProductUseCase;
+    private UpdateProductInputPort updateProductInputPort;
 
     @MockitoBean
     private ProductRestMapper productRestMapper;
@@ -61,7 +61,7 @@ class UpdateProductRestAdapterTest {
     @Test
     void updateProduct_shouldReturnUpdatedProductAndStatus200() {
         when(productRestMapper.toDomain(any(ProductRequest.class))).thenReturn(basicProduct);
-        when(updateProductUseCase.execute(eq(1), any(Product.class))).thenReturn(Mono.just(basicProduct));
+        when(updateProductInputPort.execute(eq(1), any(Product.class))).thenReturn(Mono.just(basicProduct));
         when(productRestMapper.toResponse(any(Product.class))).thenReturn(basicProductResponse);
 
         webTestClient.put().uri("/productos/1")
@@ -76,7 +76,7 @@ class UpdateProductRestAdapterTest {
     @Test
     void updateProduct_ifNotExists_shouldReturn404() {
         when(productRestMapper.toDomain(any(ProductRequest.class))).thenReturn(basicProduct);
-        when(updateProductUseCase.execute(eq(99), any(Product.class))).thenReturn(Mono.empty());
+        when(updateProductInputPort.execute(eq(99), any(Product.class))).thenReturn(Mono.empty());
 
         webTestClient.put().uri("/productos/99")
                 .contentType(MediaType.APPLICATION_JSON)

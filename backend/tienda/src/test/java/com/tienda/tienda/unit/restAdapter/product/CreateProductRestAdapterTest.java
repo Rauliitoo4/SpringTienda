@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.product;
 
-import com.tienda.tienda.product.application.usecase.CreateProductUseCase;
+import com.tienda.tienda.product.application.port.input.CreateProductInputPort;
 import com.tienda.tienda.product.domain.model.Product;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.CreateProductRestAdapter;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.mapper.ProductRestMapper;
@@ -27,7 +27,7 @@ class CreateProductRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private CreateProductUseCase createProductUseCase;
+    private CreateProductInputPort createProductInputPort;
 
     @MockitoBean
     private ProductRestMapper productRestMapper;
@@ -60,7 +60,7 @@ class CreateProductRestAdapterTest {
     @Test
     void createProduct_shouldReturnCreatedProductAndStatus201() {
         when(productRestMapper.toDomain(any(ProductRequest.class))).thenReturn(basicProduct);
-        when(createProductUseCase.execute(any(Product.class))).thenReturn(Mono.just(basicProduct));
+        when(createProductInputPort.execute(any(Product.class))).thenReturn(Mono.just(basicProduct));
         when(productRestMapper.toResponse(any(Product.class))).thenReturn(basicProductResponse);
 
         webTestClient.post().uri("/productos")
@@ -71,6 +71,6 @@ class CreateProductRestAdapterTest {
                 .expectBody(ProductResponse.class)
                 .isEqualTo(basicProductResponse);
 
-        verify(createProductUseCase, times(1)).execute(any(Product.class));
+        verify(createProductInputPort, times(1)).execute(any(Product.class));
     }
 }

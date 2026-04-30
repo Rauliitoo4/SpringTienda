@@ -1,6 +1,6 @@
 package com.tienda.tienda.product.infrastructure.adapter.input.rest;
 
-import com.tienda.tienda.product.application.usecase.GetProductUseCase;
+import com.tienda.tienda.product.application.port.input.GetProductInputPort;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.mapper.ProductRestMapper;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.response.ProductResponse;
 import org.springframework.http.ResponseEntity;
@@ -12,24 +12,24 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/productos")
 public class GetProductRestAdapter {
 
-    private final GetProductUseCase getProductUseCase;
+    private final GetProductInputPort getProductInputPort;
     private final ProductRestMapper mapper;
 
-    public GetProductRestAdapter(GetProductUseCase getProductUseCase, ProductRestMapper mapper) {
-        this.getProductUseCase = getProductUseCase;
+    public GetProductRestAdapter(GetProductInputPort getProductInputPort, ProductRestMapper mapper) {
+        this.getProductInputPort = getProductInputPort;
         this.mapper = mapper;
     }
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<ProductResponse>> getProductById(@PathVariable int id) {
-        return getProductUseCase.execute(id)
+        return getProductInputPort.execute(id)
                 .map(product -> ResponseEntity.ok(mapper.toResponse(product)))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @GetMapping()
     public ResponseEntity<Flux<ProductResponse>> getAllProduct() {
-        return ResponseEntity.ok(getProductUseCase.executeAll()
+        return ResponseEntity.ok(getProductInputPort.executeAll()
                 .map(mapper::toResponse));
     }
 }

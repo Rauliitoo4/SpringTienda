@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.carrito;
 
-import com.tienda.tienda.carrito.application.usecase.GetLineaCarritoUseCase;
+import com.tienda.tienda.carrito.application.port.input.GetLineaCarritoInputPort;
 import com.tienda.tienda.carrito.domain.model.LineaCarrito;
 import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.GetLineaCarritoRestAdapter;
 import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.mapper.LineaCarritoRestMapper;
@@ -23,7 +23,7 @@ class GetLineaCarritoRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private GetLineaCarritoUseCase getLineaCarritoUseCase;
+    private GetLineaCarritoInputPort getLineaCarritoInputPort;
 
     @MockitoBean
     private LineaCarritoRestMapper lineaCarritoRestMapper;
@@ -48,7 +48,7 @@ class GetLineaCarritoRestAdapterTest {
 
     @Test
     void getAllLineas_shouldReturnListAndStatus200() {
-        when(getLineaCarritoUseCase.executeAll()).thenReturn(Flux.just(basicLinea));
+        when(getLineaCarritoInputPort.executeAll()).thenReturn(Flux.just(basicLinea));
         when(lineaCarritoRestMapper.toResponse(basicLinea)).thenReturn(basicLineaResponse);
 
         webTestClient.get().uri("/lineas")
@@ -60,7 +60,7 @@ class GetLineaCarritoRestAdapterTest {
 
     @Test
     void getAllLineas_emptyList_shouldReturnEmptyArrayAndStatus200() {
-        when(getLineaCarritoUseCase.executeAll()).thenReturn(Flux.empty());
+        when(getLineaCarritoInputPort.executeAll()).thenReturn(Flux.empty());
 
         webTestClient.get().uri("/lineas")
                 .exchange()
@@ -71,7 +71,7 @@ class GetLineaCarritoRestAdapterTest {
 
     @Test
     void getLineaById_shouldReturnLineaAndStatus200() {
-        when(getLineaCarritoUseCase.execute(1)).thenReturn(Mono.just(basicLinea));
+        when(getLineaCarritoInputPort.execute(1)).thenReturn(Mono.just(basicLinea));
         when(lineaCarritoRestMapper.toResponse(basicLinea)).thenReturn(basicLineaResponse);
 
         webTestClient.get().uri("/lineas/1")
@@ -83,7 +83,7 @@ class GetLineaCarritoRestAdapterTest {
 
     @Test
     void getLineaById_ifNotExists_shouldReturn404() {
-        when(getLineaCarritoUseCase.execute(99)).thenReturn(Mono.empty());
+        when(getLineaCarritoInputPort.execute(99)).thenReturn(Mono.empty());
 
         webTestClient.get().uri("/lineas/99")
                 .exchange()

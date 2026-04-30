@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.promotion;
 
-import com.tienda.tienda.promotion.application.usecase.GetPromotionUseCase;
+import com.tienda.tienda.promotion.application.port.input.GetPromotionInputPort;
 import com.tienda.tienda.promotion.domain.model.Promotion;
 import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.GetPromotionRestAdapter;
 import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.data.mapper.PromotionRestMapper;
@@ -23,7 +23,7 @@ class GetPromotionRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private GetPromotionUseCase getPromotionUseCase;
+    private GetPromotionInputPort getPromotionInputPort;
 
     @MockitoBean
     private PromotionRestMapper promotionRestMapper;
@@ -46,7 +46,7 @@ class GetPromotionRestAdapterTest {
 
     @Test
     void getAllPromotions_shouldReturnListAndStatus200() {
-        when(getPromotionUseCase.executeAll()).thenReturn(Flux.just(basicPromotion));
+        when(getPromotionInputPort.executeAll()).thenReturn(Flux.just(basicPromotion));
         when(promotionRestMapper.toResponse(basicPromotion)).thenReturn(basicPromotionResponse);
 
         webTestClient.get().uri("/promociones")
@@ -58,7 +58,7 @@ class GetPromotionRestAdapterTest {
 
     @Test
     void getAllPromotions_emptyList_shouldReturnEmptyArrayAndStatus200() {
-        when(getPromotionUseCase.executeAll()).thenReturn(Flux.empty());
+        when(getPromotionInputPort.executeAll()).thenReturn(Flux.empty());
 
         webTestClient.get().uri("/promociones")
                 .exchange()
@@ -69,7 +69,7 @@ class GetPromotionRestAdapterTest {
 
     @Test
     void getPromotionById_shouldReturnPromotionAndStatus200() {
-        when(getPromotionUseCase.execute(1)).thenReturn(Mono.just(basicPromotion));
+        when(getPromotionInputPort.execute(1)).thenReturn(Mono.just(basicPromotion));
         when(promotionRestMapper.toResponse(basicPromotion)).thenReturn(basicPromotionResponse);
 
         webTestClient.get().uri("/promociones/1")
@@ -81,7 +81,7 @@ class GetPromotionRestAdapterTest {
 
     @Test
     void getPromotionById_ifNotExists_shouldReturn404() {
-        when(getPromotionUseCase.execute(99)).thenReturn(Mono.empty());
+        when(getPromotionInputPort.execute(99)).thenReturn(Mono.empty());
 
         webTestClient.get().uri("/promociones/99")
                 .exchange()

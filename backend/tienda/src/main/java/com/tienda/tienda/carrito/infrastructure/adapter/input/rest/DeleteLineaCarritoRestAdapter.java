@@ -1,6 +1,6 @@
 package com.tienda.tienda.carrito.infrastructure.adapter.input.rest;
 
-import com.tienda.tienda.carrito.application.usecase.DeleteLineaCarritoUseCase;
+import com.tienda.tienda.carrito.application.port.input.DeleteLineaCarritoInputPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -9,15 +9,15 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/lineas")
 public class DeleteLineaCarritoRestAdapter {
 
-    private final DeleteLineaCarritoUseCase deleteLineaCarritoUseCase;
+    private final DeleteLineaCarritoInputPort deleteLineaCarritoInputPort;
 
-    public DeleteLineaCarritoRestAdapter(DeleteLineaCarritoUseCase deleteLineaCarritoUseCase) {
-        this.deleteLineaCarritoUseCase = deleteLineaCarritoUseCase;
+    public DeleteLineaCarritoRestAdapter(DeleteLineaCarritoInputPort deleteLineaCarritoInputPort) {
+        this.deleteLineaCarritoInputPort = deleteLineaCarritoInputPort;
     }
 
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> deleteLinea(@PathVariable int id) {
-        return deleteLineaCarritoUseCase.execute(id)
+        return deleteLineaCarritoInputPort.execute(id)
                 .map(deleted -> deleted
                         ? ResponseEntity.<Void>noContent().build()
                         : ResponseEntity.<Void>notFound().build());

@@ -1,24 +1,25 @@
 package com.tienda.tienda.product.application.usecase;
 
+import com.tienda.tienda.product.application.port.input.CreateProductInputPort;
 import com.tienda.tienda.product.domain.model.Product;
-import com.tienda.tienda.product.domain.repository.CreateProductRepository;
+import com.tienda.tienda.product.application.port.output.CreateProductOutputPort;
 import com.tienda.tienda.product.application.helper.PromotionLoader;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
-public class CreateProductUseCase {
+public class CreateProductUseCase implements CreateProductInputPort {
 
-    private final CreateProductRepository createProductRepository;
+    private final CreateProductOutputPort createProductOutputPort;
     private final PromotionLoader promotionLoader;
 
-    public CreateProductUseCase (CreateProductRepository createProductRepository, PromotionLoader promotionLoader) {
-        this.createProductRepository = createProductRepository;
+    public CreateProductUseCase (CreateProductOutputPort createProductOutputPort, PromotionLoader promotionLoader) {
+        this.createProductOutputPort = createProductOutputPort;
         this.promotionLoader = promotionLoader;
     }
 
     public Mono<Product> execute(Product product) {
-        return createProductRepository.save(product)
+        return createProductOutputPort.save(product)
                 .flatMap(promotionLoader::loadPromotions);
     }
 }

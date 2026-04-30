@@ -1,6 +1,6 @@
 package com.tienda.tienda.promotion.infrastructure.adapter.input.rest;
 
-import com.tienda.tienda.promotion.application.usecase.UpdatePromotionUseCase;
+import com.tienda.tienda.promotion.application.port.input.UpdatePromotionInputPort;
 import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.data.mapper.PromotionRestMapper;
 import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.data.request.PromotionRequest;
 import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.data.response.PromotionResponse;
@@ -12,17 +12,17 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/promociones")
 public class UpdatePromotionRestAdapter {
 
-    private final UpdatePromotionUseCase updatePromotionUseCase;
+    private final UpdatePromotionInputPort updatePromotionInputPort;
     private final PromotionRestMapper mapper;
 
-    public UpdatePromotionRestAdapter(UpdatePromotionUseCase updatePromotionUseCase, PromotionRestMapper mapper) {
-        this.updatePromotionUseCase = updatePromotionUseCase;
+    public UpdatePromotionRestAdapter(UpdatePromotionInputPort updatePromotionInputPort, PromotionRestMapper mapper) {
+        this.updatePromotionInputPort = updatePromotionInputPort;
         this.mapper = mapper;
     }
 
     @PutMapping("/{id}")
     public Mono<ResponseEntity<PromotionResponse>> updatePromotion(@PathVariable int id, @RequestBody PromotionRequest request) {
-        return updatePromotionUseCase.execute(id, mapper.toDomain(request))
+        return updatePromotionInputPort.execute(id, mapper.toDomain(request))
                 .map(promotion -> ResponseEntity.ok(mapper.toResponse(promotion)))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }

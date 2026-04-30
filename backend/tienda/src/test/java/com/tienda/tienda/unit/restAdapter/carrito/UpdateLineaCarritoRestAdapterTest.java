@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.carrito;
 
-import com.tienda.tienda.carrito.application.usecase.UpdateLineaCarritoUseCase;
+import com.tienda.tienda.carrito.application.port.input.UpdateLineaCarritoInputPort;
 import com.tienda.tienda.carrito.domain.model.LineaCarrito;
 import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.UpdateLineaCarritoRestAdapter;
 import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.mapper.LineaCarritoRestMapper;
@@ -26,7 +26,7 @@ class UpdateLineaCarritoRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private UpdateLineaCarritoUseCase updateLineaCarritoUseCase;
+    private UpdateLineaCarritoInputPort updateLineaCarritoInputPort;
 
     @MockitoBean
     private LineaCarritoRestMapper lineaCarritoRestMapper;
@@ -59,7 +59,7 @@ class UpdateLineaCarritoRestAdapterTest {
     @Test
     void updateLinea_shouldReturnLineaUpdatedAndStatus200() {
         when(updateLineaCarritoRequestMapper.toQuantity(any(UpdateLineaCarritoRequest.class))).thenReturn(5);
-        when(updateLineaCarritoUseCase.execute(eq(1), eq(5))).thenReturn(Mono.just(basicLinea));
+        when(updateLineaCarritoInputPort.execute(eq(1), eq(5))).thenReturn(Mono.just(basicLinea));
         when(lineaCarritoRestMapper.toResponse(basicLinea)).thenReturn(basicLineaResponse);
 
         webTestClient.put().uri("/lineas/1")
@@ -74,7 +74,7 @@ class UpdateLineaCarritoRestAdapterTest {
     @Test
     void updateLinea_ifNotExists_shouldReturn404() {
         when(updateLineaCarritoRequestMapper.toQuantity(any(UpdateLineaCarritoRequest.class))).thenReturn(5);
-        when(updateLineaCarritoUseCase.execute(eq(99), eq(5))).thenReturn(Mono.empty());
+        when(updateLineaCarritoInputPort.execute(eq(99), eq(5))).thenReturn(Mono.empty());
 
         webTestClient.put().uri("/lineas/99")
                 .contentType(MediaType.APPLICATION_JSON)

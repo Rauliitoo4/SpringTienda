@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.promotion;
 
-import com.tienda.tienda.promotion.application.usecase.UpdatePromotionUseCase;
+import com.tienda.tienda.promotion.application.port.input.UpdatePromotionInputPort;
 import com.tienda.tienda.promotion.domain.model.Promotion;
 import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.UpdatePromotionRestAdapter;
 import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.data.mapper.PromotionRestMapper;
@@ -26,7 +26,7 @@ class UpdatePromotionRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private UpdatePromotionUseCase updatePromotionUseCase;
+    private UpdatePromotionInputPort updatePromotionInputPort;
 
     @MockitoBean
     private PromotionRestMapper promotionRestMapper;
@@ -54,7 +54,7 @@ class UpdatePromotionRestAdapterTest {
     @Test
     void updatePromotion_shouldReturnUpdatedPromotionAndStatus200() {
         when(promotionRestMapper.toDomain(any(PromotionRequest.class))).thenReturn(basicPromotion);
-        when(updatePromotionUseCase.execute(eq(1), any(Promotion.class))).thenReturn(Mono.just(basicPromotion));
+        when(updatePromotionInputPort.execute(eq(1), any(Promotion.class))).thenReturn(Mono.just(basicPromotion));
         when(promotionRestMapper.toResponse(any(Promotion.class))).thenReturn(basicPromotionResponse);
 
         webTestClient.put().uri("/promociones/1")
@@ -69,7 +69,7 @@ class UpdatePromotionRestAdapterTest {
     @Test
     void updatePromotion_ifNotExists_shouldReturn404() {
         when(promotionRestMapper.toDomain(any(PromotionRequest.class))).thenReturn(basicPromotion);
-        when(updatePromotionUseCase.execute(eq(99), any(Promotion.class))).thenReturn(Mono.empty());
+        when(updatePromotionInputPort.execute(eq(99), any(Promotion.class))).thenReturn(Mono.empty());
 
         webTestClient.put().uri("/promociones/99")
                 .contentType(MediaType.APPLICATION_JSON)

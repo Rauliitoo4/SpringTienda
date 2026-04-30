@@ -2,7 +2,7 @@ package com.tienda.tienda.unit.usecase.promotion;
 
 import com.tienda.tienda.promotion.application.usecase.CreatePromotionUseCase;
 import com.tienda.tienda.promotion.domain.model.Promotion;
-import com.tienda.tienda.promotion.domain.repository.CreatePromotionRepository;
+import com.tienda.tienda.promotion.application.port.output.CreatePromotionOutputPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class CreatePromotionUseCaseTest {
 
-    @Mock private CreatePromotionRepository createPromotionRepository;
+    @Mock private CreatePromotionOutputPort createPromotionOutputPort;
 
     @InjectMocks
     private CreatePromotionUseCase createPromotionUseCase;
@@ -33,7 +33,7 @@ class CreatePromotionUseCaseTest {
     @Test
     void execute_shouldSaveAndReturnPromotion() {
         Promotion promo = testPromotion();
-        when(createPromotionRepository.save(any(Promotion.class))).thenReturn(Mono.just(promo));
+        when(createPromotionOutputPort.save(any(Promotion.class))).thenReturn(Mono.just(promo));
 
         StepVerifier.create(createPromotionUseCase.execute(promo))
                 .expectNextMatches(result ->
@@ -41,6 +41,6 @@ class CreatePromotionUseCaseTest {
                                 result.getDiscount() == 20.0)
                 .verifyComplete();
 
-        verify(createPromotionRepository, times(1)).save(any(Promotion.class));
+        verify(createPromotionOutputPort, times(1)).save(any(Promotion.class));
     }
 }

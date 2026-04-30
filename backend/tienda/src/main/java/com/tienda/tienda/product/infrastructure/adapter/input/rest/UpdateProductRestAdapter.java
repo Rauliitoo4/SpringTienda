@@ -1,6 +1,6 @@
 package com.tienda.tienda.product.infrastructure.adapter.input.rest;
 
-import com.tienda.tienda.product.application.usecase.UpdateProductUseCase;
+import com.tienda.tienda.product.application.port.input.UpdateProductInputPort;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.mapper.ProductRestMapper;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.request.ProductRequest;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.response.ProductResponse;
@@ -12,17 +12,17 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/productos")
 public class UpdateProductRestAdapter {
 
-    private final UpdateProductUseCase updateProductUseCase;
+    private final UpdateProductInputPort updateProductInputPort;
     private final ProductRestMapper mapper;
 
-    public UpdateProductRestAdapter(UpdateProductUseCase updateProductUseCase, ProductRestMapper mapper) {
-        this.updateProductUseCase = updateProductUseCase;
+    public UpdateProductRestAdapter(UpdateProductInputPort updateProductInputPort, ProductRestMapper mapper) {
+        this.updateProductInputPort = updateProductInputPort;
         this.mapper = mapper;
     }
 
     @PutMapping("/{id}")
     public Mono<ResponseEntity<ProductResponse>> updateProduct(@PathVariable int id, @RequestBody ProductRequest request) {
-        return updateProductUseCase.execute(id, mapper.toDomain(request))
+        return updateProductInputPort.execute(id, mapper.toDomain(request))
                 .map(product -> ResponseEntity.ok(mapper.toResponse(product)))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }

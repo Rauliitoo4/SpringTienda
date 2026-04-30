@@ -3,7 +3,7 @@ package com.tienda.tienda.unit.usecase.product;
 import com.tienda.tienda.product.application.helper.PromotionLoader;
 import com.tienda.tienda.product.application.usecase.GetProductUseCase;
 import com.tienda.tienda.product.domain.model.Product;
-import com.tienda.tienda.product.domain.repository.GetProductRepository;
+import com.tienda.tienda.product.application.port.output.GetProductOutputPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class GetProductUseCaseTest {
 
-    @Mock private GetProductRepository getProductRepository;
+    @Mock private GetProductOutputPort getProductOutputPort;
     @Mock private PromotionLoader promotionLoader;
 
     @InjectMocks
@@ -39,7 +39,7 @@ class GetProductUseCaseTest {
     @Test
     void execute_shouldReturnProduct() {
         Product product = testProduct();
-        when(getProductRepository.findById(1)).thenReturn(Mono.just(product));
+        when(getProductOutputPort.findById(1)).thenReturn(Mono.just(product));
         when(promotionLoader.loadPromotions(any(Product.class))).thenReturn(Mono.just(product));
 
         StepVerifier.create(getProductUseCase.execute(1))
@@ -51,7 +51,7 @@ class GetProductUseCaseTest {
 
     @Test
     void execute_ifNotExists_shouldReturnEmpty() {
-        when(getProductRepository.findById(999)).thenReturn(Mono.empty());
+        when(getProductOutputPort.findById(999)).thenReturn(Mono.empty());
 
         StepVerifier.create(getProductUseCase.execute(999))
                 .verifyComplete();
@@ -60,7 +60,7 @@ class GetProductUseCaseTest {
     @Test
     void executeAll_shouldReturnAllProducts() {
         Product product = testProduct();
-        when(getProductRepository.findAll()).thenReturn(Flux.just(product));
+        when(getProductOutputPort.findAll()).thenReturn(Flux.just(product));
         when(promotionLoader.loadPromotions(any(Product.class))).thenReturn(Mono.just(product));
 
         StepVerifier.create(getProductUseCase.executeAll())

@@ -1,26 +1,26 @@
 package com.tienda.tienda.promotion.infrastructure.adapter.output.persistence;
 
 import com.tienda.tienda.promotion.domain.model.Promotion;
-import com.tienda.tienda.promotion.domain.repository.UpdatePromotionRepository;
+import com.tienda.tienda.promotion.application.port.output.UpdatePromotionOutputPort;
 import com.tienda.tienda.promotion.infrastructure.adapter.output.persistence.mapper.PromotionPersistenceMapper;
 import com.tienda.tienda.promotion.infrastructure.adapter.output.persistence.repository.PromotionR2dbcRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
-public class UpdatePromotionPersistenceAdapter implements UpdatePromotionRepository{
+public class UpdatePromotionPersistenceAdapter implements UpdatePromotionOutputPort{
 
-    private final PromotionR2dbcRepository jpaRepository;
+    private final PromotionR2dbcRepository r2dbcRepository;
     private final PromotionPersistenceMapper mapper;
 
-    public UpdatePromotionPersistenceAdapter(PromotionR2dbcRepository jpaRepository, PromotionPersistenceMapper mapper) {
-        this.jpaRepository = jpaRepository;
+    public UpdatePromotionPersistenceAdapter(PromotionR2dbcRepository r2dbcRepository, PromotionPersistenceMapper mapper) {
+        this.r2dbcRepository = r2dbcRepository;
         this.mapper = mapper;
     }
 
     @Override
     public Mono<Promotion> save(Promotion promotion) {
-        return jpaRepository.save(mapper.toEntity(promotion))
+        return r2dbcRepository.save(mapper.toEntity(promotion))
                 .map(mapper::toDomain);
     }
 }

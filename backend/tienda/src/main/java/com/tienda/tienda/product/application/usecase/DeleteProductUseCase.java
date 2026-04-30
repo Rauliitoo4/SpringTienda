@@ -1,23 +1,24 @@
 package com.tienda.tienda.product.application.usecase;
 
-import com.tienda.tienda.product.domain.repository.DeleteProductRepository;
+import com.tienda.tienda.product.application.port.input.DeleteProductInputPort;
+import com.tienda.tienda.product.application.port.output.DeleteProductOutputPort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
-public class DeleteProductUseCase {
+public class DeleteProductUseCase implements DeleteProductInputPort {
 
-    private final DeleteProductRepository deleteProductRepository;
+    private final DeleteProductOutputPort deleteProductOutputPort;
 
-    public DeleteProductUseCase(DeleteProductRepository deleteProductRepository) {
-        this.deleteProductRepository = deleteProductRepository;
+    public DeleteProductUseCase(DeleteProductOutputPort deleteProductOutputPort) {
+        this.deleteProductOutputPort = deleteProductOutputPort;
     }
 
     public Mono<Boolean> execute(int id) {
-        return deleteProductRepository.existsById(id)
+        return deleteProductOutputPort.existsById(id)
                 .flatMap(exists -> {
                     if (!exists) return Mono.just(false);
-                    return deleteProductRepository.deleteById(id).thenReturn(true);
+                    return deleteProductOutputPort.deleteById(id).thenReturn(true);
                 });
     }
 }

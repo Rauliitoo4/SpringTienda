@@ -5,10 +5,10 @@ import com.tienda.tienda.carrito.application.helper.TotalCalculator;
 import com.tienda.tienda.carrito.application.usecase.AddProductToCarritoUseCase;
 import com.tienda.tienda.carrito.domain.model.Carrito;
 import com.tienda.tienda.carrito.domain.model.LineaCarrito;
-import com.tienda.tienda.carrito.domain.repository.CreateLineaCarritoRepository;
-import com.tienda.tienda.carrito.domain.repository.GetCarritoRepository;
+import com.tienda.tienda.carrito.application.port.output.CreateLineaCarritoOutputPort;
+import com.tienda.tienda.carrito.application.port.output.GetCarritoOutputPort;
 import com.tienda.tienda.product.domain.model.Product;
-import com.tienda.tienda.product.domain.repository.GetProductRepository;
+import com.tienda.tienda.product.application.port.output.GetProductOutputPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,9 +25,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class AddProductToCarritoUseCaseTest {
 
-    @Mock private GetCarritoRepository getCarritoRepository;
-    @Mock private CreateLineaCarritoRepository createLineaCarritoRepository;
-    @Mock private GetProductRepository getProductRepository;
+    @Mock private GetCarritoOutputPort getCarritoOutputPort;
+    @Mock private CreateLineaCarritoOutputPort createLineaCarritoOutputPort;
+    @Mock private GetProductOutputPort getProductOutputPort;
     @Mock private LineaLoader lineaLoader;
     @Mock private TotalCalculator totalCalculator;
 
@@ -61,9 +61,9 @@ class AddProductToCarritoUseCaseTest {
         linea.setQuantity(2);
         updatedCarrito.setLineas(List.of(linea));
 
-        when(getCarritoRepository.findById(1)).thenReturn(Mono.just(carrito), Mono.just(updatedCarrito));
-        when(getProductRepository.findById(1)).thenReturn(Mono.just(testProduct()));
-        when(createLineaCarritoRepository.save(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
+        when(getCarritoOutputPort.findById(1)).thenReturn(Mono.just(carrito), Mono.just(updatedCarrito));
+        when(getProductOutputPort.findById(1)).thenReturn(Mono.just(testProduct()));
+        when(createLineaCarritoOutputPort.save(any(LineaCarrito.class))).thenReturn(Mono.just(linea));
         when(totalCalculator.recalculate(1)).thenReturn(Mono.empty());
         when(lineaLoader.loadLineas(any(Carrito.class))).thenReturn(Mono.just(updatedCarrito));
 
@@ -71,28 +71,28 @@ class AddProductToCarritoUseCaseTest {
                 .expectNextMatches(result -> result.getTotal() == 40.0)
                 .verifyComplete();
 
-        verify(createLineaCarritoRepository, times(1)).save(any(LineaCarrito.class));
+        verify(createLineaCarritoOutputPort, times(1)).save(any(LineaCarrito.class));
     }
 
     @Test
     void execute_ifCarritoNotExists_shouldReturnEmpty() {
-        when(getCarritoRepository.findById(999)).thenReturn(Mono.empty());
-        when(getProductRepository.findById(1)).thenReturn(Mono.just(testProduct()));
+        when(getCarritoOutputPort.findById(999)).thenReturn(Mono.empty());
+        when(getProductOutputPort.findById(1)).thenReturn(Mono.just(testProduct()));
 
         StepVerifier.create(addProductToCarritoUseCase.execute(999, 1, 2))
                 .verifyComplete();
 
-        verify(createLineaCarritoRepository, never()).save(any(LineaCarrito.class));
+        verify(createLineaCarritoOutputPort, never()).save(any(LineaCarrito.class));
     }
 
     @Test
     void execute_ifProductNotExists_shouldReturnEmpty() {
-        when(getCarritoRepository.findById(1)).thenReturn(Mono.just(testCarrito()));
-        when(getProductRepository.findById(999)).thenReturn(Mono.empty());
+        when(getCarritoOutputPort.findById(1)).thenReturn(Mono.just(testCarrito()));
+        when(getProductOutputPort.findById(999)).thenReturn(Mono.empty());
 
         StepVerifier.create(addProductToCarritoUseCase.execute(1, 999, 2))
                 .verifyComplete();
 
-        verify(createLineaCarritoRepository, never()).save(any(LineaCarrito.class));
+        verify(createLineaCarritoOutputPort, never()).save(any(LineaCarrito.class));
     }
 }

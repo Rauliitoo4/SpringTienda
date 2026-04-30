@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.carrito;
 
-import com.tienda.tienda.carrito.application.usecase.AddProductToCarritoUseCase;
+import com.tienda.tienda.carrito.application.port.input.AddProductToCarritoInputPort;
 import com.tienda.tienda.carrito.domain.model.Carrito;
 import com.tienda.tienda.carrito.domain.model.LineaCarrito;
 import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.AddProductToCarritoRestAdapter;
@@ -29,7 +29,7 @@ class AddProductToCarritoRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private AddProductToCarritoUseCase addProductToCarritoUseCase;
+    private AddProductToCarritoInputPort addProductToCarritoInputPort;
 
     @MockitoBean
     private CarritoRestMapper carritoRestMapper;
@@ -72,7 +72,7 @@ class AddProductToCarritoRestAdapterTest {
     void addProductToCarrito_shouldReturnCarritoUpdatedAndStatus200() {
         when(requestMapper.toProductId(any(AddProductToCarritoRequest.class))).thenReturn(1);
         when(requestMapper.toQuantity(any(AddProductToCarritoRequest.class))).thenReturn(2);
-        when(addProductToCarritoUseCase.execute(1, 1, 2)).thenReturn(Mono.just(carritoWithLinea));
+        when(addProductToCarritoInputPort.execute(1, 1, 2)).thenReturn(Mono.just(carritoWithLinea));
         when(carritoRestMapper.toResponse(carritoWithLinea)).thenReturn(carritoWithLineaResponse);
 
         webTestClient.post().uri("/carritos/1/productos")
@@ -83,14 +83,14 @@ class AddProductToCarritoRestAdapterTest {
                 .expectBody(CarritoResponse.class)
                 .isEqualTo(carritoWithLineaResponse);
 
-        verify(addProductToCarritoUseCase, times(1)).execute(1, 1, 2);
+        verify(addProductToCarritoInputPort, times(1)).execute(1, 1, 2);
     }
 
     @Test
     void addProductToCarrito_ifNotExistsCarrito_shouldReturn404() {
         when(requestMapper.toProductId(any(AddProductToCarritoRequest.class))).thenReturn(1);
         when(requestMapper.toQuantity(any(AddProductToCarritoRequest.class))).thenReturn(2);
-        when(addProductToCarritoUseCase.execute(99, 1, 2)).thenReturn(Mono.empty());
+        when(addProductToCarritoInputPort.execute(99, 1, 2)).thenReturn(Mono.empty());
 
         webTestClient.post().uri("/carritos/99/productos")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -107,7 +107,7 @@ class AddProductToCarritoRestAdapterTest {
 
         when(requestMapper.toProductId(any(AddProductToCarritoRequest.class))).thenReturn(99);
         when(requestMapper.toQuantity(any(AddProductToCarritoRequest.class))).thenReturn(2);
-        when(addProductToCarritoUseCase.execute(1, 99, 2)).thenReturn(Mono.empty());
+        when(addProductToCarritoInputPort.execute(1, 99, 2)).thenReturn(Mono.empty());
 
         webTestClient.post().uri("/carritos/1/productos")
                 .contentType(MediaType.APPLICATION_JSON)

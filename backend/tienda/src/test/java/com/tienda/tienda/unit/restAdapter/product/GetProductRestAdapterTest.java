@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.product;
 
-import com.tienda.tienda.product.application.usecase.GetProductUseCase;
+import com.tienda.tienda.product.application.port.input.GetProductInputPort;
 import com.tienda.tienda.product.domain.model.Product;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.GetProductRestAdapter;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.mapper.ProductRestMapper;
@@ -25,7 +25,7 @@ class GetProductRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private GetProductUseCase getProductUseCase;
+    private GetProductInputPort getProductInputPort;
 
     @MockitoBean
     private ProductRestMapper productRestMapper;
@@ -52,7 +52,7 @@ class GetProductRestAdapterTest {
 
     @Test
     void getAllProducts_shouldReturnListAndStatus200() {
-        when(getProductUseCase.executeAll()).thenReturn(Flux.just(basicProduct));
+        when(getProductInputPort.executeAll()).thenReturn(Flux.just(basicProduct));
         when(productRestMapper.toResponse(basicProduct)).thenReturn(basicProductResponse);
 
         webTestClient.get().uri("/productos")
@@ -64,7 +64,7 @@ class GetProductRestAdapterTest {
 
     @Test
     void getAllProducts_emptyList_shouldReturnEmptyArrayAndStatus200() {
-        when(getProductUseCase.executeAll()).thenReturn(Flux.empty());
+        when(getProductInputPort.executeAll()).thenReturn(Flux.empty());
 
         webTestClient.get().uri("/productos")
                 .exchange()
@@ -75,7 +75,7 @@ class GetProductRestAdapterTest {
 
     @Test
     void getProductById_shouldReturnProductAndStatus200() {
-        when(getProductUseCase.execute(1)).thenReturn(Mono.just(basicProduct));
+        when(getProductInputPort.execute(1)).thenReturn(Mono.just(basicProduct));
         when(productRestMapper.toResponse(basicProduct)).thenReturn(basicProductResponse);
 
         webTestClient.get().uri("/productos/1")
@@ -87,7 +87,7 @@ class GetProductRestAdapterTest {
 
     @Test
     void getProductById_ifNotExists_shouldReturn404() {
-        when(getProductUseCase.execute(99)).thenReturn(Mono.empty());
+        when(getProductInputPort.execute(99)).thenReturn(Mono.empty());
 
         webTestClient.get().uri("/productos/99")
                 .exchange()

@@ -1,27 +1,27 @@
 package com.tienda.tienda.carrito.infrastructure.adapter.output.persistence;
 
 import com.tienda.tienda.carrito.domain.model.LineaCarrito;
-import com.tienda.tienda.carrito.domain.repository.UpdateLineaCarritoRepository;
+import com.tienda.tienda.carrito.application.port.output.UpdateLineaCarritoOutputPort;
 import com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.mapper.LineaCarritoPersistenceMapper;
 import com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.repository.LineaCarritoR2dbcRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
-public class UpdateLineaCarritoPersistenceAdapter implements UpdateLineaCarritoRepository {
+public class UpdateLineaCarritoPersistenceAdapter implements UpdateLineaCarritoOutputPort {
 
-    private final LineaCarritoR2dbcRepository jpaRepository;
+    private final LineaCarritoR2dbcRepository r2dbcRepository;
     private final LineaCarritoPersistenceMapper mapper;
 
-    public UpdateLineaCarritoPersistenceAdapter(LineaCarritoR2dbcRepository jpaRepository,
+    public UpdateLineaCarritoPersistenceAdapter(LineaCarritoR2dbcRepository r2dbcRepository,
                                                 LineaCarritoPersistenceMapper mapper) {
-        this.jpaRepository = jpaRepository;
+        this.r2dbcRepository = r2dbcRepository;
         this.mapper = mapper;
     }
 
     @Override
     public Mono<LineaCarrito> save(LineaCarrito lineaCarrito) {
-        return jpaRepository.save(mapper.toEntity(lineaCarrito))
+        return r2dbcRepository.save(mapper.toEntity(lineaCarrito))
                 .map(mapper::toDomain);
     }
 }

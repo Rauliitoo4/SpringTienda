@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.promotion;
 
-import com.tienda.tienda.promotion.application.usecase.CreatePromotionUseCase;
+import com.tienda.tienda.promotion.application.port.input.CreatePromotionInputPort;
 import com.tienda.tienda.promotion.domain.model.Promotion;
 import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.CreatePromotionRestAdapter;
 import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.data.mapper.PromotionRestMapper;
@@ -25,7 +25,7 @@ class CreatePromotionRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private CreatePromotionUseCase createPromotionUseCase;
+    private CreatePromotionInputPort createPromotionInputPort;
 
     @MockitoBean
     private PromotionRestMapper promotionRestMapper;
@@ -54,7 +54,7 @@ class CreatePromotionRestAdapterTest {
     @Test
     void createPromotion_shouldReturnCreatedPromotionAndStatus201() {
         when(promotionRestMapper.toDomain(any(PromotionRequest.class))).thenReturn(basicPromotion);
-        when(createPromotionUseCase.execute(any(Promotion.class))).thenReturn(Mono.just(basicPromotion));
+        when(createPromotionInputPort.execute(any(Promotion.class))).thenReturn(Mono.just(basicPromotion));
         when(promotionRestMapper.toResponse(any(Promotion.class))).thenReturn(basicPromotionResponse);
 
         webTestClient.post().uri("/promociones")
@@ -65,6 +65,6 @@ class CreatePromotionRestAdapterTest {
                 .expectBody(PromotionResponse.class)
                 .isEqualTo(basicPromotionResponse);
 
-        verify(createPromotionUseCase, times(1)).execute(any(Promotion.class));
+        verify(createPromotionInputPort, times(1)).execute(any(Promotion.class));
     }
 }

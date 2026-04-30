@@ -2,7 +2,7 @@ package com.tienda.tienda.unit.usecase.carrito;
 
 import com.tienda.tienda.carrito.application.usecase.CreateCarritoUseCase;
 import com.tienda.tienda.carrito.domain.model.Carrito;
-import com.tienda.tienda.carrito.domain.repository.CreateCarritoRepository;
+import com.tienda.tienda.carrito.application.port.output.CreateCarritoOutputPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class CreateCarritoUseCaseTest {
 
-    @Mock private CreateCarritoRepository createCarritoRepository;
+    @Mock private CreateCarritoOutputPort createCarritoOutputPort;
 
     @InjectMocks
     private CreateCarritoUseCase createCarritoUseCase;
@@ -27,7 +27,7 @@ class CreateCarritoUseCaseTest {
         Carrito carrito = new Carrito();
         carrito.setId(1);
         carrito.setTotal(0.0);
-        when(createCarritoRepository.save(any(Carrito.class))).thenReturn(Mono.just(carrito));
+        when(createCarritoOutputPort.save(any(Carrito.class))).thenReturn(Mono.just(carrito));
 
         StepVerifier.create(createCarritoUseCase.execute())
                 .expectNextMatches(result ->
@@ -35,6 +35,6 @@ class CreateCarritoUseCaseTest {
                                 result.getTotal() == 0.0)
                 .verifyComplete();
 
-        verify(createCarritoRepository, times(1)).save(any(Carrito.class));
+        verify(createCarritoOutputPort, times(1)).save(any(Carrito.class));
     }
 }

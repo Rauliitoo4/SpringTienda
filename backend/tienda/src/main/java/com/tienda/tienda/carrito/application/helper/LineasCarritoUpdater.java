@@ -1,7 +1,7 @@
 package com.tienda.tienda.carrito.application.helper;
 
-import com.tienda.tienda.carrito.domain.repository.GetLineaCarritoRepository;
-import com.tienda.tienda.carrito.domain.repository.UpdateLineaCarritoRepository;
+import com.tienda.tienda.carrito.application.port.output.GetLineaCarritoOutputPort;
+import com.tienda.tienda.carrito.application.port.output.UpdateLineaCarritoOutputPort;
 import com.tienda.tienda.product.domain.model.Product;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -9,22 +9,22 @@ import reactor.core.publisher.Mono;
 @Component
 public class LineasCarritoUpdater {
 
-    private final GetLineaCarritoRepository getLineaCarritoRepository;
-    private final UpdateLineaCarritoRepository updateLineaCarritoRepository;
+    private final GetLineaCarritoOutputPort getLineaCarritoOutputPort;
+    private final UpdateLineaCarritoOutputPort updateLineaCarritoOutputPort;
     private final TotalCalculator totalCalculator;
 
-    public LineasCarritoUpdater(GetLineaCarritoRepository getLineaCarritoRepository, UpdateLineaCarritoRepository updateLineaCarritoRepository, TotalCalculator totalCalculator) {
-        this.getLineaCarritoRepository = getLineaCarritoRepository;
-        this.updateLineaCarritoRepository = updateLineaCarritoRepository;
+    public LineasCarritoUpdater(GetLineaCarritoOutputPort getLineaCarritoOutputPort, UpdateLineaCarritoOutputPort updateLineaCarritoOutputPort, TotalCalculator totalCalculator) {
+        this.getLineaCarritoOutputPort = getLineaCarritoOutputPort;
+        this.updateLineaCarritoOutputPort = updateLineaCarritoOutputPort;
         this.totalCalculator = totalCalculator;
     }
 
     public Mono<Void> updateLineas(Product product) {
-        return getLineaCarritoRepository.findAll()
+        return getLineaCarritoOutputPort.findAll()
                 .filter(linea -> linea.getProductId().equals(product.getId()))
                 .flatMap(linea -> {
                     linea.setSubtotal(product.getFinalPrice() * linea.getQuantity());
-                    return updateLineaCarritoRepository.save(linea);
+                    return updateLineaCarritoOutputPort.save(linea);
                 })
                 .collectList()
                 .flatMap(updatedLineas -> {

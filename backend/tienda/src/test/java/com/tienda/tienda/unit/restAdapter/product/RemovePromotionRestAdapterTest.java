@@ -1,6 +1,6 @@
 package com.tienda.tienda.unit.restAdapter.product;
 
-import com.tienda.tienda.product.application.usecase.RemovePromotionUseCase;
+import com.tienda.tienda.product.application.port.input.RemovePromotionInputPort;
 import com.tienda.tienda.product.domain.model.Product;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.RemovePromotionRestAdapter;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.mapper.ProductRestMapper;
@@ -24,7 +24,7 @@ class RemovePromotionRestAdapterTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private RemovePromotionUseCase removePromotionUseCase;
+    private RemovePromotionInputPort removePromotionInputPort;
 
     @MockitoBean
     private ProductRestMapper productRestMapper;
@@ -51,7 +51,7 @@ class RemovePromotionRestAdapterTest {
 
     @Test
     void removePromotion_shouldReturnProductWithoutPromoAndStatus200() {
-        when(removePromotionUseCase.execute(1, 1)).thenReturn(Mono.just(basicProduct));
+        when(removePromotionInputPort.execute(1, 1)).thenReturn(Mono.just(basicProduct));
         when(productRestMapper.toResponse(basicProduct)).thenReturn(basicProductResponse);
 
         webTestClient.delete().uri("/productos/1/promociones/1")
@@ -63,7 +63,7 @@ class RemovePromotionRestAdapterTest {
 
     @Test
     void removePromotion_ifNotExistsProduct_shouldReturn404() {
-        when(removePromotionUseCase.execute(99, 1)).thenReturn(Mono.empty());
+        when(removePromotionInputPort.execute(99, 1)).thenReturn(Mono.empty());
 
         webTestClient.delete().uri("/productos/99/promociones/1")
                 .exchange()

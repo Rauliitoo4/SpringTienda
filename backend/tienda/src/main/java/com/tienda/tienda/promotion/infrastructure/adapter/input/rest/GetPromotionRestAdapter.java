@@ -1,6 +1,6 @@
 package com.tienda.tienda.promotion.infrastructure.adapter.input.rest;
 
-import com.tienda.tienda.promotion.application.usecase.GetPromotionUseCase;
+import com.tienda.tienda.promotion.application.port.input.GetPromotionInputPort;
 import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.data.mapper.PromotionRestMapper;
 import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.data.response.PromotionResponse;
 import org.springframework.http.ResponseEntity;
@@ -12,24 +12,24 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/promociones")
 public class GetPromotionRestAdapter {
 
-    private final GetPromotionUseCase getPromotionUseCase;
+    private final GetPromotionInputPort getPromotionInputPort;
     private final PromotionRestMapper mapper;
 
-    public GetPromotionRestAdapter(GetPromotionUseCase getPromotionUseCase, PromotionRestMapper mapper) {
-        this.getPromotionUseCase = getPromotionUseCase;
+    public GetPromotionRestAdapter(GetPromotionInputPort getPromotionInputPort, PromotionRestMapper mapper) {
+        this.getPromotionInputPort = getPromotionInputPort;
         this.mapper = mapper;
     }
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<PromotionResponse>> getPromotionById(@PathVariable int id) {
-        return getPromotionUseCase.execute(id)
+        return getPromotionInputPort.execute(id)
                 .map(promotion -> ResponseEntity.ok(mapper.toResponse(promotion)))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @GetMapping()
     public ResponseEntity<Flux<PromotionResponse>> getAllPromotions() {
-        return ResponseEntity.ok(getPromotionUseCase.executeAll()
+        return ResponseEntity.ok(getPromotionInputPort.executeAll()
                 .map(mapper::toResponse));
     }
 }

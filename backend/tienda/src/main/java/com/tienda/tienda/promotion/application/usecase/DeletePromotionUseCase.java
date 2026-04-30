@@ -1,27 +1,28 @@
 package com.tienda.tienda.promotion.application.usecase;
 
-import com.tienda.tienda.promotion.domain.repository.DeletePromotionRepository;
-import com.tienda.tienda.product.domain.repository.ProductPromotionRepository;
+import com.tienda.tienda.promotion.application.port.input.DeletePromotionInputPort;
+import com.tienda.tienda.promotion.application.port.output.DeletePromotionOutputPort;
+import com.tienda.tienda.product.application.port.output.ProductPromotionOutputPort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
-public class DeletePromotionUseCase {
+public class DeletePromotionUseCase implements DeletePromotionInputPort {
 
-    private final DeletePromotionRepository deletePromotionRepository;
-    private final ProductPromotionRepository productPromotionRepository;
+    private final DeletePromotionOutputPort deletePromotionOutputPort;
+    private final ProductPromotionOutputPort productPromotionOutputPort;
 
-    public DeletePromotionUseCase(DeletePromotionRepository deletePromotionRepository, ProductPromotionRepository productPromotionRepository) {
-        this.deletePromotionRepository = deletePromotionRepository;
-        this.productPromotionRepository = productPromotionRepository;
+    public DeletePromotionUseCase(DeletePromotionOutputPort deletePromotionOutputPort, ProductPromotionOutputPort productPromotionOutputPort) {
+        this.deletePromotionOutputPort = deletePromotionOutputPort;
+        this.productPromotionOutputPort = productPromotionOutputPort;
     }
 
     public Mono<Boolean> execute(int id) {
-        return deletePromotionRepository.existsById(id)
+        return deletePromotionOutputPort.existsById(id)
                 .flatMap(exists -> {
                     if (!exists) return Mono.just(false);
-                    return productPromotionRepository.deleteByPromotionId(id)
-                            .then(deletePromotionRepository.deleteById(id))
+                    return productPromotionOutputPort.deleteByPromotionId(id)
+                            .then(deletePromotionOutputPort.deleteById(id))
                             .thenReturn(true);
                 });
     }
