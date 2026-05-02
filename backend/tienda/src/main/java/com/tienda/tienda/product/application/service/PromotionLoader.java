@@ -2,9 +2,12 @@ package com.tienda.tienda.product.application.service;
 
 import com.tienda.tienda.product.domain.model.Product;
 import com.tienda.tienda.product.application.port.output.ProductPromotionOutputPort;
+import com.tienda.tienda.product.domain.model.Size;
 import com.tienda.tienda.promotion.application.port.output.GetPromotionOutputPort;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Component
 public class PromotionLoader {

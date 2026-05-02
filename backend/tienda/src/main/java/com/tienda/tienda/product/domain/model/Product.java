@@ -6,12 +6,14 @@ import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Product {
 
     private Integer id;
@@ -23,4 +25,5 @@ public class Product {
     private String considerations;
     private String imageUrl;
     private List<Promotion> promotions;
+    private List<Size> sizes = new ArrayList<>(Arrays.asList(Size.values()));
 }
