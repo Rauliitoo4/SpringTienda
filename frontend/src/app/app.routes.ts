@@ -1,12 +1,11 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
-import { ProductComponent } from './pages/product/product.component';
-import { TiendasComponent } from './pages/tiendas/tiendas.component';
-import { CarritoComponent } from './pages/carrito/carrito.component';
 
 export const routes: Routes = [
-    {path:'', component: HomeComponent},
-    {path:'tiendas', component: TiendasComponent},
-    {path:'product', component: ProductComponent},
-    {path:'carrito', component: CarritoComponent}
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent) },
+  { path: 'catalogo', loadComponent: () => import('./pages/catalog/catalog.component').then(m => m.CatalogComponent) },
+  { path: 'producto/:id', loadComponent: () => import('./pages/product-detail/product-detail.component').then(m => m.ProductDetailComponent) },
+  { path: 'carrito', loadComponent: () => import('./pages/carrito/carrito.component').then(m => m.CarritoComponent) },
+  { path: 'auth', loadComponent: () => import('./pages/auth/auth.component').then(m => m.AuthComponent) },
+  { path: '**', redirectTo: 'home' }
 ];
