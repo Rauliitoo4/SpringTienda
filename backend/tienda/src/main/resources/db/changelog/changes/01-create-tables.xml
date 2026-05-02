@@ -87,6 +87,11 @@
                        columnNames="product_id, promotion_id"/>
     </changeSet>
 
+    <changeSet id="01-add-size-to-lineas-carrito" author="raul.redondochicano">
+        <addColumn tableName="lineas_carrito">
+            <column name="size" type="VARCHAR(5)"/>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>
 

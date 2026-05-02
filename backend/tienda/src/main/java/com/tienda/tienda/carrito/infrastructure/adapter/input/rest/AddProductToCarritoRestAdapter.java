@@ -25,7 +25,7 @@ public class AddProductToCarritoRestAdapter {
 
     @PostMapping("/{carritoId}/productos")
     public Mono<ResponseEntity<CarritoResponse>> addProduct(@PathVariable int carritoId, @RequestBody AddProductToCarritoRequest request) {
-        return addProductToCarritoInputPort.execute(carritoId, requestMapper.toProductId(request), requestMapper.toQuantity(request))
+        return addProductToCarritoInputPort.execute(carritoId, requestMapper.toProductId(request), requestMapper.toQuantity(request), requestMapper.toSize(request))
                 .map(carrito -> ResponseEntity.ok(carritoRestMapper.toResponse(carrito)))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }

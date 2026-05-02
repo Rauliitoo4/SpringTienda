@@ -8,6 +8,7 @@ import com.tienda.tienda.carrito.application.port.output.CreateLineaCarritoOutpu
 import com.tienda.tienda.carrito.application.service.LineaLoader;
 import com.tienda.tienda.carrito.application.service.TotalCalculator;
 import com.tienda.tienda.product.application.port.output.GetProductOutputPort;
+import com.tienda.tienda.product.domain.model.Size;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -28,7 +29,7 @@ public class AddProductToCarritoUseCase implements AddProductToCarritoInputPort 
         this.totalCalculator = totalCalculator;
     }
 
-    public Mono<Carrito> execute(int carritoId, int productId, int quantity) {
+    public Mono<Carrito> execute(int carritoId, int productId, int quantity, Size size) {
         return getCarritoOutputPort.findById(carritoId)
                 .zipWith(getProductOutputPort.findById(productId))
                 .flatMap(tuple -> {
@@ -38,6 +39,7 @@ public class AddProductToCarritoUseCase implements AddProductToCarritoInputPort 
                     linea.setProductId(tuple.getT2().getId());
                     linea.setCarritoId(carrito.getId());
                     linea.setSubtotal(tuple.getT2().getFinalPrice() * quantity);
+                    linea.setSize(size);
 
                     return createLineaCarritoOutputPort.save(linea)
                             .then(totalCalculator.recalculate(carritoId))

@@ -20,6 +20,7 @@ public class LineaCarritoEntity {
 
     private double subtotal;
     private int quantity;
+    private String size;
 
     @Column("carrito_id")
     private Integer carritoId;
