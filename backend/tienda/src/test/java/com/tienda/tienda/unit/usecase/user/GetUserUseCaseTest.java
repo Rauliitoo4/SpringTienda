@@ -1,5 +1,6 @@
 package com.tienda.tienda.unit.usecase.user;
 
+import com.tienda.tienda.user.application.service.FavoritoLoader;
 import com.tienda.tienda.user.application.usecase.GetUserUseCase;
 import com.tienda.tienda.user.domain.model.User;
 import com.tienda.tienda.user.application.port.output.GetUserOutputPort;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.*;
 class GetUserUseCaseTest {
 
     @Mock private GetUserOutputPort getUserOutputPort;
+    @Mock private FavoritoLoader favoritoLoader;
 
     @InjectMocks
     private GetUserUseCase getUserUseCase;
@@ -37,6 +39,7 @@ class GetUserUseCaseTest {
     void execute_shouldReturnUser() {
         User user = testUser();
         when(getUserOutputPort.findById(1)).thenReturn(Mono.just(user));
+        when(favoritoLoader.loadFavoritos(any(User.class))).thenReturn(Mono.just(user));
 
         StepVerifier.create(getUserUseCase.execute(1))
                 .expectNextMatches(result ->
@@ -57,6 +60,7 @@ class GetUserUseCaseTest {
     void executeAll_shouldReturnAllUsers() {
         User user = testUser();
         when(getUserOutputPort.findAll()).thenReturn(Flux.just(user));
+        when(favoritoLoader.loadFavoritos(any(User.class))).thenReturn(Mono.just(user));
 
         StepVerifier.create(getUserUseCase.executeAll())
                 .expectNextMatches(result -> result.getName().equals("Alberto"))

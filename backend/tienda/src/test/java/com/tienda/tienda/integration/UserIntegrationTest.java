@@ -1,5 +1,7 @@
 package com.tienda.tienda.integration;
 
+import com.tienda.tienda.product.application.usecase.CreateProductUseCase;
+import com.tienda.tienda.product.domain.model.Product;
 import com.tienda.tienda.user.domain.model.User;
 import com.tienda.tienda.user.application.usecase.*;
 import org.junit.jupiter.api.Test;
@@ -50,6 +52,15 @@ class UserIntegrationTest {
     @Autowired
     private DeleteUserUseCase deleteUserUseCase;
 
+    @Autowired
+    private AddFavoritoUseCase addFavoritoUseCase;
+
+    @Autowired
+    private RemoveFavoritoUseCase removeFavoritoUseCase;
+
+    @Autowired
+    private CreateProductUseCase createProductUseCase;
+
     private User createUserTest() {
         User user = new User();
         user.setName("Alberto");
@@ -58,6 +69,16 @@ class UserIntegrationTest {
         user.setEmail("albertog@gmail.com");
         user.setPassword("1234");
         return createUserUseCase.execute(user).block();
+    }
+
+    private Product createProductTest() {
+        Product product = new Product();
+        product.setName("Camiseta Test");
+        product.setPrice(20.00);
+        product.setFinalPrice(20.00);
+        product.setDescription("Descripción test");
+        product.setConsiderations("Lavar a 30 grados");
+        return createProductUseCase.execute(product).block();
     }
 
     @Test
@@ -123,6 +144,54 @@ class UserIntegrationTest {
 
         assertTrue(deleted);
         assertNull(getUserUseCase.execute(created.getId()).block());
+    }
+
+    @Test
+    void addFavorito_shouldAddProductToFavoritos() {
+        User user = createUserTest();
+        Product product = createProductTest();
+
+        User result = addFavoritoUseCase.execute(user.getId(), product.getId()).block();
+
+        assertNotNull(result);
+        assertFalse(result.getFavoritoIds().isEmpty());
+        assertTrue(result.getFavoritoIds().contains(product.getId()));
+    }
+
+    @Test
+    void addFavorito_ifAlreadyExists_shouldNotDuplicate() {
+        User user = createUserTest();
+        Product product = createProductTest();
+
+        addFavoritoUseCase.execute(user.getId(), product.getId()).block();
+        User result = addFavoritoUseCase.execute(user.getId(), product.getId()).block();
+
+        assertNotNull(result);
+        assertEquals(1, result.getFavoritoIds().size());
+    }
+
+    @Test
+    void removeFavorito_shouldRemoveProductFromFavoritos() {
+        User user = createUserTest();
+        Product product = createProductTest();
+
+        addFavoritoUseCase.execute(user.getId(), product.getId()).block();
+        User result = removeFavoritoUseCase.execute(user.getId(), product.getId()).block();
+
+        assertNotNull(result);
+        assertTrue(result.getFavoritoIds().isEmpty());
+    }
+
+    @Test
+    void getUserById_shouldReturn_favoritoIds() {
+        User user = createUserTest();
+        Product product = createProductTest();
+
+        addFavoritoUseCase.execute(user.getId(), product.getId()).block();
+        User result = getUserUseCase.execute(user.getId()).block();
+
+        assertNotNull(result);
+        assertTrue(result.getFavoritoIds().contains(product.getId()));
     }
 
 }

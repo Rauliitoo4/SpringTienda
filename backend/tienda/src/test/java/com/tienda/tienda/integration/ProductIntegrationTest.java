@@ -2,6 +2,7 @@ package com.tienda.tienda.integration;
 
 import com.tienda.tienda.product.application.usecase.*;
 import com.tienda.tienda.product.domain.model.Product;
+import com.tienda.tienda.product.domain.model.Size;
 import com.tienda.tienda.promotion.application.usecase.CreatePromotionUseCase;
 import com.tienda.tienda.promotion.domain.model.Promotion;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,8 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -84,6 +87,15 @@ class ProductIntegrationTest {
         assertEquals("Camiseta Test", result.getName());
         assertEquals(20.00, result.getPrice());
         assertEquals(20.00, result.getFinalPrice());
+    }
+
+    @Test
+    void createProduct_shouldHaveAllSizes() {
+        Product result = createProductTest();
+
+        assertNotNull(result.getSizes());
+        assertEquals(5, result.getSizes().size());
+        assertTrue(result.getSizes().containsAll(List.of(Size.values())));
     }
 
     @Test

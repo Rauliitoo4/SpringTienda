@@ -9,6 +9,7 @@ import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.mapper.C
 import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.request.AddProductToCarritoRequest;
 import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.response.CarritoResponse;
 import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.response.LineaCarritoResponse;
+import com.tienda.tienda.product.domain.model.Size;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,13 +67,15 @@ class AddProductToCarritoRestAdapterTest {
         request = new AddProductToCarritoRequest();
         request.setProductId(1);
         request.setQuantity(2);
+        request.setSize(Size.M);
     }
 
     @Test
     void addProductToCarrito_shouldReturnCarritoUpdatedAndStatus200() {
         when(requestMapper.toProductId(any(AddProductToCarritoRequest.class))).thenReturn(1);
         when(requestMapper.toQuantity(any(AddProductToCarritoRequest.class))).thenReturn(2);
-        when(addProductToCarritoInputPort.execute(1, 1, 2)).thenReturn(Mono.just(carritoWithLinea));
+        when(requestMapper.toSize(any(AddProductToCarritoRequest.class))).thenReturn(Size.M);
+        when(addProductToCarritoInputPort.execute(1, 1, 2, Size.M)).thenReturn(Mono.just(carritoWithLinea));
         when(carritoRestMapper.toResponse(carritoWithLinea)).thenReturn(carritoWithLineaResponse);
 
         webTestClient.post().uri("/carritos/1/productos")
@@ -83,14 +86,15 @@ class AddProductToCarritoRestAdapterTest {
                 .expectBody(CarritoResponse.class)
                 .isEqualTo(carritoWithLineaResponse);
 
-        verify(addProductToCarritoInputPort, times(1)).execute(1, 1, 2);
+        verify(addProductToCarritoInputPort, times(1)).execute(1, 1, 2, Size.M);
     }
 
     @Test
     void addProductToCarrito_ifNotExistsCarrito_shouldReturn404() {
         when(requestMapper.toProductId(any(AddProductToCarritoRequest.class))).thenReturn(1);
         when(requestMapper.toQuantity(any(AddProductToCarritoRequest.class))).thenReturn(2);
-        when(addProductToCarritoInputPort.execute(99, 1, 2)).thenReturn(Mono.empty());
+        when(requestMapper.toSize(any(AddProductToCarritoRequest.class))).thenReturn(Size.M);
+        when(addProductToCarritoInputPort.execute(99, 1, 2, Size.M)).thenReturn(Mono.empty());
 
         webTestClient.post().uri("/carritos/99/productos")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -107,7 +111,8 @@ class AddProductToCarritoRestAdapterTest {
 
         when(requestMapper.toProductId(any(AddProductToCarritoRequest.class))).thenReturn(99);
         when(requestMapper.toQuantity(any(AddProductToCarritoRequest.class))).thenReturn(2);
-        when(addProductToCarritoInputPort.execute(1, 99, 2)).thenReturn(Mono.empty());
+        when(requestMapper.toSize(any(AddProductToCarritoRequest.class))).thenReturn(Size.M);
+        when(addProductToCarritoInputPort.execute(1, 99, 2, Size.M)).thenReturn(Mono.empty());
 
         webTestClient.post().uri("/carritos/1/productos")
                 .contentType(MediaType.APPLICATION_JSON)

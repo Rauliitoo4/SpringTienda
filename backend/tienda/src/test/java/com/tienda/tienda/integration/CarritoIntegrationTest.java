@@ -5,6 +5,7 @@ import com.tienda.tienda.carrito.domain.model.Carrito;
 import com.tienda.tienda.carrito.domain.model.LineaCarrito;
 import com.tienda.tienda.product.application.usecase.CreateProductUseCase;
 import com.tienda.tienda.product.domain.model.Product;
+import com.tienda.tienda.product.domain.model.Size;
 import com.tienda.tienda.user.domain.model.User;
 import com.tienda.tienda.user.application.usecase.CreateUserUseCase;
 import org.junit.jupiter.api.Test;
@@ -88,7 +89,7 @@ class CarritoIntegrationTest {
     private LineaCarrito createLineasTest() {
         User user = createUserTest();
         Product product = createProductTest();
-        Carrito carrito = addProductToCarritoUseCase.execute(user.getCarritoId(), product.getId(), 2).block();
+        Carrito carrito = addProductToCarritoUseCase.execute(user.getCarritoId(), product.getId(), 2, Size.M).block();
         return carrito.getLineas().get(0);
     }
 
@@ -112,7 +113,7 @@ class CarritoIntegrationTest {
         User user = createUserTest();
         Product product = createProductTest();
 
-        Carrito result = addProductToCarritoUseCase.execute(user.getCarritoId(), product.getId(), 2).block();
+        Carrito result = addProductToCarritoUseCase.execute(user.getCarritoId(), product.getId(), 2, Size.M).block();
 
         assertNotNull(result);
         assertFalse(result.getLineas().isEmpty());
@@ -122,15 +123,42 @@ class CarritoIntegrationTest {
     @Test
     void addProductToCarrito_ifCarritoDoesntExists_shouldReturnNull() {
         Product product = createProductTest();
-        Carrito result = addProductToCarritoUseCase.execute(9999, product.getId(), 2).block();
+        Carrito result = addProductToCarritoUseCase.execute(9999, product.getId(), 2, Size.M).block();
         assertNull(result);
     }
 
     @Test
     void addProductToCarrito_ifProductDoesntExists_shouldReturnNull() {
         User user = createUserTest();
-        Carrito result = addProductToCarritoUseCase.execute(user.getCarritoId(), 9999, 2).block();
+        Carrito result = addProductToCarritoUseCase.execute(user.getCarritoId(), 9999, 2, Size.M).block();
         assertNull(result);
+    }
+
+    @Test
+    void addProductToCarrito_sameSizeSameProduct_shouldAccumulateQuantity() {
+        User user = createUserTest();
+        Product product = createProductTest();
+
+        addProductToCarritoUseCase.execute(user.getCarritoId(), product.getId(), 2, Size.M).block();
+        Carrito result = addProductToCarritoUseCase.execute(user.getCarritoId(), product.getId(), 3, Size.M).block();
+
+        assertNotNull(result);
+        assertEquals(1, result.getLineas().size());
+        assertEquals(5, result.getLineas().get(0).getQuantity());
+        assertEquals(100.00, result.getTotal());
+    }
+
+    @Test
+    void addProductToCarrito_differentSize_shouldCreateNewLinea() {
+        User user = createUserTest();
+        Product product = createProductTest();
+
+        addProductToCarritoUseCase.execute(user.getCarritoId(), product.getId(), 2, Size.M).block();
+        Carrito result = addProductToCarritoUseCase.execute(user.getCarritoId(), product.getId(), 2, Size.L).block();
+
+        assertNotNull(result);
+        assertEquals(2, result.getLineas().size());
+        assertEquals(80.00, result.getTotal());
     }
 
     @Test
