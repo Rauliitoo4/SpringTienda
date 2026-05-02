@@ -4,6 +4,7 @@ import com.tienda.tienda.carrito.domain.model.LineaCarrito;
 import com.tienda.tienda.carrito.application.port.output.GetLineaCarritoOutputPort;
 import com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.mapper.LineaCarritoPersistenceMapper;
 import com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.repository.LineaCarritoR2dbcRepository;
+import com.tienda.tienda.product.domain.model.Size;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -34,6 +35,12 @@ public class GetLineaCarritoPersistenceAdapter implements GetLineaCarritoOutputP
     @Override
     public Flux<LineaCarrito> findByCarritoId(int carritoId) {
         return r2dbcRepository.findByCarritoId(carritoId)
+                .map(mapper::toDomain);
+    }
+
+    @Override
+    public Mono<LineaCarrito> findByCarritoIdAndProductIdAndSize(int carritoId, int productId, Size size) {
+        return r2dbcRepository.findByCarritoIdAndProductIdAndSize(carritoId, productId, size.name())
                 .map(mapper::toDomain);
     }
 }
