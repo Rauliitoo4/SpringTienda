@@ -93,5 +93,23 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="01-create-table-usuario-favoritos" author="raul.redondochicano">
+        <createTable tableName="usuario_favoritos">
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="usuario_favoritos" columnNames="user_id, product_id"/>
+        <addForeignKeyConstraint baseTableName="usuario_favoritos" baseColumnNames="user_id"
+                                 referencedTableName="usuarios" referencedColumnNames="id"
+                                 constraintName="fk_favorito_user"/>
+        <addForeignKeyConstraint baseTableName="usuario_favoritos" baseColumnNames="product_id"
+                                 referencedTableName="productos" referencedColumnNames="id"
+                                 constraintName="fk_favorito_product"/>
+    </changeSet>
+
 </databaseChangeLog>
 
