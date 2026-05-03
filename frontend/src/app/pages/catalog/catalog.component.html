@@ -1,1 +1,45 @@
-<p>catalog works!</p>
+<div class="catalog-page">
+
+  <div class="catalog-page__header">
+    <h1 class="catalog-page__title">Catálogo de <em>productos</em></h1>
+    <p class="catalog-page__subtitle">Descubre nuestra colección completa</p>
+  </div>
+
+  <div class="filters">
+    <div class="filters__pills">
+      <button class="pill" [class.active]="selectedFilter() === 'todo'" (click)="setFilter('todo')">todo</button>
+      <button class="pill" [class.active]="selectedFilter() === 'camisetas'" (click)="setFilter('camisetas')">camisetas</button>
+      <button class="pill" [class.active]="selectedFilter() === 'pantalones'" (click)="setFilter('pantalones')">pantalones</button>
+      <button class="pill" [class.active]="selectedFilter() === 'sudaderas'" (click)="setFilter('sudaderas')">sudaderas</button>
+      <button class="pill" [class.active]="selectedFilter() === 'chaquetas'" (click)="setFilter('chaquetas')">chaquetas</button>
+    </div>
+    <mat-form-field appearance="outline" class="filters__sort">
+      <mat-select [(ngModel)]="selectedSort" disableOptionCentering panelClass="sort-panel">
+        <mat-option value="relevantes">más relevantes</mat-option>
+        <mat-option value="precio-asc">precio: menor a mayor</mat-option>
+        <mat-option value="precio-desc">precio: mayor a menor</mat-option>
+        <mat-option value="novedades">novedades</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="catalog-grid">
+  <a class="catalog-grid__card" *ngFor="let i of [1,2,3,4,5,6,7,8,9]" [routerLink]="['/producto', i]">
+    <div class="catalog-grid__image">
+      <span class="catalog-grid__badge catalog-grid__badge--new">NUEVO</span>
+      <button class="catalog-grid__wishlist" (click)="$event.stopPropagation(); $event.preventDefault()">
+        <mat-icon>favorite_border</mat-icon>
+      </button>
+    </div>
+    <div class="catalog-grid__info">
+      <div class="catalog-grid__name">Camiseta lino oversize</div>
+      <div class="catalog-grid__cat">CAMISETAS</div>
+      <div class="catalog-grid__price">
+        <span class="catalog-grid__price-current">39,95 €</span>
+      </div>
+      <button mat-stroked-button class="catalog-grid__add-btn" (click)="$event.stopPropagation(); $event.preventDefault()">añadir al carrito</button>
+    </div>
+  </a>
+</div>
+
+</div>
