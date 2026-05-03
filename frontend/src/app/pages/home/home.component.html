@@ -1,5 +1,5 @@
 <section class="hero">
-  <span class="hero__tag">NUEVA COLECCIÓN SS26</span>
+  <span class="hero__tag">NUEVA COLECCIÓN SS25</span>
   <h1 class="hero__title">Prendas que definen <em>tu estilo</em></h1>
   <p class="hero__subtitle">Diseños limpios para el día a día. Materiales sostenibles, siluetas atemporales.</p>
   <div class="hero__cta">
@@ -8,39 +8,50 @@
   </div>
 </section>
 
-<div class="filters">
-  <div class="filters__pills">
-    <button class="pill" [class.active]="selectedFilter() === 'todo'" (click)="setFilter('todo')">Todo</button>
-    <button class="pill" [class.active]="selectedFilter() === 'camisetas'" (click)="setFilter('camisetas')">Camisetas</button>
-    <button class="pill" [class.active]="selectedFilter() === 'pantalones'" (click)="setFilter('pantalones')">Pantalones</button>
-    <button class="pill" [class.active]="selectedFilter() === 'sudaderas'" (click)="setFilter('sudaderas')">Sudaderas</button>
-    <button class="pill" [class.active]="selectedFilter() === 'chaquetas'" (click)="setFilter('chaquetas')">Chaquetas</button>
-  </div>
-  <mat-form-field appearance="outline" class="filters__sort">
-    <mat-select [(ngModel)]="selectedSort" disableOptionCentering panelClass="sort-panel">
-      <mat-option value="relevantes">Más relevantes</mat-option>
-      <mat-option value="precio-asc">Precio: menor a mayor</mat-option>
-      <mat-option value="precio-desc">Precio: mayor a menor</mat-option>
-      <mat-option value="novedades">Novedades</mat-option>
-    </mat-select>
-  </mat-form-field>
-</div>
-
-<div class="catalog">
-  <div class="catalog__card" *ngFor="let i of [1,2,3,4,5,6]">
-    <div class="catalog__image">
-      <span class="catalog__badge catalog__badge--new">NUEVO</span>
-      <button class="catalog__wishlist">
-        <mat-icon>favorite_border</mat-icon>
+<section class="featured">
+  <div class="featured__header">
+    <h2 class="featured__title">Productos <em>destacados</em></h2>
+    <div class="featured__controls">
+      <button class="featured__arrow" (click)="prev()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button class="featured__arrow" (click)="next()">
+        <mat-icon>chevron_right</mat-icon>
       </button>
     </div>
-    <div class="catalog__info">
-      <div class="catalog__name">Camiseta lino oversize</div>
-      <div class="catalog__cat">CAMISETAS</div>
-      <div class="catalog__price">
-        <span class="catalog__price-current">39,95 €</span>
-      </div>
-      <button mat-stroked-button class="catalog__add-btn">añadir al carrito</button>
-    </div>
   </div>
-</div>
+
+  <div class="featured__carousel">
+    <a class="featured__card" *ngFor="let product of visibleProducts" [routerLink]="['/producto', product.id]">
+      <div class="featured__image">
+        <span *ngIf="product.badge" class="featured__badge"
+          [class.featured__badge--new]="product.badge === 'NUEVO'"
+          [class.featured__badge--sale]="product.badge === 'SALE'">
+          {{ product.badge }}
+        </span>
+        <button class="featured__wishlist" (click)="$event.stopPropagation(); $event.preventDefault()">
+          <mat-icon>favorite_border</mat-icon>
+        </button>
+      </div>
+      <div class="featured__info">
+        <div class="featured__name">{{ product.name }}</div>
+        <div class="featured__cat">{{ product.category }}</div>
+        <div class="featured__price">
+          <span class="featured__price-current">{{ product.price | number:'1.2-2' }} €</span>
+          <span *ngIf="product.oldPrice" class="featured__price-old">{{ product.oldPrice | number:'1.2-2' }} €</span>
+        </div>
+        <button mat-stroked-button class="featured__add-btn"
+          (click)="$event.stopPropagation(); $event.preventDefault()">
+          añadir al carrito
+        </button>
+      </div>
+    </a>
+  </div>
+
+  <div class="featured__dots">
+    <span *ngFor="let s of slidesArray; let i = index"
+      class="featured__dot"
+      [class.active]="i === currentSlide()">
+    </span>
+  </div>
+</section>
