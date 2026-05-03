@@ -23,9 +23,14 @@
       <mat-icon>favorite_border</mat-icon>
     </button>
 
-    <button mat-icon-button routerLink="/carrito">
-      <mat-icon [matBadge]="cartItemCount() > 0 ? cartItemCount() : null" matBadgeColor="warn">shopping_bag</mat-icon>
-    </button>
+    <div class="cart-wrap" (mouseenter)="showCart.set(true)" (mouseleave)="showCart.set(false)">
+      <button mat-icon-button routerLink="/carrito">
+        <mat-icon [matBadge]="cartItemCount() > 0 ? cartItemCount() : null" matBadgeColor="warn">shopping_bag</mat-icon>
+      </button>
+      <div class="cart-dropdown" *ngIf="showCart()">
+        <app-mini-carrito/>
+      </div>
+    </div>
 
     <button mat-icon-button routerLink="/auth">
       <mat-icon>person</mat-icon>
