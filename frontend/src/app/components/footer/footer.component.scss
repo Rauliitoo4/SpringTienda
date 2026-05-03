@@ -1,0 +1,96 @@
+.footer {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  padding: 3rem 2rem 1.5rem;
+  margin-top: 4rem;
+  border-top: 0.5px solid var(--color-border);
+  transition: background-color .25s;
+
+  &__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 2rem;
+    border-bottom: 0.5px solid var(--color-border);
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  &__brand {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__logo {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    color: var(--color-text-primary);
+
+    span {
+      color: var(--color-accent);
+    }
+  }
+
+  &__tagline {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin: 0;
+    letter-spacing: 0.04em;
+  }
+
+  &__nav {
+    display: flex;
+    gap: 2rem;
+
+    a {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color .2s;
+
+      &:hover {
+        color: var(--color-accent);
+      }
+    }
+  }
+
+  &__social {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__social-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s;
+    text-decoration: none;
+    color: var(--color-text-secondary);
+
+    &:hover {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+  }
+
+  &__bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 1.5rem;
+    text-align: center;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.04em;
+  }
+}

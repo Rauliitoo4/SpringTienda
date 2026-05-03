@@ -1,1 +1,38 @@
-<p>footer works!</p>
+<footer class="footer">
+  <div class="footer__content">
+
+    <div class="footer__brand">
+      <span class="footer__logo">SUR<span>VER</span></span>
+    </div>
+
+    <div class="footer__nav">
+      <a routerLink="/home">inicio</a>
+      <a routerLink="/catalogo">catálogo</a>
+      <a routerLink="/nosotros">nosotros</a>
+      <a routerLink="/contacto">contacto</a>
+    </div>
+
+    <div class="footer__social">
+      <a href="https://github.com/Rauliitoo4" target="_blank" class="footer__social-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path [attr.d]="siGithub.path"/>
+        </svg>
+      </a>
+      <a href="https://www.instagram.com/rauliitooh_4/" target="_blank" class="footer__social-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path [attr.d]="siInstagram.path"/>
+        </svg>
+      </a>
+      <a href="https://www.twitch.tv/negr0tex" target="_blank" class="footer__social-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path [attr.d]="siTwitch.path"/>
+        </svg>
+      </a>
+    </div>
+
+  </div>
+
+  <div class="footer__bottom">
+    <span>© {{ currentYear }} SURVER. Todos los derechos reservados.</span>
+  </div>
+</footer>
