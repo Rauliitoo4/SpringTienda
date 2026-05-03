@@ -17,6 +17,6 @@ export class NavbarComponent {
 
   toggleDarkMode() {
     this.isDarkMode.update(v => !v);
-    document.body.classList.toggle('dark-theme', this.isDarkMode());
+    document.documentElement.classList.toggle('dark-theme', this.isDarkMode());
   }
 }

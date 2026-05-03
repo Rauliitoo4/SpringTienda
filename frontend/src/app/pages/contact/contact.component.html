@@ -1,0 +1,64 @@
+<div class="contact">
+
+  <div class="contact__hero">
+    <span class="contact__tag">CONTACTO</span>
+    <h1 class="contact__title">Contacta con <em>nosotros</em></h1>
+    <p class="contact__subtitle">Estamos aquí para ayudarte. Escríbenos y te respondemos en menos de 24 horas.</p>
+  </div>
+
+  <div class="contact__content">
+
+    <div class="contact__info">
+      <div class="contact__info-item">
+        <mat-icon>mail_outline</mat-icon>
+        <div>
+          <h3>Email</h3>
+          <p>contacto&#64;surver.com</p>
+        </div>
+      </div>
+      <div class="contact__info-item">
+        <mat-icon>location_on</mat-icon>
+        <div>
+          <h3>Ubicación</h3>
+          <p>Marbella, Málaga, Andalucía</p>
+        </div>
+      </div>
+      <div class="contact__info-item">
+        <mat-icon>schedule</mat-icon>
+        <div>
+          <h3>Horario</h3>
+          <p>Lunes a Viernes, 9h - 14h</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact__form" *ngIf="!sent()">
+      <mat-form-field appearance="outline" class="contact__field">
+        <mat-label>nombre</mat-label>
+        <input matInput [(ngModel)]="name" placeholder="Tu nombre"/>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="contact__field">
+        <mat-label>email</mat-label>
+        <input matInput [(ngModel)]="email" type="email" placeholder="tu@email.com"/>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="contact__field">
+        <mat-label>mensaje</mat-label>
+        <textarea matInput [(ngModel)]="message" rows="5" placeholder="¿En qué podemos ayudarte?"></textarea>
+      </mat-form-field>
+
+      <button mat-flat-button class="contact__btn" (click)="send()">
+        Enviar mensaje
+      </button>
+    </div>
+
+    <div class="contact__success" *ngIf="sent()">
+      <mat-icon>check_circle_outline</mat-icon>
+      <h2>¡Mensaje enviado!</h2>
+      <p>Gracias por contactarnos. Te respondemos en menos de 24 horas.</p>
+    </div>
+
+  </div>
+
+</div>
