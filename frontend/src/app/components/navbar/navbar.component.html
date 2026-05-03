@@ -1,1 +1,34 @@
-<p>navbar works!</p>
+<nav class="navbar">
+  <div class="navbar__logo">
+    <a routerLink="/home">SUR<span>VER</span></a>
+  </div>
+
+  <div class="navbar__links">
+    <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">inicio</a>
+    <a routerLink="/catalogo" routerLinkActive="active">catálogo</a>
+    <a routerLink="/nosotros" routerLinkActive="active">nosotros</a>
+    <a routerLink="/contacto" routerLinkActive="active">contacto</a>
+  </div>
+
+  <div class="navbar__actions">
+    <button mat-icon-button (click)="toggleDarkMode()" class="navbar__toggle">
+      <mat-icon>{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+
+    <button mat-icon-button>
+      <mat-icon>search</mat-icon>
+    </button>
+
+    <button mat-icon-button routerLink="/favoritos">
+      <mat-icon>favorite_border</mat-icon>
+    </button>
+
+    <button mat-icon-button routerLink="/carrito">
+      <mat-icon [matBadge]="cartItemCount() > 0 ? cartItemCount() : null" matBadgeColor="warn">shopping_bag</mat-icon>
+    </button>
+
+    <button mat-icon-button routerLink="/auth">
+      <mat-icon>person</mat-icon>
+    </button>
+  </div>
+</nav>
