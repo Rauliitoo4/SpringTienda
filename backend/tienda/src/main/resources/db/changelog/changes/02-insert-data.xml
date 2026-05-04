@@ -89,5 +89,252 @@
         </update>
     </changeSet>
 
+    <changeSet id="02-update-imagenes-productos" author="raul.redondochicano">
+        <update tableName="productos">
+            <column name="image_url" value="https://img01.ztat.net/article/spp-media-p1/f76dee03726447ce83cd8ee7d4f86a42/4a9e2164db844e239e43e23a15d7a6b7.jpg?imwidth=1800"/>
+            <where>name = 'Camiseta básica blanca'</where>
+        </update>
+        <update tableName="productos">
+            <column name="image_url" value="https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600"/>
+            <where>name = 'Pantalón Vaquero'</where>
+        </update>
+        <update tableName="productos">
+            <column name="image_url" value="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=600"/>
+            <where>name = 'Sudadera básica'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="02-insert-camisetas" author="raul.redondochicano">
+        <insert tableName="productos">
+            <column name="name" value="Camiseta básica negra"/>
+            <column name="price" valueNumeric="19.99"/>
+            <column name="final_price" valueNumeric="19.99"/>
+            <column name="description" value="Camiseta básica de manga corta en negro"/>
+            <column name="material" value="Algodón 100%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://www.puntoblanco.com/520014-thickbox_default/camiseta-manga-corta-basico.jpg"/>
+            <column name="category" value="CAMISETAS"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Camiseta básica gris"/>
+            <column name="price" valueNumeric="19.99"/>
+            <column name="final_price" valueNumeric="19.99"/>
+            <column name="description" value="Camiseta básica de manga corta en gris"/>
+            <column name="material" value="Algodón 100%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://www.ouka.es/wp-content/uploads/2025/03/comprar_camiseta_basica_manga_corta_hombre_color_colorful_standard_gris_oscuro_CS1001LG_2-937x1171.jpg"/>
+            <column name="category" value="CAMISETAS"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Camiseta oversize blessed"/>
+            <column name="price" valueNumeric="24.99"/>
+            <column name="final_price" valueNumeric="24.99"/>
+            <column name="description" value="Camiseta oversize con estampado blessed"/>
+            <column name="material" value="Algodón 100%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://acdn-us.mitiendanube.com/stores/002/278/791/products/diseno-3-bis1-fa392784207548030216579195059174-480-0.png"/>
+            <column name="category" value="CAMISETAS"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Camiseta estampado 2Pac"/>
+            <column name="price" valueNumeric="27.99"/>
+            <column name="final_price" valueNumeric="27.99"/>
+            <column name="description" value="Camiseta con estampado de 2Pac"/>
+            <column name="material" value="Algodón 100%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://www.saoko.com.br/cdn/shop/files/BLCOV-BR-TAM_IF-203884.png?v=1753724451"/>
+            <column name="category" value="CAMISETAS"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Camiseta Jordan"/>
+            <column name="price" valueNumeric="35.99"/>
+            <column name="final_price" valueNumeric="35.99"/>
+            <column name="description" value="Camiseta de Jordan negra"/>
+            <column name="material" value="Algodón 100%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://24segons.es/199218-large_default/camiseta-jordan-city-88-black.jpg"/>
+            <column name="category" value="CAMISETAS"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="02-insert-sudaderas" author="raul.redondochicano">
+        <update tableName="productos">
+            <column name="name" value="Sudadera básica blanca"/>
+            <column name="image_url" value="https://cdn.wallapop.com/images/10420/kb/1x/__/c10420p1227889406/i6275405596.jpg?pictureSize=W640"/>
+            <where>name = 'Sudadera básica'</where>
+        </update>
+        <insert tableName="productos">
+            <column name="name" value="Sudadera básica negra"/>
+            <column name="price" valueNumeric="34.99"/>
+            <column name="final_price" valueNumeric="34.99"/>
+            <column name="description" value="Sudadera básica negra con capucha"/>
+            <column name="material" value="Algodón 80%, Poliéster 20%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://images.asos-media.com/products/sudadera-negra-basica-con-capucha-de-asos-design/209733909-1-black?$n_640w$&amp;wid=513&amp;fit=constrain"/>
+            <column name="category" value="SUDADERAS"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Sudadera 2Pac oversized"/>
+            <column name="price" valueNumeric="44.99"/>
+            <column name="final_price" valueNumeric="44.99"/>
+            <column name="description" value="Sudadera oversized sin capucha con estampado de 2Pac"/>
+            <column name="material" value="Algodón 80%, Poliéster 20%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://images.asos-media.com/products/sudadera-negro-lavado-unisex-extragrande-con-estampados-con-licencia-de-tupac-de-asos-design/206813272-1-washedblack?$n_640w$&amp;wid=513&amp;fit=constrain"/>
+            <column name="category" value="SUDADERAS"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Sudadera básica Jordan"/>
+            <column name="price" valueNumeric="59.99"/>
+            <column name="final_price" valueNumeric="59.99"/>
+            <column name="description" value="Sudadera básica Jordan con capucha"/>
+            <column name="material" value="Algodón 80%, Poliéster 20%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://static.nike.com/a/images/t_web_pdp_936_v2/f_auto,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/50e5473a-c932-425a-b577-a663c8c415be/M+J+BRK+OVS+PO+HD.png"/>
+            <column name="category" value="SUDADERAS"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Sudadera Stranger Things"/>
+            <column name="price" valueNumeric="39.99"/>
+            <column name="final_price" valueNumeric="39.99"/>
+            <column name="description" value="Sudadera con capucha de Stranger Things"/>
+            <column name="material" value="Algodón 80%, Poliéster 20%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://static.carrefour.es/hd_510x_/crs/cdn_static/catalog/hd/573580_01_1.jpg"/>
+            <column name="category" value="SUDADERAS"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Sudadera Adidas bicolor"/>
+            <column name="price" valueNumeric="64.99"/>
+            <column name="final_price" valueNumeric="64.99"/>
+            <column name="description" value="Sudadera Adidas bicolor con capucha"/>
+            <column name="material" value="Algodón 70%, Poliéster 30%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://resize.sprintercdn.com/o/products/0398791/sweatshirt-capuz-adidas_0398791_00_5_1870434263.jpg"/>
+            <column name="category" value="SUDADERAS"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="02-insert-pantalones" author="raul.redondochicano">
+        <update tableName="productos">
+            <column name="name" value="Pantalón Vaquero básico"/>
+            <column name="image_url" value="https://capitandenim.com/cdn/shop/files/1_64_3daa586f-1605-43e7-b83b-73422c19ed48.webp?v=1733519415"/>
+            <where>name = 'Pantalón Vaquero'</where>
+        </update>
+        <insert tableName="productos">
+            <column name="name" value="Pantalón vaquero con estampados"/>
+            <column name="price" valueNumeric="44.99"/>
+            <column name="final_price" valueNumeric="44.99"/>
+            <column name="description" value="Pantalón vaquero con estampados"/>
+            <column name="material" value="Denim 100%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://m.media-amazon.com/images/I/61fmqYAsHaL._AC_UY1000_.jpg"/>
+            <column name="category" value="PANTALONES"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Pantalón vaquero gris"/>
+            <column name="price" valueNumeric="49.99"/>
+            <column name="final_price" valueNumeric="49.99"/>
+            <column name="description" value="Pantalón vaquero slim fit en gris"/>
+            <column name="material" value="Denim 98%, Elastano 2%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://img1.g-star.com/product/c_fill,f_auto,w_1000,ar_0.75,q_auto/v1717662742/D05385-9882-C587-E01/g-star-jeans-d-staq-slim-gris.jpg"/>
+            <column name="category" value="PANTALONES"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Pantalón jogger gris"/>
+            <column name="price" valueNumeric="29.99"/>
+            <column name="final_price" valueNumeric="29.99"/>
+            <column name="description" value="Pantalón jogger gris cómodo para el día a día"/>
+            <column name="material" value="Algodón 70%, Poliéster 30%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://www.bolf.es/hpeciai/f985c779c2af7322e04d4a9f1e4ce99d/spa_pl_Pantalon-de-chandal-para-hombre-gris-Bolf-AK13A-1-92929_10.jpg"/>
+            <column name="category" value="PANTALONES"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Pantalón jogger negro"/>
+            <column name="price" valueNumeric="29.99"/>
+            <column name="final_price" valueNumeric="29.99"/>
+            <column name="description" value="Pantalón jogger negro cómodo para el día a día"/>
+            <column name="material" value="Algodón 70%, Poliéster 30%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://www.bolf.es/hpeciai/4d466471fbf4a4c172a892822aed8575/spa_pl_Pantalon-de-chandal-para-hombre-negro-Bolf-AK13B-1-93706_9.jpg"/>
+            <column name="category" value="PANTALONES"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Pantalón vaquero negro"/>
+            <column name="price" valueNumeric="44.99"/>
+            <column name="final_price" valueNumeric="44.99"/>
+            <column name="description" value="Pantalón vaquero slim fit en negro"/>
+            <column name="material" value="Denim 98%, Elastano 2%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://www.bolf.es/hpeciai/fa86ec2df4ca1417ed1a53aa2eb7eb28/spa_pl_Pantalon-vaquero-slim-fit-para-hombre-negro-Bolf-6497-95682_2.jpg"/>
+            <column name="category" value="PANTALONES"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="02-insert-chaquetas" author="raul.redondochicano">
+        <insert tableName="productos">
+            <column name="name" value="Chaqueta vaquera azul"/>
+            <column name="price" valueNumeric="59.99"/>
+            <column name="final_price" valueNumeric="59.99"/>
+            <column name="description" value="Chaqueta vaquera en color azul"/>
+            <column name="material" value="Denim 100%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://www.bolf.es/hpeciai/342a51e2028c0b57d680b15e78948949/spa_pl_Chaqueta-vaquera-para-hombre-azul-oscuro-Bolf-200A-92820_1.jpg"/>
+            <column name="category" value="CHAQUETAS"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Chaqueta vaquera verde"/>
+            <column name="price" valueNumeric="59.99"/>
+            <column name="final_price" valueNumeric="59.99"/>
+            <column name="description" value="Chaqueta vaquera en color verde"/>
+            <column name="material" value="Denim 100%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://m.media-amazon.com/images/I/718zCEThwyL._AC_UY1000_.jpg"/>
+            <column name="category" value="CHAQUETAS"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Chaqueta chándal negra"/>
+            <column name="price" valueNumeric="49.99"/>
+            <column name="final_price" valueNumeric="49.99"/>
+            <column name="description" value="Chaqueta de chándal negra"/>
+            <column name="material" value="Poliéster 100%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://42krunning.com/wp-content/uploads/2026/02/chaqueta-chandal-active-42k-00006.jpg"/>
+            <column name="category" value="CHAQUETAS"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Chaqueta chándal blanca Adidas"/>
+            <column name="price" valueNumeric="69.99"/>
+            <column name="final_price" valueNumeric="69.99"/>
+            <column name="description" value="Chaqueta de chándal blanca Adidas"/>
+            <column name="material" value="Poliéster 100%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://i8.amplience.net/i/jpl/jd_754630_a?qlt=92&amp;w=600&amp;h=765&amp;v=1&amp;fmt=auto"/>
+            <column name="category" value="CHAQUETAS"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Chaquetón de piel negro"/>
+            <column name="price" valueNumeric="129.99"/>
+            <column name="final_price" valueNumeric="129.99"/>
+            <column name="description" value="Chaquetón de piel sintética en negro"/>
+            <column name="material" value="Poliuretano 100%"/>
+            <column name="considerations" value="Limpiar con paño húmedo"/>
+            <column name="image_url" value="https://img.joomcdn.net/7e80b56c0466805790edc93e7b30d9427d7a5979_original.jpeg"/>
+            <column name="category" value="CHAQUETAS"/>
+        </insert>
+        <insert tableName="productos">
+            <column name="name" value="Chaqueta North Face negra y gris"/>
+            <column name="price" valueNumeric="89.99"/>
+            <column name="final_price" valueNumeric="89.99"/>
+            <column name="description" value="Chaqueta North Face negra y gris"/>
+            <column name="material" value="Poliéster 100%"/>
+            <column name="considerations" value="Lavar a 30 grados"/>
+            <column name="image_url" value="https://m.media-amazon.com/images/I/71wYh5DpdgL._AC_UY1000_.jpg"/>
+            <column name="category" value="CHAQUETAS"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
 

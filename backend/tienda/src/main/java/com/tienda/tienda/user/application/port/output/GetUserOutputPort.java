@@ -7,4 +7,5 @@ import reactor.core.publisher.Mono;
 public interface GetUserOutputPort {
     Mono<User> findById(int id);
     Flux<User> findAll();
+    Mono<User> findByEmailAndPassword(String email, String password);
 }

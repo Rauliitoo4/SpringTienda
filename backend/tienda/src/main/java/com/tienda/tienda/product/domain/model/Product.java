@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,4 +28,5 @@ public class Product {
     private List<Promotion> promotions;
     private List<Size> sizes = new ArrayList<>(Arrays.asList(Size.values()));
     private Category category;
+    private LocalDateTime createdAt;
 }

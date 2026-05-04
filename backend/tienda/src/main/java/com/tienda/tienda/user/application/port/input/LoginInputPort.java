@@ -1,4 +1,8 @@
 package com.tienda.tienda.user.application.port.input;
 
-public class LoginInputPort {
+import com.tienda.tienda.user.domain.model.User;
+import reactor.core.publisher.Mono;
+
+public interface LoginInputPort {
+    Mono<User> execute(String email, String password);
 }

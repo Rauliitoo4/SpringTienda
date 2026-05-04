@@ -31,4 +31,7 @@ public class ProductEntity {
 
     private String category;
 
+    @Column("created_at")
+    private java.time.LocalDateTime createdAt;
+
 }

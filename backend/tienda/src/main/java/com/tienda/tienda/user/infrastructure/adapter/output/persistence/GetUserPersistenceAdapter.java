@@ -30,4 +30,10 @@ public class GetUserPersistenceAdapter implements GetUserOutputPort {
         return r2dbcRepository.findAll()
                 .map(mapper::toDomain);
     }
+
+    @Override
+    public Mono<User> findByEmailAndPassword(String email, String password) {
+        return r2dbcRepository.findByEmailAndPassword(email, password)
+                .map(mapper::toDomain);
+    }
 }
