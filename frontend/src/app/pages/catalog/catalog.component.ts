@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,6 +23,8 @@ export class CatalogComponent implements OnInit {
   products = signal<Product[]>([]);
   loading = signal(true);
   error = signal(false);
+  currentPage = signal(0);
+  readonly pageSize = 9;
 
   ngOnInit() {
     this.productService.getAll().subscribe({
@@ -40,12 +42,43 @@ export class CatalogComponent implements OnInit {
   get filteredProducts() {
     let list = this.products();
     if (this.selectedFilter() !== 'todo') {
-      list = list.filter(product => product.category?.toLowerCase() === this.selectedFilter());
+      list = list.filter(p => p.category?.toLowerCase() === this.selectedFilter());
     }
     return list;
   }
 
+  get paginatedProducts() {
+    const start = this.currentPage() * this.pageSize;
+    return this.filteredProducts.slice(start, start + this.pageSize);
+  }
+
+  get totalPages() {
+    return Math.ceil(this.filteredProducts.length / this.pageSize);
+  }
+
+  get pagesArray() {
+    return Array(this.totalPages).fill(0);
+  }
+
   setFilter(filter: string) {
     this.selectedFilter.set(filter);
+    this.currentPage.set(0);
+  }
+
+  goToPage(page: number) {
+    this.currentPage.set(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  prevPage() {
+    if (this.currentPage() > 0) {
+      this.goToPage(this.currentPage() - 1);
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage() < this.totalPages - 1) {
+      this.goToPage(this.currentPage() + 1);
+    }
   }
 }

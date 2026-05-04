@@ -7,24 +7,24 @@
 
   <div class="filters">
     <div class="filters__pills">
-      <button class="pill" [class.active]="selectedFilter() === 'todo'" (click)="setFilter('todo')">Todo</button>
-      <button class="pill" [class.active]="selectedFilter() === 'camisetas'" (click)="setFilter('camisetas')">Camisetas</button>
-      <button class="pill" [class.active]="selectedFilter() === 'pantalones'" (click)="setFilter('pantalones')">Pantalones</button>
-      <button class="pill" [class.active]="selectedFilter() === 'sudaderas'" (click)="setFilter('sudaderas')">Sudaderas</button>
-      <button class="pill" [class.active]="selectedFilter() === 'chaquetas'" (click)="setFilter('chaquetas')">Chaquetas</button>
+      <button class="pill" [class.active]="selectedFilter() === 'todo'" (click)="setFilter('todo')">todo</button>
+      <button class="pill" [class.active]="selectedFilter() === 'camisetas'" (click)="setFilter('camisetas')">camisetas</button>
+      <button class="pill" [class.active]="selectedFilter() === 'pantalones'" (click)="setFilter('pantalones')">pantalones</button>
+      <button class="pill" [class.active]="selectedFilter() === 'sudaderas'" (click)="setFilter('sudaderas')">sudaderas</button>
+      <button class="pill" [class.active]="selectedFilter() === 'chaquetas'" (click)="setFilter('chaquetas')">chaquetas</button>
     </div>
     <mat-form-field appearance="outline" class="filters__sort">
       <mat-select [(ngModel)]="selectedSort" disableOptionCentering panelClass="sort-panel">
-        <mat-option value="relevantes">Más relevantes</mat-option>
-        <mat-option value="precio-asc">Precio: menor a mayor</mat-option>
-        <mat-option value="precio-desc">Precio: mayor a menor</mat-option>
-        <mat-option value="novedades">Novedades</mat-option>
+        <mat-option value="relevantes">más relevantes</mat-option>
+        <mat-option value="precio-asc">precio: menor a mayor</mat-option>
+        <mat-option value="precio-desc">precio: mayor a menor</mat-option>
+        <mat-option value="novedades">novedades</mat-option>
       </mat-select>
     </mat-form-field>
   </div>
 
   <div class="catalog-grid" *ngIf="!loading() && !error()">
-    <a class="catalog-grid__card" *ngFor="let product of filteredProducts" [routerLink]="['/producto', product.id]">
+    <a class="catalog-grid__card" *ngFor="let product of paginatedProducts" [routerLink]="['/producto', product.id]">
       <div class="catalog-grid__image">
         <span *ngIf="product.promotions.length > 0" class="catalog-grid__badge catalog-grid__badge--sale">
           −{{ product.promotions[0].discount }}%
@@ -43,7 +43,7 @@
         </div>
         <button mat-stroked-button class="catalog-grid__add-btn"
           (click)="$event.stopPropagation(); $event.preventDefault()">
-          añadir al carrito
+          Añadir al carrito
         </button>
       </div>
     </a>
@@ -55,6 +55,21 @@
 
   <div class="catalog-grid__error" *ngIf="error()">
     <p>Error al cargar los productos. Inténtalo de nuevo.</p>
+  </div>
+
+  <div class="catalog-pagination" *ngIf="totalPages > 1">
+    <button class="catalog-pagination__btn" (click)="prevPage()" [disabled]="currentPage() === 0">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button *ngFor="let p of pagesArray; let i = index"
+      class="catalog-pagination__page"
+      [class.active]="i === currentPage()"
+      (click)="goToPage(i)">
+      {{ i + 1 }}
+    </button>
+    <button class="catalog-pagination__btn" (click)="nextPage()" [disabled]="currentPage() === totalPages - 1">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
   </div>
 
 </div>

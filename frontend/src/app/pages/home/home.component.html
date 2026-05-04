@@ -24,11 +24,11 @@
   <div class="featured__carousel">
     <a class="featured__card" *ngFor="let product of visibleProducts" [routerLink]="['/producto', product.id]">
       <div class="featured__image">
-        <span *ngIf="product.badge" class="featured__badge"
-          [class.featured__badge--new]="product.badge === 'NUEVO'"
-          [class.featured__badge--sale]="product.badge === 'SALE'">
-          {{ product.badge }}
+        <span *ngIf="product.promotions.length > 0" class="featured__badge featured__badge--sale">
+          −{{ product.promotions[0].discount }}%
         </span>
+        <img *ngIf="product.imageUrl" [src]="product.imageUrl" [alt]="product.name" class="featured__img"/>
+        <mat-icon *ngIf="!product.imageUrl" class="featured__image-placeholder">image</mat-icon>
         <button class="featured__wishlist" (click)="$event.stopPropagation(); $event.preventDefault()">
           <mat-icon>favorite_border</mat-icon>
         </button>
@@ -37,8 +37,8 @@
         <div class="featured__name">{{ product.name }}</div>
         <div class="featured__cat">{{ product.category }}</div>
         <div class="featured__price">
-          <span class="featured__price-current">{{ product.price | number:'1.2-2' }} €</span>
-          <span *ngIf="product.oldPrice" class="featured__price-old">{{ product.oldPrice | number:'1.2-2' }} €</span>
+          <span class="featured__price-current">{{ product.finalPrice | number:'1.2-2' }} €</span>
+          <span *ngIf="product.price !== product.finalPrice" class="featured__price-old">{{ product.price | number:'1.2-2' }} €</span>
         </div>
         <button mat-stroked-button class="featured__add-btn"
           (click)="$event.stopPropagation(); $event.preventDefault()">
