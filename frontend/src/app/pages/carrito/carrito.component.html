@@ -14,10 +14,12 @@
     <div class="carrito__items">
       <div class="carrito__item" *ngFor="let item of items">
         <div class="carrito__item-image">
-          <img *ngIf="item.product.imageUrl" [src]="item.product.imageUrl" [alt]="item.product.name" class="carrito__item-img"/>
+          <a [routerLink]="['/producto', item.product.id]">
+            <img *ngIf="item.product?.imageUrl" [src]="item.product.imageUrl" [alt]="item.product.name" class="carrito__item-img"/>
+          </a>
         </div>
         <div class="carrito__item-info">
-          <div class="carrito__item-name">{{ item.product.name }}</div>
+          <a [routerLink]="['/producto', item.product.id]" class="carrito__item-name">{{ item.product.name }}</a>
           <div class="carrito__item-meta">Talla {{ item.size }}</div>
         </div>
         <div class="carrito__item-actions">
