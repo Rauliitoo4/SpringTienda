@@ -14,4 +14,5 @@ export interface Product {
   promotions: Promotion[];
   sizes: Size[];
   category: Category;
+  createdAt: string;
 }

@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit, computed } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,7 +19,7 @@ export class CatalogComponent implements OnInit {
   private productService = inject(ProductService);
 
   selectedFilter = signal('todo');
-  selectedSort = 'relevantes';
+  selectedSort = signal('relevantes');
   products = signal<Product[]>([]);
   loading = signal(true);
   error = signal(false);
@@ -41,9 +41,27 @@ export class CatalogComponent implements OnInit {
 
   get filteredProducts() {
     let list = this.products();
+
     if (this.selectedFilter() !== 'todo') {
       list = list.filter(p => p.category?.toLowerCase() === this.selectedFilter());
     }
+
+    switch (this.selectedSort()) {
+      case 'precio-asc':
+        list = [...list].sort((a, b) => a.finalPrice - b.finalPrice);
+        break;
+      case 'precio-desc':
+        list = [...list].sort((a, b) => b.finalPrice - a.finalPrice);
+        break;
+      case 'novedades':
+        list = [...list].sort((a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        break;
+      default:
+        break;
+    }
+
     return list;
   }
 
