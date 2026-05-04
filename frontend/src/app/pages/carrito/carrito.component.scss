@@ -316,4 +316,18 @@
       color: #1a1a1a !important;
     }
   }
+
+  &__item-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  &__loading {
+    text-align: center;
+    padding: 4rem;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+  }
 }

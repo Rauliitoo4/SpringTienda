@@ -34,8 +34,10 @@
           −{{ product.promotions[0].discount }}%
         </span>
         <img *ngIf="product.imageUrl" [src]="product.imageUrl" [alt]="product.name" class="catalog-grid__img"/>
-        <button class="catalog-grid__wishlist" (click)="$event.stopPropagation(); $event.preventDefault()">
-          <mat-icon>favorite_border</mat-icon>
+        <button class="catalog-grid__wishlist"
+          [class.active]="isFavorite(product.id)"
+          (click)="$event.stopPropagation(); $event.preventDefault(); toggleFavorite(product)">
+          <mat-icon>{{ isFavorite(product.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
         </button>
       </div>
       <div class="catalog-grid__info">
@@ -46,7 +48,7 @@
           <span *ngIf="product.price !== product.finalPrice" class="catalog-grid__price-old">{{ product.price | number:'1.2-2' }} €</span>
         </div>
         <button mat-stroked-button class="catalog-grid__add-btn"
-          (click)="$event.stopPropagation(); $event.preventDefault()">
+          (click)="$event.stopPropagation(); $event.preventDefault(); openSizeSelector(product)">
           Añadir al carrito
         </button>
       </div>
@@ -75,5 +77,12 @@
       <mat-icon>chevron_right</mat-icon>
     </button>
   </div>
+
+  <app-size-selector
+    *ngIf="showSizeSelector()"
+    [sizes]="selectedProduct()!.sizes"
+    [productName]="selectedProduct()!.name"
+    (closed)="closeSizeSelector()"
+    (sizeSelected)="addToCart($event)"/>
 
 </div>

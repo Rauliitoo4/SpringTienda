@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -6,7 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
+import { AuthService } from '../../services/user/auth.service';
+import { UserService } from '../../services/user/user.service';
+import { ProductService } from '../../services/product/product.service';
+import { User } from '../../models/user/user.model';
+import { Product } from '../../models/product/product.model';
 
 @Component({
   selector: 'app-profile',
@@ -14,30 +19,66 @@ import { RouterLink } from '@angular/router';
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
-export class ProfileComponent {
-  isEditing = signal(false);
+export class ProfileComponent implements OnInit {
+  private authService = inject(AuthService);
+  private userService = inject(UserService);
+  private productService = inject(ProductService);
+  private router = inject(Router);
 
-  user = {
-    name: 'Alberto',
-    lastname: 'García',
-    username: 'albertog',
-    email: 'albertog@gmail.com',
-    carritoId: 1
+  isEditing = signal(false);
+  loading = signal(true);
+  favorites = signal<Product[]>([]);
+
+  user: User = {
+    id: 0,
+    name: '',
+    lastname: '',
+    username: '',
+    email: '',
+    carritoId: 0,
+    favoritoIds: []
   };
 
-  favorites = [
-    { id: 1, name: 'Camiseta lino oversize', category: 'CAMISETAS', price: 39.95 },
-    { id: 2, name: 'Pantalón wide leg', category: 'PANTALONES', price: 55.96 },
-    { id: 3, name: 'Sudadera hoodie oversize', category: 'SUDADERAS', price: 69.95 },
-  ];
+  ngOnInit() {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) {
+      this.router.navigate(['/auth']);
+      return;
+    }
+
+    this.userService.getById(currentUser.id).subscribe({
+      next: (data) => {
+        this.user = { ...data };
+        this.loading.set(false);
+        this.loadFavorites(data.favoritoIds);
+      }
+    });
+  }
+
+  loadFavorites(ids: number[]) {
+    if (!ids || ids.length === 0) return;
+    this.productService.getAll().subscribe({
+      next: (products) => {
+        this.favorites.set(products.filter(p => ids.includes(p.id)));
+      }
+    });
+  }
 
   toggleEdit() {
     this.isEditing.update(v => !v);
   }
 
   saveChanges() {
-    this.isEditing.set(false);
+    this.userService.update(this.user.id, this.user).subscribe({
+      next: (updated) => {
+        this.authService.currentUser.set(updated);
+        this.isEditing.set(false);
+      }
+    });
   }
 
-  logout() { }
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/home']);
+  }
 }

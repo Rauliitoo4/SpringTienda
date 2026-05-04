@@ -1,8 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { CarritoService } from '../../services/carrito/carrito.service';
+import { AuthService } from '../../services/user/auth.service';
+import { Carrito } from '../../models/carrito/carrito.model';
 
 @Component({
   selector: 'app-carrito',
@@ -10,34 +13,63 @@ import { CommonModule } from '@angular/common';
   templateUrl: './carrito.component.html',
   styleUrl: './carrito.component.scss'
 })
-export class CarritoComponent {
+export class CarritoComponent implements OnInit {
+  private carritoService = inject(CarritoService);
+  private authService = inject(AuthService);
 
-  items = [
-    { id: 1, name: 'Camiseta lino oversize', size: 'M', price: 39.95, quantity: 1 },
-    { id: 2, name: 'Pantalón wide leg', size: 'S', price: 55.96, quantity: 2 },
-    { id: 3, name: 'Sudadera french terry', size: 'L', price: 59.95, quantity: 1 },
-    { id: 4, name: 'Chaqueta denim clásica', size: 'M', price: 67.15, quantity: 1 },
-  ];
+  carrito = signal<Carrito | null>(null);
+  loading = signal(true);
+
+  get items() {
+    return this.carrito()?.lineas ?? [];
+  }
 
   get total() {
-    return this.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    return this.carrito()?.total ?? 0;
   }
 
   get totalItems() {
     return this.items.reduce((acc, item) => acc + item.quantity, 0);
   }
 
-  changeQuantity(id: number, delta: number) {
-    const item = this.items.find(i => i.id === id);
-    if (!item) return;
-    if (item.quantity + delta < 1) {
-      this.removeItem(id);
-      return;
+  ngOnInit() {
+    const user = this.authService.currentUser();
+    if (user) {
+      this.carritoService.getCarrito(user.carritoId).subscribe({
+        next: (data) => {
+          this.carrito.set(data);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false)
+      });
     }
-    item.quantity += delta;
   }
 
-  removeItem(id: number) {
-    this.items = this.items.filter(i => i.id !== id);
+  changeQuantity(lineaId: number, delta: number) {
+    const linea = this.items.find(i => i.id === lineaId);
+    if (!linea) return;
+    const newQty = linea.quantity + delta;
+    if (newQty < 1) {
+      this.removeItem(lineaId);
+      return;
+    }
+    this.carritoService.updateLinea(lineaId, newQty).subscribe({
+      next: () => this.reload()
+    });
+  }
+
+  removeItem(lineaId: number) {
+    this.carritoService.deleteLinea(lineaId).subscribe({
+      next: () => this.reload()
+    });
+  }
+
+  private reload() {
+    const user = this.authService.currentUser();
+    if (user) {
+      this.carritoService.getCarrito(user.carritoId).subscribe({
+        next: (data) => this.carrito.set(data)
+      });
+    }
   }
 }

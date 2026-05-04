@@ -1,7 +1,7 @@
 <div class="detail">
 
   <div class="detail__breadcrumb">
-    <a routerLink="/catalogo">Catálogo</a>
+    <a routerLink="/catalogo">catálogo</a>
     <span>/</span>
     <span>{{ product()?.name }}</span>
   </div>
@@ -41,7 +41,7 @@
       </div>
 
       <div class="detail__sizes">
-        <p class="detail__label">talla
+        <p class="detail__label">Talla
           <span *ngIf="selectedSize()" class="detail__selected-size">— {{ selectedSize() }}</span>
         </p>
         <div class="detail__sizes-grid">
@@ -54,9 +54,20 @@
         </div>
       </div>
 
+      <div class="detail__quantity">
+        <p class="detail__label">Cantidad</p>
+        <div class="detail__qty-controls">
+          <button class="detail__qty-btn" (click)="decreaseQuantity()">−</button>
+          <span class="detail__qty-num">{{ quantity() }}</span>
+          <button class="detail__qty-btn" (click)="increaseQuantity()">+</button>
+        </div>
+      </div>
+
       <div class="detail__actions">
-        <button mat-flat-button class="detail__add-btn" [disabled]="!selectedSize()">
-          Añadir al carrito
+        <button mat-flat-button class="detail__add-btn"
+          [disabled]="!selectedSize()"
+          (click)="addToCart()">
+          {{ addedToCart() ? '✓ Añadido al carrito' : 'Añadir al carrito' }}
         </button>
         <button class="detail__fav-btn" (click)="toggleFavorite()">
           <mat-icon>{{ isFavorite() ? 'favorite' : 'favorite_border' }}</mat-icon>
@@ -75,7 +86,7 @@
           <p class="detail__meta-text">{{ product()!.material }}</p>
         </div>
         <div class="detail__meta-item">
-          <h3 class="detail__meta-title">Consideraciones</h3>
+          <h3 class="detail__meta-title">Cuidados</h3>
           <p class="detail__meta-text">{{ product()!.considerations }}</p>
         </div>
       </div>

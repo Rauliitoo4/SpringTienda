@@ -58,19 +58,21 @@
       <div class="profile__section">
         <h2 class="profile__section-title">Productos guardados</h2>
 
-        <div class="profile__favorites">
-          <a class="profile__favorite" *ngFor="let fav of favorites" [routerLink]="['/producto', fav.id]">
-            <div class="profile__favorite-image"></div>
+        <div class="profile__favorites" *ngIf="favorites().length > 0">
+          <a class="profile__favorite" *ngFor="let fav of favorites()" [routerLink]="['/producto', fav.id]">
+            <div class="profile__favorite-image">
+              <img *ngIf="fav.imageUrl" [src]="fav.imageUrl" [alt]="fav.name" class="profile__favorite-img"/>
+            </div>
             <div class="profile__favorite-info">
               <div class="profile__favorite-name">{{ fav.name }}</div>
               <div class="profile__favorite-cat">{{ fav.category }}</div>
-              <div class="profile__favorite-price">{{ fav.price | number:'1.2-2' }} €</div>
+              <div class="profile__favorite-price">{{ fav.finalPrice | number:'1.2-2' }} €</div>
             </div>
             <mat-icon class="profile__favorite-arrow">chevron_right</mat-icon>
           </a>
         </div>
 
-        <div class="profile__empty" *ngIf="favorites.length === 0">
+        <div class="profile__empty" *ngIf="favorites().length === 0">
           <mat-icon>favorite_border</mat-icon>
           <p>No tienes favoritos aún</p>
         </div>

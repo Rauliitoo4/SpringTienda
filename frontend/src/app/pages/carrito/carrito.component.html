@@ -5,13 +5,19 @@
     <p class="carrito__subtitle">{{ totalItems }} artículos</p>
   </div>
 
-  <div class="carrito__content" *ngIf="items.length > 0">
+  <div class="carrito__loading" *ngIf="loading()">
+    <p>Cargando carrito...</p>
+  </div>
+
+  <div class="carrito__content" *ngIf="!loading() && items.length > 0">
 
     <div class="carrito__items">
       <div class="carrito__item" *ngFor="let item of items">
-        <div class="carrito__item-image"></div>
+        <div class="carrito__item-image">
+          <img *ngIf="item.product.imageUrl" [src]="item.product.imageUrl" [alt]="item.product.name" class="carrito__item-img"/>
+        </div>
         <div class="carrito__item-info">
-          <div class="carrito__item-name">{{ item.name }}</div>
+          <div class="carrito__item-name">{{ item.product.name }}</div>
           <div class="carrito__item-meta">Talla {{ item.size }}</div>
         </div>
         <div class="carrito__item-actions">
@@ -20,7 +26,7 @@
             <span class="carrito__qty-num">{{ item.quantity }}</span>
             <button class="carrito__qty-btn" (click)="changeQuantity(item.id, 1)">+</button>
           </div>
-          <div class="carrito__item-price">{{ item.price * item.quantity | number:'1.2-2' }} €</div>
+          <div class="carrito__item-price">{{ item.subtotal | number:'1.2-2' }} €</div>
           <button class="carrito__remove" (click)="removeItem(item.id)">
             <mat-icon>delete_outline</mat-icon>
           </button>
@@ -53,7 +59,7 @@
 
   </div>
 
-  <div class="carrito__empty" *ngIf="items.length === 0">
+  <div class="carrito__empty" *ngIf="!loading() && items.length === 0">
     <mat-icon>shopping_bag</mat-icon>
     <h2>Tu carrito está vacío</h2>
     <p>Explora el catálogo y añade productos que te gusten.</p>

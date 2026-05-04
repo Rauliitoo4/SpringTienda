@@ -29,8 +29,10 @@
         </span>
         <img *ngIf="product.imageUrl" [src]="product.imageUrl" [alt]="product.name" class="featured__img"/>
         <mat-icon *ngIf="!product.imageUrl" class="featured__image-placeholder">image</mat-icon>
-        <button class="featured__wishlist" (click)="$event.stopPropagation(); $event.preventDefault()">
-          <mat-icon>favorite_border</mat-icon>
+        <button class="featured__wishlist"
+          [class.active]="isFavorite(product.id)"
+          (click)="$event.stopPropagation(); $event.preventDefault(); toggleFavorite(product)">
+          <mat-icon>{{ isFavorite(product.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
         </button>
       </div>
       <div class="featured__info">
@@ -41,7 +43,7 @@
           <span *ngIf="product.price !== product.finalPrice" class="featured__price-old">{{ product.price | number:'1.2-2' }} €</span>
         </div>
         <button mat-stroked-button class="featured__add-btn"
-          (click)="$event.stopPropagation(); $event.preventDefault()">
+          (click)="$event.stopPropagation(); $event.preventDefault(); openSizeSelector(product)">
           Añadir al carrito
         </button>
       </div>
@@ -55,3 +57,10 @@
     </span>
   </div>
 </section>
+
+<app-size-selector
+  *ngIf="showSizeSelector()"
+  [sizes]="selectedProduct()!.sizes"
+  [productName]="selectedProduct()!.name"
+  (closed)="closeSizeSelector()"
+  (sizeSelected)="addToCart($event)"/>

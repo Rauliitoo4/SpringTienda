@@ -199,8 +199,18 @@
 
     &:hover {
       border-color: var(--color-error);
+
       mat-icon {
         color: var(--color-error);
+      }
+    }
+
+    &.active {
+      border-color: var(--color-error);
+      background: var(--color-error);
+
+      mat-icon {
+        color: #fff;
       }
     }
   }

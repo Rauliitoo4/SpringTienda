@@ -2,18 +2,18 @@
 
   <div class="favorites__header">
     <h1 class="favorites__title">Mis <em>favoritos</em></h1>
-    <p class="favorites__subtitle">{{ favorites.length }} productos guardados</p>
+    <p class="favorites__subtitle">{{ favorites().length }} productos guardados</p>
   </div>
 
-  <div class="favorites__grid" *ngIf="favorites.length > 0">
-    <a class="favorites__card" *ngFor="let product of favorites" [routerLink]="['/producto', product.id]">
+  <div class="favorites__grid" *ngIf="!loading() && favorites().length > 0">
+    <a class="favorites__card" *ngFor="let product of favorites()" [routerLink]="['/producto', product.id]">
       <div class="favorites__image">
-        <span *ngIf="product.badge" class="favorites__badge"
-          [class.favorites__badge--new]="product.badge === 'NUEVO'"
-          [class.favorites__badge--sale]="product.badge === 'SALE'">
-          {{ product.badge }}
+        <span *ngIf="product.promotions.length > 0" class="favorites__badge favorites__badge--sale">
+          −{{ product.promotions[0].discount }}%
         </span>
-        <button class="favorites__remove" (click)="$event.stopPropagation(); $event.preventDefault(); removeFavorite(product.id)">
+        <img *ngIf="product.imageUrl" [src]="product.imageUrl" [alt]="product.name" class="favorites__img"/>
+        <button class="favorites__remove"
+          (click)="$event.stopPropagation(); $event.preventDefault(); removeFavorite(product.id)">
           <mat-icon>favorite</mat-icon>
         </button>
       </div>
@@ -21,22 +21,29 @@
         <div class="favorites__name">{{ product.name }}</div>
         <div class="favorites__cat">{{ product.category }}</div>
         <div class="favorites__price">
-          <span class="favorites__price-current">{{ product.price | number:'1.2-2' }} €</span>
-          <span *ngIf="product.oldPrice" class="favorites__price-old">{{ product.oldPrice | number:'1.2-2' }} €</span>
+          <span class="favorites__price-current">{{ product.finalPrice | number:'1.2-2' }} €</span>
+          <span *ngIf="product.price !== product.finalPrice" class="favorites__price-old">{{ product.price | number:'1.2-2' }} €</span>
         </div>
         <button mat-stroked-button class="favorites__add-btn"
-          (click)="$event.stopPropagation(); $event.preventDefault()">
+          (click)="$event.stopPropagation(); $event.preventDefault(); openSizeSelector(product)">
           Añadir al carrito
         </button>
       </div>
     </a>
   </div>
 
-  <div class="favorites__empty" *ngIf="favorites.length === 0">
+  <div class="favorites__empty" *ngIf="!loading() && favorites().length === 0">
     <mat-icon>favorite_border</mat-icon>
     <h2>No tienes favoritos aún</h2>
     <p>Explora el catálogo y guarda los productos que más te gusten.</p>
     <button mat-flat-button routerLink="/catalogo" class="favorites__btn-primary">Ver catálogo</button>
   </div>
+
+  <app-size-selector
+    *ngIf="showSizeSelector()"
+    [sizes]="selectedProduct()!.sizes"
+    [productName]="selectedProduct()!.name"
+    (closed)="closeSizeSelector()"
+    (sizeSelected)="addToCart($event)"/>
 
 </div>

@@ -1,0 +1,34 @@
+<div class="size-selector">
+  <div class="size-selector__overlay" (click)="close()"></div>
+  <div class="size-selector__panel">
+    <div class="size-selector__header">
+      <span class="size-selector__title">{{ productName() || 'Selecciona opciones' }}</span>
+      <button class="size-selector__close" (click)="close()">✕</button>
+    </div>
+
+    <div class="size-selector__section">
+      <p class="size-selector__label">Talla</p>
+      <div class="size-selector__grid">
+        <button *ngFor="let size of sizes()"
+          class="size-selector__btn"
+          [class.active]="selectedSize() === size"
+          (click)="select(size)">
+          {{ size }}
+        </button>
+      </div>
+    </div>
+
+    <div class="size-selector__section">
+      <p class="size-selector__label">Cantidad</p>
+      <div class="size-selector__qty">
+        <button class="size-selector__qty-btn" (click)="decrease()">−</button>
+        <span class="size-selector__qty-num">{{ quantity() }}</span>
+        <button class="size-selector__qty-btn" (click)="increase()">+</button>
+      </div>
+    </div>
+
+    <button class="size-selector__confirm" [disabled]="!selectedSize()" (click)="confirm()">
+      Añadir al carrito
+    </button>
+  </div>
+</div>
