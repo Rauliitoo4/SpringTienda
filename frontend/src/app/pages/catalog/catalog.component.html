@@ -23,23 +23,38 @@
     </mat-form-field>
   </div>
 
-  <div class="catalog-grid">
-  <a class="catalog-grid__card" *ngFor="let i of [1,2,3,4,5,6,7,8,9]" [routerLink]="['/producto', i]">
-    <div class="catalog-grid__image">
-      <span class="catalog-grid__badge catalog-grid__badge--new">NUEVO</span>
-      <button class="catalog-grid__wishlist" (click)="$event.stopPropagation(); $event.preventDefault()">
-        <mat-icon>favorite_border</mat-icon>
-      </button>
-    </div>
-    <div class="catalog-grid__info">
-      <div class="catalog-grid__name">Camiseta lino oversize</div>
-      <div class="catalog-grid__cat">CAMISETAS</div>
-      <div class="catalog-grid__price">
-        <span class="catalog-grid__price-current">39,95 €</span>
+  <div class="catalog-grid" *ngIf="!loading() && !error()">
+    <a class="catalog-grid__card" *ngFor="let product of filteredProducts" [routerLink]="['/producto', product.id]">
+      <div class="catalog-grid__image">
+        <span *ngIf="product.promotions.length > 0" class="catalog-grid__badge catalog-grid__badge--sale">
+          −{{ product.promotions[0].discount }}%
+        </span>
+        <img *ngIf="product.imageUrl" [src]="product.imageUrl" [alt]="product.name" class="catalog-grid__img"/>
+        <button class="catalog-grid__wishlist" (click)="$event.stopPropagation(); $event.preventDefault()">
+          <mat-icon>favorite_border</mat-icon>
+        </button>
       </div>
-      <button mat-stroked-button class="catalog-grid__add-btn" (click)="$event.stopPropagation(); $event.preventDefault()">Añadir al carrito</button>
-    </div>
-  </a>
-</div>
+      <div class="catalog-grid__info">
+        <div class="catalog-grid__name">{{ product.name }}</div>
+        <div class="catalog-grid__cat">{{ product.category }}</div>
+        <div class="catalog-grid__price">
+          <span class="catalog-grid__price-current">{{ product.finalPrice | number:'1.2-2' }} €</span>
+          <span *ngIf="product.price !== product.finalPrice" class="catalog-grid__price-old">{{ product.price | number:'1.2-2' }} €</span>
+        </div>
+        <button mat-stroked-button class="catalog-grid__add-btn"
+          (click)="$event.stopPropagation(); $event.preventDefault()">
+          añadir al carrito
+        </button>
+      </div>
+    </a>
+  </div>
+
+  <div class="catalog-grid__loading" *ngIf="loading()">
+    <p>Cargando productos...</p>
+  </div>
+
+  <div class="catalog-grid__error" *ngIf="error()">
+    <p>Error al cargar los productos. Inténtalo de nuevo.</p>
+  </div>
 
 </div>

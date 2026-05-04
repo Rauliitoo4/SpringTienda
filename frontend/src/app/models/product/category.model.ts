@@ -1,0 +1,1 @@
+export type Category = 'CAMISETAS' | 'PANTALONES' | 'SUDADERAS' | 'CHAQUETAS';

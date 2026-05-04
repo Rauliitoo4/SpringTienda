@@ -1,5 +1,6 @@
 import { Promotion } from '../promotion/promotion.model';
 import { Size } from './size.model';
+import { Category } from './category.model';
 
 export interface Product {
   id: number;
@@ -12,4 +13,5 @@ export interface Product {
   imageUrl: string;
   promotions: Promotion[];
   sizes: Size[];
+  category: Category;
 }
