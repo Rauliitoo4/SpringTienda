@@ -8,10 +8,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product/product.service';
 import { Product } from '../../models/product/product.model';
+import { SearchbarComponent } from '../../components/searchbar/searchbar.component';
 
 @Component({
   selector: 'app-catalog',
-  imports: [RouterLink, MatButtonModule, MatIconModule, MatSelectModule, MatFormFieldModule, CommonModule, FormsModule],
+  imports: [RouterLink, MatButtonModule, MatIconModule, MatSelectModule, MatFormFieldModule, CommonModule, FormsModule, SearchbarComponent],
   templateUrl: './catalog.component.html',
   styleUrl: './catalog.component.scss'
 })
@@ -20,6 +21,7 @@ export class CatalogComponent implements OnInit {
 
   selectedFilter = signal('todo');
   selectedSort = signal('relevantes');
+  searchQuery = signal('');
   products = signal<Product[]>([]);
   loading = signal(true);
   error = signal(false);
@@ -44,6 +46,10 @@ export class CatalogComponent implements OnInit {
 
     if (this.selectedFilter() !== 'todo') {
       list = list.filter(p => p.category?.toLowerCase() === this.selectedFilter());
+    }
+
+    if (this.searchQuery()) {
+      list = list.filter(p => p.name.toLowerCase().includes(this.searchQuery()));
     }
 
     switch (this.selectedSort()) {
@@ -80,6 +86,11 @@ export class CatalogComponent implements OnInit {
 
   setFilter(filter: string) {
     this.selectedFilter.set(filter);
+    this.currentPage.set(0);
+  }
+
+  onSearch(query: string) {
+    this.searchQuery.set(query.toLowerCase());
     this.currentPage.set(0);
   }
 

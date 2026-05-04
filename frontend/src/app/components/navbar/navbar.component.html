@@ -10,30 +10,36 @@
     <a routerLink="/contacto" routerLinkActive="active">Contacto</a>
   </div>
 
-  <div class="navbar__actions">
-    <button mat-icon-button (click)="toggleDarkMode()" class="navbar__toggle">
-      <mat-icon>{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-    </button>
-
-    <button mat-icon-button>
-      <mat-icon>search</mat-icon>
-    </button>
-
-    <button mat-icon-button routerLink="/favoritos">
-      <mat-icon>favorite_border</mat-icon>
-    </button>
-
-    <div class="cart-wrap" (mouseenter)="showCart.set(true)" (mouseleave)="showCart.set(false)">
-      <button mat-icon-button routerLink="/carrito">
-        <mat-icon aria-hidden="false" [matBadge]="cartItemCount() > 0 ? cartItemCount() : null" matBadgeColor="warn">shopping_bag</mat-icon>
-      </button>
-      <div class="cart-dropdown" *ngIf="showCart()">
-        <app-mini-carrito/>
-      </div>
+  <div class="navbar__right">
+    <div class="navbar__session" *ngIf="isLoggedIn">
+      <span>Sesión iniciada como <em>{{ currentUser!.username }}</em></span>
     </div>
 
-    <button mat-icon-button routerLink="/auth">
-      <mat-icon>person</mat-icon>
-    </button>
+    <div class="navbar__actions">
+      <button mat-icon-button (click)="toggleDarkMode()" class="navbar__toggle">
+        <mat-icon>{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+
+      <button mat-icon-button routerLink="/favoritos">
+        <mat-icon>favorite_border</mat-icon>
+      </button>
+
+      <div class="cart-wrap" (mouseenter)="showCart.set(true)" (mouseleave)="showCart.set(false)">
+        <button mat-icon-button routerLink="/carrito">
+          <mat-icon aria-hidden="false" [matBadge]="cartItemCount() > 0 ? cartItemCount() : null" matBadgeColor="warn">shopping_bag</mat-icon>
+        </button>
+        <div class="cart-dropdown" *ngIf="showCart()">
+          <app-mini-carrito />
+        </div>
+      </div>
+
+      <button mat-icon-button routerLink="/auth" *ngIf="!isLoggedIn">
+        <mat-icon>person</mat-icon>
+      </button>
+
+      <button mat-icon-button routerLink="/perfil" *ngIf="isLoggedIn">
+        <mat-icon>person</mat-icon>
+      </button>
+    </div>
   </div>
 </nav>

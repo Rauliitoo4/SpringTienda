@@ -1,0 +1,11 @@
+<div class="searchbar">
+  <mat-icon class="searchbar__icon">search</mat-icon>
+  <input
+    class="searchbar__input"
+    type="text"
+    placeholder="Buscar productos..."
+    [(ngModel)]="query"
+    (keydown)="onKeyDown($event)"
+  />
+  <button class="searchbar__btn" (click)="search()">Buscar</button>
+</div>

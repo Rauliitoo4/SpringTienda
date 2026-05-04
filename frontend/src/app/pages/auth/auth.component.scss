@@ -101,6 +101,13 @@
     }
   }
 
+  &__error {
+    font-size: 12px;
+    color: var(--color-error);
+    text-align: center;
+    margin: 0;
+  }
+
   &__btn {
     width: 100%;
     background-color: var(--color-text-primary) !important;
@@ -115,6 +122,11 @@
     &:hover {
       background-color: var(--color-accent) !important;
       color: #1a1a1a !important;
+    }
+
+    &[disabled] {
+      opacity: 0.6 !important;
+      cursor: not-allowed !important;
     }
   }
 

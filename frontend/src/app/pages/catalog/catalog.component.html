@@ -5,20 +5,24 @@
     <p class="catalog-page__subtitle">Descubre nuestra colección completa</p>
   </div>
 
+  <div class="catalog-page__search">
+    <app-searchbar (searched)="onSearch($event)" />
+  </div>
+
   <div class="filters">
     <div class="filters__pills">
-      <button class="pill" [class.active]="selectedFilter() === 'todo'" (click)="setFilter('todo')">Todo</button>
-      <button class="pill" [class.active]="selectedFilter() === 'camisetas'" (click)="setFilter('camisetas')">Camisetas</button>
-      <button class="pill" [class.active]="selectedFilter() === 'pantalones'" (click)="setFilter('pantalones')">Pantalones</button>
-      <button class="pill" [class.active]="selectedFilter() === 'sudaderas'" (click)="setFilter('sudaderas')">Sudaderas</button>
-      <button class="pill" [class.active]="selectedFilter() === 'chaquetas'" (click)="setFilter('chaquetas')">Chaquetas</button>
+      <button class="pill" [class.active]="selectedFilter() === 'todo'" (click)="setFilter('todo')">todo</button>
+      <button class="pill" [class.active]="selectedFilter() === 'camisetas'" (click)="setFilter('camisetas')">camisetas</button>
+      <button class="pill" [class.active]="selectedFilter() === 'pantalones'" (click)="setFilter('pantalones')">pantalones</button>
+      <button class="pill" [class.active]="selectedFilter() === 'sudaderas'" (click)="setFilter('sudaderas')">sudaderas</button>
+      <button class="pill" [class.active]="selectedFilter() === 'chaquetas'" (click)="setFilter('chaquetas')">chaquetas</button>
     </div>
     <mat-form-field appearance="outline" class="filters__sort">
-      <mat-select [(ngModel)]="selectedSort" disableOptionCentering panelClass="sort-panel">
-        <mat-option value="relevantes">Más relevantes</mat-option>
-        <mat-option value="precio-asc">Precio: menor a mayor</mat-option>
-        <mat-option value="precio-desc">Precio: mayor a menor</mat-option>
-        <mat-option value="novedades">Novedades</mat-option>
+      <mat-select [value]="selectedSort()" (selectionChange)="selectedSort.set($event.value)" disableOptionCentering panelClass="sort-panel">
+        <mat-option value="relevantes">más relevantes</mat-option>
+        <mat-option value="precio-asc">precio: menor a mayor</mat-option>
+        <mat-option value="precio-desc">precio: mayor a menor</mat-option>
+        <mat-option value="novedades">novedades</mat-option>
       </mat-select>
     </mat-form-field>
   </div>

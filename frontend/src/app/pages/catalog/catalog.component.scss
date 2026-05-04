@@ -28,6 +28,12 @@
     color: var(--color-text-secondary);
     margin: 16px 0 0;
   }
+
+  &__search {
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0;
+  }
 }
 
 .filters {

@@ -5,8 +5,8 @@
     <div class="auth__logo">SUR<span>VER</span></div>
 
     <div class="auth__tabs">
-      <button class="auth__tab" [class.active]="isLogin()" (click)="isLogin.set(true)">Iniciar sesión</button>
-      <button class="auth__tab" [class.active]="!isLogin()" (click)="isLogin.set(false)">Registrarse</button>
+      <button class="auth__tab" [class.active]="isLogin()" (click)="isLogin.set(true); error.set('')">Iniciar sesión</button>
+      <button class="auth__tab" [class.active]="!isLogin()" (click)="isLogin.set(false); error.set('')">Registrarse</button>
     </div>
 
     <div class="auth__form" *ngIf="isLogin()">
@@ -23,13 +23,15 @@
         </button>
       </mat-form-field>
 
-      <button mat-flat-button class="auth__btn" (click)="login()">
-        Iniciar sesión
+      <p class="auth__error" *ngIf="error()">{{ error() }}</p>
+
+      <button mat-flat-button class="auth__btn" (click)="login()" [disabled]="loading()">
+        {{ loading() ? 'Cargando...' : 'Iniciar sesión' }}
       </button>
 
       <p class="auth__switch">
         ¿No tienes cuenta?
-        <span (click)="isLogin.set(false)">Regístrate</span>
+        <span (click)="isLogin.set(false); error.set('')">Regístrate</span>
       </p>
     </div>
 
@@ -62,13 +64,15 @@
         </button>
       </mat-form-field>
 
-      <button mat-flat-button class="auth__btn" (click)="register()">
-        Crear cuenta
+      <p class="auth__error" *ngIf="error()">{{ error() }}</p>
+
+      <button mat-flat-button class="auth__btn" (click)="register()" [disabled]="loading()">
+        {{ loading() ? 'Cargando...' : 'Crear cuenta' }}
       </button>
 
       <p class="auth__switch">
         ¿Ya tienes cuenta?
-        <span (click)="isLogin.set(true)">Inicia sesión</span>
+        <span (click)="isLogin.set(true); error.set('')">Inicia sesión</span>
       </p>
     </div>
 
