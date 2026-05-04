@@ -28,5 +28,5 @@ public class Product {
     private List<Promotion> promotions;
     private List<Size> sizes = new ArrayList<>(Arrays.asList(Size.values()));
     private Category category;
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

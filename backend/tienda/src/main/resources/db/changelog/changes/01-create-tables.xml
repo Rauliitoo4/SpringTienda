@@ -119,7 +119,7 @@
 
     <changeSet id="01-add-created-at-productos" author="raul.redondochicano">
         <addColumn tableName="productos">
-            <column name="created_at" type="TIMESTAMP" defaultValueComputed="NOW()"/>
+            <column name="created_at" type="TIMESTAMP"/>
         </addColumn>
     </changeSet>
 

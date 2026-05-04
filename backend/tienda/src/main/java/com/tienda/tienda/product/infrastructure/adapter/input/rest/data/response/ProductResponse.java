@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -24,4 +25,5 @@ public class ProductResponse {
     private List<PromotionResponse> promotions;
     private List<Size> sizes;
     private Category category;
+    private String createdAt;;
 }
