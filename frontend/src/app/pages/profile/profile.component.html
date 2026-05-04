@@ -1,0 +1,82 @@
+<div class="profile">
+
+  <div class="profile__header">
+    <div class="profile__avatar">
+      <mat-icon>person</mat-icon>
+    </div>
+    <div class="profile__header-info">
+      <h1 class="profile__name">{{ user.name }} {{ user.lastname }}</h1>
+      <p class="profile__username">&#64;{{ user.username }}</p>
+    </div>
+    <button class="profile__logout" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Cerrar sesión
+    </button>
+  </div>
+
+  <mat-tab-group class="profile__tabs" animationDuration="200ms">
+
+    <mat-tab label="Mis datos">
+      <div class="profile__section">
+        <div class="profile__section-header">
+          <h2 class="profile__section-title">Información personal</h2>
+          <button mat-stroked-button class="profile__edit-btn" (click)="toggleEdit()">
+            <mat-icon>{{ isEditing() ? 'close' : 'edit' }}</mat-icon>
+            {{ isEditing() ? 'Cancelar' : 'Editar' }}
+          </button>
+        </div>
+
+        <div class="profile__fields">
+          <mat-form-field appearance="outline" class="profile__field">
+            <mat-label>Nombre</mat-label>
+            <input matInput [(ngModel)]="user.name" [readonly]="!isEditing()"/>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="profile__field">
+            <mat-label>Apellidos</mat-label>
+            <input matInput [(ngModel)]="user.lastname" [readonly]="!isEditing()"/>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="profile__field">
+            <mat-label>Nombre de usuario</mat-label>
+            <input matInput [(ngModel)]="user.username" [readonly]="!isEditing()"/>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="profile__field">
+            <mat-label>Email</mat-label>
+            <input matInput [(ngModel)]="user.email" [readonly]="!isEditing()"/>
+          </mat-form-field>
+        </div>
+
+        <button mat-flat-button class="profile__save-btn" *ngIf="isEditing()" (click)="saveChanges()">
+          Guardar cambios
+        </button>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Mis favoritos">
+      <div class="profile__section">
+        <h2 class="profile__section-title">Productos guardados</h2>
+
+        <div class="profile__favorites">
+          <a class="profile__favorite" *ngFor="let fav of favorites" [routerLink]="['/producto', fav.id]">
+            <div class="profile__favorite-image"></div>
+            <div class="profile__favorite-info">
+              <div class="profile__favorite-name">{{ fav.name }}</div>
+              <div class="profile__favorite-cat">{{ fav.category }}</div>
+              <div class="profile__favorite-price">{{ fav.price | number:'1.2-2' }} €</div>
+            </div>
+            <mat-icon class="profile__favorite-arrow">chevron_right</mat-icon>
+          </a>
+        </div>
+
+        <div class="profile__empty" *ngIf="favorites.length === 0">
+          <mat-icon>favorite_border</mat-icon>
+          <p>No tienes favoritos aún</p>
+        </div>
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+
+</div>

@@ -1,0 +1,137 @@
+.auth {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: var(--color-bg);
+
+  &__card {
+    width: 100%;
+    max-width: 420px;
+    background-color: var(--color-bg-card);
+    border: 0.5px solid var(--color-border);
+    border-radius: 16px;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    transition: background .25s;
+  }
+
+  &__logo {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    color: var(--color-text-primary);
+
+    span {
+      color: var(--color-accent);
+    }
+  }
+
+  &__tabs {
+    display: flex;
+    border-bottom: 0.5px solid var(--color-border);
+  }
+
+  &__tab {
+    flex: 1;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all .2s;
+    font-family: Roboto, sans-serif;
+    letter-spacing: 0.04em;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -0.5px;
+
+    &:hover {
+      color: var(--color-text-primary);
+    }
+
+    &.active {
+      color: var(--color-accent);
+      border-bottom-color: var(--color-accent);
+      font-weight: 500;
+    }
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__field {
+    width: 100%;
+
+    ::ng-deep .mdc-notched-outline__leading,
+    ::ng-deep .mdc-notched-outline__notch,
+    ::ng-deep .mdc-notched-outline__trailing {
+      border-color: var(--color-border) !important;
+    }
+
+    ::ng-deep .mat-mdc-floating-label {
+      color: var(--color-text-secondary) !important;
+    }
+
+    ::ng-deep input {
+      color: var(--color-text-primary) !important;
+    }
+
+    ::ng-deep .mat-mdc-form-field-icon-suffix button {
+      color: var(--color-text-secondary) !important;
+    }
+
+    &:hover ::ng-deep .mdc-notched-outline__leading,
+    &:hover ::ng-deep .mdc-notched-outline__notch,
+    &:hover ::ng-deep .mdc-notched-outline__trailing {
+      border-color: var(--color-accent) !important;
+    }
+
+    ::ng-deep .mat-focused .mdc-notched-outline__leading,
+    ::ng-deep .mat-focused .mdc-notched-outline__notch,
+    ::ng-deep .mat-focused .mdc-notched-outline__trailing {
+      border-color: var(--color-accent) !important;
+    }
+  }
+
+  &__btn {
+    width: 100%;
+    background-color: var(--color-text-primary) !important;
+    color: var(--color-bg) !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    letter-spacing: 0.04em !important;
+    font-weight: 500 !important;
+    padding: 12px !important;
+    margin-top: 8px;
+
+    &:hover {
+      background-color: var(--color-accent) !important;
+      color: #1a1a1a !important;
+    }
+  }
+
+  &__switch {
+    text-align: center;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin: 4px 0 0;
+
+    span {
+      color: var(--color-accent);
+      cursor: pointer;
+      font-weight: 500;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

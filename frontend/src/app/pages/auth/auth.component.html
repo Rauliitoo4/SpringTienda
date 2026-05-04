@@ -1,1 +1,77 @@
-<p>auth works!</p>
+<div class="auth">
+
+  <div class="auth__card">
+
+    <div class="auth__logo">SUR<span>VER</span></div>
+
+    <div class="auth__tabs">
+      <button class="auth__tab" [class.active]="isLogin()" (click)="isLogin.set(true)">Iniciar sesión</button>
+      <button class="auth__tab" [class.active]="!isLogin()" (click)="isLogin.set(false)">Registrarse</button>
+    </div>
+
+    <div class="auth__form" *ngIf="isLogin()">
+      <mat-form-field appearance="outline" class="auth__field">
+        <mat-label>Email</mat-label>
+        <input matInput [(ngModel)]="loginData.email" type="email" placeholder="tu@email.com"/>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="auth__field">
+        <mat-label>Contraseña</mat-label>
+        <input matInput [(ngModel)]="loginData.password" [type]="showPassword() ? 'text' : 'password'"/>
+        <button matSuffix mat-icon-button (click)="togglePassword()">
+          <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <button mat-flat-button class="auth__btn" (click)="login()">
+        Iniciar sesión
+      </button>
+
+      <p class="auth__switch">
+        ¿No tienes cuenta?
+        <span (click)="isLogin.set(false)">Regístrate</span>
+      </p>
+    </div>
+
+    <div class="auth__form" *ngIf="!isLogin()">
+      <mat-form-field appearance="outline" class="auth__field">
+        <mat-label>Nombre</mat-label>
+        <input matInput [(ngModel)]="registerData.name" placeholder="Tu nombre"/>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="auth__field">
+        <mat-label>Apellidos</mat-label>
+        <input matInput [(ngModel)]="registerData.lastname" placeholder="Tus apellidos"/>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="auth__field">
+        <mat-label>Nombre de usuario</mat-label>
+        <input matInput [(ngModel)]="registerData.username" placeholder="usuario123"/>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="auth__field">
+        <mat-label>Email</mat-label>
+        <input matInput [(ngModel)]="registerData.email" type="email" placeholder="tu@email.com"/>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="auth__field">
+        <mat-label>Contraseña</mat-label>
+        <input matInput [(ngModel)]="registerData.password" [type]="showPassword() ? 'text' : 'password'"/>
+        <button matSuffix mat-icon-button (click)="togglePassword()">
+          <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <button mat-flat-button class="auth__btn" (click)="register()">
+        Crear cuenta
+      </button>
+
+      <p class="auth__switch">
+        ¿Ya tienes cuenta?
+        <span (click)="isLogin.set(true)">Inicia sesión</span>
+      </p>
+    </div>
+
+  </div>
+
+</div>

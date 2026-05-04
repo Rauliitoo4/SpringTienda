@@ -34,17 +34,17 @@
 
     <div class="contact__form" *ngIf="!sent()">
       <mat-form-field appearance="outline" class="contact__field">
-        <mat-label>nombre</mat-label>
+        <mat-label>Nombre</mat-label>
         <input matInput [(ngModel)]="name" placeholder="Tu nombre"/>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="contact__field">
-        <mat-label>email</mat-label>
+        <mat-label>Email</mat-label>
         <input matInput [(ngModel)]="email" type="email" placeholder="tu@email.com"/>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="contact__field">
-        <mat-label>mensaje</mat-label>
+        <mat-label>Mensaje</mat-label>
         <textarea matInput [(ngModel)]="message" rows="5" placeholder="¿En qué podemos ayudarte?"></textarea>
       </mat-form-field>
 

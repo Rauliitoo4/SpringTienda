@@ -86,9 +86,19 @@
 
   .cart-dropdown {
     position: absolute;
-    top: calc(100% + 8px);
+    top: 100%;
     right: 0;
     z-index: 1000;
+    padding-top: 8px;
     filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+    }
   }
 }
