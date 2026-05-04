@@ -111,5 +111,11 @@
                                  constraintName="fk_favorito_product"/>
     </changeSet>
 
+    <changeSet id="01-add-category-to-productos" author="raul.redondochicano">
+        <addColumn tableName="productos">
+            <column name="category" type="VARCHAR(20)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
 

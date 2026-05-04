@@ -29,4 +29,6 @@ public class ProductEntity {
     @Column("image_url")
     private String imageUrl;
 
+    private String category;
+
 }

@@ -1,5 +1,6 @@
 package com.tienda.tienda.product.infrastructure.adapter.input.rest.data.response;
 
+import com.tienda.tienda.product.domain.model.Category;
 import com.tienda.tienda.product.domain.model.Size;
 import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.data.response.PromotionResponse;
 import lombok.EqualsAndHashCode;
@@ -22,4 +23,5 @@ public class ProductResponse {
     private String imageUrl;
     private List<PromotionResponse> promotions;
     private List<Size> sizes;
+    private Category category;
 }

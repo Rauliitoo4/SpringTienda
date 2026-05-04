@@ -26,4 +26,5 @@ public class Product {
     private String imageUrl;
     private List<Promotion> promotions;
     private List<Size> sizes = new ArrayList<>(Arrays.asList(Size.values()));
+    private Category category;
 }

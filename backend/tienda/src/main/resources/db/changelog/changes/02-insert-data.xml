@@ -74,5 +74,20 @@
         </insert>
     </changeSet>
 
+    <changeSet id="02-update-category-productos" author="raul.redondochicano">
+        <update tableName="productos">
+            <column name="category" value="CAMISETAS"/>
+            <where>name = 'Camiseta básica blanca'</where>
+        </update>
+        <update tableName="productos">
+            <column name="category" value="PANTALONES"/>
+            <where>name = 'Pantalón Vaquero'</where>
+        </update>
+        <update tableName="productos">
+            <column name="category" value="SUDADERAS"/>
+            <where>name = 'Sudadera básica'</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>
 

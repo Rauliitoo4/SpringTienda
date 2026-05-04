@@ -7,7 +7,11 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ProductPersistenceMapper {
+
+    @Mapping(target = "category", expression = "java(product.getCategory() != null ? product.getCategory().name() : null)")
     ProductEntity toEntity(Product product);
+
     @Mapping(target = "promotions", ignore = true)
+    @Mapping(target = "category", expression = "java(entity.getCategory() != null ? com.tienda.tienda.product.domain.model.Category.valueOf(entity.getCategory()) : null)")
     Product toDomain(ProductEntity entity);
 }
