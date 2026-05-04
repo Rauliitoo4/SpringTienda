@@ -1,8 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
+import { ProductService } from '../../services/product/product.service';
+import { Product } from '../../models/product/product.model';
 
 @Component({
   selector: 'app-product-detail',
@@ -10,22 +12,29 @@ import { RouterLink } from '@angular/router';
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
 })
-export class ProductDetailComponent {
+export class ProductDetailComponent implements OnInit {
+  private productService = inject(ProductService);
+  private route = inject(ActivatedRoute);
+
   selectedSize = signal<string | null>(null);
   isFavorite = signal(false);
+  product = signal<Product | null>(null);
+  loading = signal(true);
+  error = signal(false);
 
-  product = {
-    id: 1,
-    name: 'Camiseta lino oversize',
-    price: 39.95,
-    finalPrice: 31.96,
-    description: 'Camiseta de lino 100% de corte oversize. Perfecta para el día a día, con una caída natural y un tacto suave. Disponible en varios colores.',
-    material: 'Lino 100%',
-    considerations: 'Lavar a máquina a 30°. No usar secadora. Planchar a temperatura media.',
-    imageUrl: null,
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    promotions: [{ description: 'Rebajas de verano', discount: 20 }]
-  };
+  ngOnInit() {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.productService.getById(id).subscribe({
+      next: (data) => {
+        this.product.set(data);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set(true);
+        this.loading.set(false);
+      }
+    });
+  }
 
   selectSize(size: string) {
     this.selectedSize.set(size);

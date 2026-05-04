@@ -1,33 +1,42 @@
 <div class="detail">
 
   <div class="detail__breadcrumb">
-    <a routerLink="/catalogo">catálogo</a>
+    <a routerLink="/catalogo">Catálogo</a>
     <span>/</span>
-    <span>{{ product.name }}</span>
+    <span>{{ product()?.name }}</span>
   </div>
 
-  <div class="detail__content">
+  <div class="detail__loading" *ngIf="loading()">
+    <p>Cargando producto...</p>
+  </div>
+
+  <div class="detail__error" *ngIf="error()">
+    <p>Error al cargar el producto.</p>
+  </div>
+
+  <div class="detail__content" *ngIf="product() && !loading()">
 
     <div class="detail__image-wrap">
       <div class="detail__image">
-        <span *ngIf="product.promotions.length > 0" class="detail__badge">
-          −{{ product.promotions[0].discount }}%
+        <span *ngIf="product()!.promotions.length > 0" class="detail__badge">
+          −{{ product()!.promotions[0].discount }}%
         </span>
-        <mat-icon class="detail__image-placeholder">image</mat-icon>
+        <img *ngIf="product()!.imageUrl" [src]="product()!.imageUrl" [alt]="product()!.name" class="detail__img"/>
+        <mat-icon *ngIf="!product()!.imageUrl" class="detail__image-placeholder">image</mat-icon>
       </div>
     </div>
 
     <div class="detail__info">
 
-      <h1 class="detail__name">{{ product.name }}</h1>
+      <h1 class="detail__name">{{ product()!.name }}</h1>
 
       <div class="detail__price">
-        <span class="detail__price-current">{{ product.finalPrice | number:'1.2-2' }} €</span>
-        <span *ngIf="product.price !== product.finalPrice" class="detail__price-old">
-          {{ product.price | number:'1.2-2' }} €
+        <span class="detail__price-current">{{ product()!.finalPrice | number:'1.2-2' }} €</span>
+        <span *ngIf="product()!.price !== product()!.finalPrice" class="detail__price-old">
+          {{ product()!.price | number:'1.2-2' }} €
         </span>
-        <span *ngIf="product.promotions.length > 0" class="detail__promo-tag">
-          {{ product.promotions[0].description }}
+        <span *ngIf="product()!.promotions.length > 0" class="detail__promo-tag">
+          {{ product()!.promotions[0].description }}
         </span>
       </div>
 
@@ -36,7 +45,7 @@
           <span *ngIf="selectedSize()" class="detail__selected-size">— {{ selectedSize() }}</span>
         </p>
         <div class="detail__sizes-grid">
-          <button *ngFor="let size of product.sizes"
+          <button *ngFor="let size of product()!.sizes"
             class="detail__size-btn"
             [class.active]="selectedSize() === size"
             (click)="selectSize(size)">
@@ -47,7 +56,7 @@
 
       <div class="detail__actions">
         <button mat-flat-button class="detail__add-btn" [disabled]="!selectedSize()">
-          añadir al carrito
+          Añadir al carrito
         </button>
         <button class="detail__fav-btn" (click)="toggleFavorite()">
           <mat-icon>{{ isFavorite() ? 'favorite' : 'favorite_border' }}</mat-icon>
@@ -59,15 +68,15 @@
       <div class="detail__meta">
         <div class="detail__meta-item">
           <h3 class="detail__meta-title">Descripción</h3>
-          <p class="detail__meta-text">{{ product.description }}</p>
+          <p class="detail__meta-text">{{ product()!.description }}</p>
         </div>
         <div class="detail__meta-item">
           <h3 class="detail__meta-title">Material</h3>
-          <p class="detail__meta-text">{{ product.material }}</p>
+          <p class="detail__meta-text">{{ product()!.material }}</p>
         </div>
         <div class="detail__meta-item">
           <h3 class="detail__meta-title">Cuidados</h3>
-          <p class="detail__meta-text">{{ product.considerations }}</p>
+          <p class="detail__meta-text">{{ product()!.considerations }}</p>
         </div>
       </div>
 

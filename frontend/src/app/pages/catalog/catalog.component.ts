@@ -6,20 +6,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Product } from '../../models/product/product.model';
 import { ProductService } from '../../services/product/product.service';
+import { Product } from '../../models/product/product.model';
 
 @Component({
   selector: 'app-catalog',
-  imports: [
-    RouterLink, 
-    MatButtonModule, 
-    MatIconModule, 
-    MatSelectModule, 
-    MatFormFieldModule, 
-    CommonModule, 
-    FormsModule
-  ],
+  imports: [RouterLink, MatButtonModule, MatIconModule, MatSelectModule, MatFormFieldModule, CommonModule, FormsModule],
   templateUrl: './catalog.component.html',
   styleUrl: './catalog.component.scss'
 })
@@ -32,15 +24,7 @@ export class CatalogComponent implements OnInit {
   loading = signal(true);
   error = signal(false);
 
-  get filteredProducts() {
-    let list = this.products();
-    if (this.selectedFilter() !== 'todo') {
-      list = list.filter(product => product.category?.toLowerCase() === this.selectedFilter());
-    }
-    return list;
-  }
-
-  ngOnInit(): void {
+  ngOnInit() {
     this.productService.getAll().subscribe({
       next: (data) => {
         this.products.set(data);
@@ -51,6 +35,14 @@ export class CatalogComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  get filteredProducts() {
+    let list = this.products();
+    if (this.selectedFilter() !== 'todo') {
+      list = list.filter(product => product.category?.toLowerCase() === this.selectedFilter());
+    }
+    return list;
   }
 
   setFilter(filter: string) {

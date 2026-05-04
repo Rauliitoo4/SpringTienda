@@ -25,7 +25,7 @@
 
     <div class="cart-wrap" (mouseenter)="showCart.set(true)" (mouseleave)="showCart.set(false)">
       <button mat-icon-button routerLink="/carrito">
-        <mat-icon [matBadge]="cartItemCount() > 0 ? cartItemCount() : null" matBadgeColor="warn">shopping_bag</mat-icon>
+        <mat-icon aria-hidden="false" [matBadge]="cartItemCount() > 0 ? cartItemCount() : null" matBadgeColor="warn">shopping_bag</mat-icon>
       </button>
       <div class="cart-dropdown" *ngIf="showCart()">
         <app-mini-carrito/>
