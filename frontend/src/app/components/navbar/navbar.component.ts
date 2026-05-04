@@ -6,6 +6,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { CommonModule } from '@angular/common';
 import { MiniCarritoComponent } from '../mini-carrito/mini-carrito.component';
 import { AuthService } from '../../services/user/auth.service';
+import { CarritoService } from '../../services/carrito/carrito.service';
 
 @Component({
   selector: 'app-navbar',
@@ -15,9 +16,9 @@ import { AuthService } from '../../services/user/auth.service';
 })
 export class NavbarComponent {
   private authService = inject(AuthService);
+  private carritoService = inject(CarritoService);
 
   isDarkMode = signal(false);
-  cartItemCount = signal(0);
   showCart = signal(false);
 
   get currentUser() {
@@ -26,6 +27,26 @@ export class NavbarComponent {
 
   get isLoggedIn() {
     return this.authService.isLoggedIn();
+  }
+
+  get favCount() {
+    return this.authService.currentUser()?.favoritoIds?.length ?? 0;
+  }
+
+  get cartCount() {
+    return this.carritoService.carritoActual()?.lineas?.length ?? 0;
+  }
+
+  formatBadge(count: number): string {
+    return count > 9 ? '+9' : String(count);
+  }
+
+  onCartHover() {
+    const user = this.authService.currentUser();
+    if (user) {
+      this.carritoService.getCarrito(user.carritoId).subscribe();
+    }
+    this.showCart.set(true);
   }
 
   toggleDarkMode() {

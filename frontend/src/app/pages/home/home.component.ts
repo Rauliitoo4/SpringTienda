@@ -112,4 +112,9 @@ export class HomeComponent implements OnInit {
       next: () => this.closeSizeSelector()
     });
   }
+
+  isNew(createdAt: string): boolean {
+    const days = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24);
+    return days <= 15;
+  }
 }

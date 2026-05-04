@@ -27,6 +27,9 @@
         <span *ngIf="product.promotions.length > 0" class="featured__badge featured__badge--sale">
           −{{ product.promotions[0].discount }}%
         </span>
+        <span *ngIf="product.promotions.length === 0 && isNew(product.createdAt)" class="featured__badge featured__badge--new">
+          NUEVO
+        </span>
         <img *ngIf="product.imageUrl" [src]="product.imageUrl" [alt]="product.name" class="featured__img"/>
         <mat-icon *ngIf="!product.imageUrl" class="featured__image-placeholder">image</mat-icon>
         <button class="featured__wishlist"

@@ -189,6 +189,7 @@
     text-decoration: none;
     align-items: center;
     transition: background .25s;
+    overflow: hidden;
 
     &:hover {
       background-color: var(--color-bg-surface);
@@ -200,6 +201,14 @@
     height: 70px;
     background-color: var(--color-bg-surface);
     border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  &__favorite-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   &__favorite-info {

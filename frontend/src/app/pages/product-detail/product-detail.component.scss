@@ -69,14 +69,19 @@
     position: absolute;
     top: 16px;
     left: 16px;
-    background: var(--color-error);
-    color: #fff;
     font-size: 12px;
     font-weight: 500;
     padding: 4px 10px;
     border-radius: 4px;
     letter-spacing: 0.04em;
     z-index: 1;
+    background: var(--color-error);
+    color: #fff;
+
+    &--new {
+      background: var(--color-accent);
+      color: #1a1a1a;
+    }
   }
 
   &__info {
@@ -253,6 +258,12 @@
       color: var(--color-error);
     }
 
+    &.active {
+      border-color: var(--color-error);
+      background: var(--color-error);
+      color: #fff;
+    }
+
     mat-icon {
       font-size: 20px;
       width: 20px;
@@ -298,5 +309,26 @@
     padding: 4rem;
     font-size: 14px;
     color: var(--color-text-secondary);
+  }
+
+  &__back {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    padding: 0;
+    transition: color .2s;
+
+    &:hover {
+      color: var(--color-accent);
+    }
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
   }
 }

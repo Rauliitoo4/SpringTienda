@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { User } from '../../models/user/user.model';
+import { CarritoService } from '../carrito/carrito.service';
 
 export interface LoginRequest {
   email: string;
@@ -21,6 +22,7 @@ export interface RegisterRequest {
 })
 export class AuthService {
   private http = inject(HttpClient);
+  private carritoService = inject(CarritoService);
   private apiUrl = 'http://localhost:8080';
 
   currentUser = signal<User | null>(null);
@@ -49,6 +51,7 @@ export class AuthService {
   logout() {
     this.currentUser.set(null);
     this.isLoggedIn.set(false);
+    this.carritoService.carritoActual.set(null);
     localStorage.removeItem('userId');
   }
 

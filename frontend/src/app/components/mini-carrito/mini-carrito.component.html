@@ -1,23 +1,29 @@
 <div class="mini-cart">
   <div class="mini-cart__header">
-    <span class="mini-cart__title">Carrito</span>
+    <span class="mini-cart__title">mi carrito</span>
     <span class="mini-cart__count">{{ items.length }} artículos</span>
   </div>
 
   <div class="mini-cart__items">
     <div class="mini-cart__item" *ngFor="let item of items">
-      <div class="mini-cart__item-image"></div>
+      <div class="mini-cart__item-image">
+        <img *ngIf="item.product?.imageUrl" [src]="item.product.imageUrl" [alt]="item.product.name" class="mini-cart__item-img"/>
+      </div>
       <div class="mini-cart__item-info">
-        <div class="mini-cart__item-name">{{ item.name }}</div>
+        <div class="mini-cart__item-name">{{ item.product.name }}</div>
         <div class="mini-cart__item-meta">Talla {{ item.size }} · {{ item.quantity }} ud</div>
       </div>
-      <div class="mini-cart__item-price">{{ item.price * item.quantity | number:'1.2-2' }} €</div>
+      <div class="mini-cart__item-price">{{ item.subtotal | number:'1.2-2' }} €</div>
     </div>
+  </div>
+
+  <div class="mini-cart__empty" *ngIf="items.length === 0">
+    <p>Tu carrito está vacío</p>
   </div>
 
   <div class="mini-cart__footer">
     <div class="mini-cart__total">
-      <span>Total</span>
+      <span>total</span>
       <span class="mini-cart__total-price">{{ total | number:'1.2-2' }} €</span>
     </div>
     <button mat-flat-button routerLink="/carrito" class="mini-cart__btn">

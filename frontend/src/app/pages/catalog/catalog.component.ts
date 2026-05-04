@@ -97,7 +97,8 @@ export class CatalogComponent implements OnInit {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
         break;
-      default:
+      default: 
+        list = [...list].sort((a, b) => b.promotions.length - a.promotions.length);
         break;
     }
 
@@ -167,5 +168,10 @@ export class CatalogComponent implements OnInit {
     this.carritoService.addProduct(user.carritoId, product.id, event.quantity, event.size).subscribe({
       next: () => this.closeSizeSelector()
     });
+  }
+
+  isNew(createdAt: string): boolean {
+    const days = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24);
+    return days <= 15;
   }
 }

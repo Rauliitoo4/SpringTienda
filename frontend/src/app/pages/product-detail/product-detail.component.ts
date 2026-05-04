@@ -1,11 +1,12 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../services/product/product.service';
 import { CarritoService } from '../../services/carrito/carrito.service';
 import { AuthService } from '../../services/user/auth.service';
+import { UserService } from '../../services/user/user.service';
 import { Product } from '../../models/product/product.model';
 import { Size } from '../../models/product/size.model';
 
@@ -19,16 +20,21 @@ export class ProductDetailComponent implements OnInit {
   private productService = inject(ProductService);
   private carritoService = inject(CarritoService);
   private authService = inject(AuthService);
+  private userService = inject(UserService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private location = inject(Location);
 
   selectedSize = signal<Size | null>(null);
-  isFavorite = signal(false);
   product = signal<Product | null>(null);
   loading = signal(true);
   error = signal(false);
   addedToCart = signal(false);
   quantity = signal(1);
+
+  isFavorite = computed(() =>
+    this.authService.currentUser()?.favoritoIds?.includes(this.product()?.id ?? 0) ?? false
+  );
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -49,7 +55,22 @@ export class ProductDetailComponent implements OnInit {
   }
 
   toggleFavorite() {
-    this.isFavorite.update(v => !v);
+    const user = this.authService.currentUser();
+    const product = this.product();
+    if (!user || !product) {
+      this.router.navigate(['/auth']);
+      return;
+    }
+
+    if (this.isFavorite()) {
+      this.userService.removeFavorito(user.id, product.id).subscribe({
+        next: (updatedUser) => this.authService.currentUser.set(updatedUser)
+      });
+    } else {
+      this.userService.addFavorito(user.id, product.id).subscribe({
+        next: (updatedUser) => this.authService.currentUser.set(updatedUser)
+      });
+    }
   }
 
   increaseQuantity() {
@@ -64,7 +85,6 @@ export class ProductDetailComponent implements OnInit {
 
   addToCart() {
     const user = this.authService.currentUser();
-
     if (!user) {
       this.router.navigate(['/auth']);
       return;
@@ -80,5 +100,14 @@ export class ProductDetailComponent implements OnInit {
         setTimeout(() => this.addedToCart.set(false), 2000);
       }
     });
+  }
+
+  isNew(createdAt: string): boolean {
+    const days = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24);
+    return days <= 15;
+  }
+
+  goBack() {
+    this.location.back();
   }
 }

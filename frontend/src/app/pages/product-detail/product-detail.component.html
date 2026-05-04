@@ -1,6 +1,9 @@
 <div class="detail">
 
   <div class="detail__breadcrumb">
+    <button class="detail__back" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     <a routerLink="/catalogo">catálogo</a>
     <span>/</span>
     <span>{{ product()?.name }}</span>
@@ -20,6 +23,9 @@
       <div class="detail__image">
         <span *ngIf="product()!.promotions.length > 0" class="detail__badge">
           −{{ product()!.promotions[0].discount }}%
+        </span>
+        <span *ngIf="product()!.promotions.length === 0 && isNew(product()!.createdAt!)" class="detail__badge detail__badge--new">
+          NUEVO
         </span>
         <img *ngIf="product()!.imageUrl" [src]="product()!.imageUrl" [alt]="product()!.name" class="detail__img"/>
         <mat-icon *ngIf="!product()!.imageUrl" class="detail__image-placeholder">image</mat-icon>
@@ -69,7 +75,9 @@
           (click)="addToCart()">
           {{ addedToCart() ? '✓ Añadido al carrito' : 'Añadir al carrito' }}
         </button>
-        <button class="detail__fav-btn" (click)="toggleFavorite()">
+        <button class="detail__fav-btn"
+          [class.active]="isFavorite()"
+          (click)="toggleFavorite()">
           <mat-icon>{{ isFavorite() ? 'favorite' : 'favorite_border' }}</mat-icon>
         </button>
       </div>

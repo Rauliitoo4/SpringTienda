@@ -20,14 +20,20 @@
         <mat-icon>{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
       </button>
 
-      <button mat-icon-button routerLink="/favoritos">
-        <mat-icon>favorite_border</mat-icon>
-      </button>
-
-      <div class="cart-wrap" (mouseenter)="showCart.set(true)" (mouseleave)="showCart.set(false)">
-        <button mat-icon-button routerLink="/carrito">
-          <mat-icon aria-hidden="false" [matBadge]="cartItemCount() > 0 ? cartItemCount() : null" matBadgeColor="warn">shopping_bag</mat-icon>
+      <div class="navbar__badge-wrap">
+        <button mat-icon-button routerLink="/favoritos">
+          <mat-icon>favorite_border</mat-icon>
         </button>
+        <span class="navbar__badge" *ngIf="favCount > 0">{{ formatBadge(favCount) }}</span>
+      </div>
+
+      <div class="cart-wrap navbar__badge-wrap"
+        (mouseenter)="onCartHover()"
+        (mouseleave)="showCart.set(false)">
+        <button mat-icon-button routerLink="/carrito">
+          <mat-icon>shopping_bag</mat-icon>
+        </button>
+        <span class="navbar__badge" *ngIf="cartCount > 0">{{ formatBadge(cartCount) }}</span>
         <div class="cart-dropdown" *ngIf="showCart()">
           <app-mini-carrito />
         </div>
