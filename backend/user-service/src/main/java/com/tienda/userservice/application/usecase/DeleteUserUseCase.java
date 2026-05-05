@@ -1,7 +1,7 @@
 package com.tienda.userservice.application.usecase;
 
-import com.tienda.tienda.user.application.port.input.DeleteUserInputPort;
-import com.tienda.tienda.user.application.port.output.DeleteUserOutputPort;
+import com.tienda.userservice.application.port.input.DeleteUserInputPort;
+import com.tienda.userservice.application.port.output.DeleteUserOutputPort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 

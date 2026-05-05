@@ -1,6 +1,6 @@
 package com.tienda.userservice.infrastructure.adapter.output.persistence.repository;
 
-import com.tienda.tienda.user.infrastructure.adapter.output.persistence.entity.UserFavoritoEntity;
+import com.tienda.userservice.infrastructure.adapter.output.persistence.entity.UserFavoritoEntity;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;

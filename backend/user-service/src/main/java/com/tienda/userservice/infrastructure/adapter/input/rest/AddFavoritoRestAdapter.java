@@ -1,8 +1,8 @@
 package com.tienda.userservice.infrastructure.adapter.input.rest;
 
-import com.tienda.tienda.user.application.port.input.AddFavoritoInputPort;
-import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.mapper.UserRestMapper;
-import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.response.UserResponse;
+import com.tienda.userservice.application.port.input.AddFavoritoInputPort;
+import com.tienda.userservice.infrastructure.adapter.input.rest.data.mapper.UserRestMapper;
+import com.tienda.userservice.infrastructure.adapter.input.rest.data.response.UserResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;

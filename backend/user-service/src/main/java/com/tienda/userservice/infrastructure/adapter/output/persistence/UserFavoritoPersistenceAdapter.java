@@ -1,7 +1,7 @@
 package com.tienda.userservice.infrastructure.adapter.output.persistence;
 
-import com.tienda.tienda.user.application.port.output.UserFavoritoOutputPort;
-import com.tienda.tienda.user.infrastructure.adapter.output.persistence.repository.UserFavoritoR2dbcRepository;
+import com.tienda.userservice.application.port.output.UserFavoritoOutputPort;
+import com.tienda.userservice.infrastructure.adapter.output.persistence.repository.UserFavoritoR2dbcRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

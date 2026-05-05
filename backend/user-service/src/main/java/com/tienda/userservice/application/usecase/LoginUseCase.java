@@ -1,8 +1,8 @@
 package com.tienda.userservice.application.usecase;
 
-import com.tienda.tienda.user.application.port.input.LoginInputPort;
-import com.tienda.tienda.user.application.port.output.GetUserOutputPort;
-import com.tienda.tienda.user.domain.model.User;
+import com.tienda.userservice.application.port.input.LoginInputPort;
+import com.tienda.userservice.application.port.output.GetUserOutputPort;
+import com.tienda.userservice.domain.model.User;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 

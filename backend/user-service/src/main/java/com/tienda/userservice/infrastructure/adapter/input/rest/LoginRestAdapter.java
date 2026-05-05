@@ -1,9 +1,9 @@
 package com.tienda.userservice.infrastructure.adapter.input.rest;
 
-import com.tienda.tienda.user.application.port.input.LoginInputPort;
-import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.mapper.UserRestMapper;
-import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.request.LoginRequest;
-import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.response.UserResponse;
+import com.tienda.userservice.application.port.input.LoginInputPort;
+import com.tienda.userservice.infrastructure.adapter.input.rest.data.mapper.UserRestMapper;
+import com.tienda.userservice.infrastructure.adapter.input.rest.data.request.LoginRequest;
+import com.tienda.userservice.infrastructure.adapter.input.rest.data.response.UserResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;

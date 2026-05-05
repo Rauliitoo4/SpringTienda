@@ -1,7 +1,7 @@
 package com.tienda.userservice.infrastructure.adapter.output.persistence;
 
-import com.tienda.tienda.user.application.port.output.DeleteUserOutputPort;
-import com.tienda.tienda.user.infrastructure.adapter.output.persistence.repository.UserR2dbcRepository;
+import com.tienda.userservice.application.port.output.DeleteUserOutputPort;
+import com.tienda.userservice.infrastructure.adapter.output.persistence.repository.UserR2dbcRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 

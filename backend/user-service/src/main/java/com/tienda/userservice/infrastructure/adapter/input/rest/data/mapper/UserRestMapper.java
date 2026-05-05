@@ -1,8 +1,8 @@
 package com.tienda.userservice.infrastructure.adapter.input.rest.data.mapper;
 
-import com.tienda.tienda.user.domain.model.User;
-import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.response.UserResponse;
-import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.request.UserRequest;
+import com.tienda.userservice.domain.model.User;
+import com.tienda.userservice.infrastructure.adapter.input.rest.data.response.UserResponse;
+import com.tienda.userservice.infrastructure.adapter.input.rest.data.request.UserRequest;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

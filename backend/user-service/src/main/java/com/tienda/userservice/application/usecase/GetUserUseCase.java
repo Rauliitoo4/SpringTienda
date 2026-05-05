@@ -1,9 +1,9 @@
 package com.tienda.userservice.application.usecase;
 
-import com.tienda.tienda.user.application.port.input.GetUserInputPort;
-import com.tienda.tienda.user.application.service.FavoritoLoader;
-import com.tienda.tienda.user.domain.model.User;
-import com.tienda.tienda.user.application.port.output.GetUserOutputPort;
+import com.tienda.userservice.application.port.input.GetUserInputPort;
+import com.tienda.userservice.application.service.FavoritoLoader;
+import com.tienda.userservice.domain.model.User;
+import com.tienda.userservice.application.port.output.GetUserOutputPort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

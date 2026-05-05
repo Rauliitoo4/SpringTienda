@@ -1,6 +1,6 @@
 package com.tienda.userservice.infrastructure.adapter.input.rest;
 
-import com.tienda.tienda.user.application.port.input.DeleteUserInputPort;
+import com.tienda.userservice.application.port.input.DeleteUserInputPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;

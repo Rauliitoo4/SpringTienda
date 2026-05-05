@@ -1,9 +1,9 @@
 package com.tienda.userservice.infrastructure.adapter.output.persistence;
 
-import com.tienda.tienda.user.domain.model.User;
-import com.tienda.tienda.user.application.port.output.CreateUserOutputPort;
-import com.tienda.tienda.user.infrastructure.adapter.output.persistence.mapper.UserPersistenceMapper;
-import com.tienda.tienda.user.infrastructure.adapter.output.persistence.repository.UserR2dbcRepository;
+import com.tienda.userservice.domain.model.User;
+import com.tienda.userservice.application.port.output.CreateUserOutputPort;
+import com.tienda.userservice.infrastructure.adapter.output.persistence.mapper.UserPersistenceMapper;
+import com.tienda.userservice.infrastructure.adapter.output.persistence.repository.UserR2dbcRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 

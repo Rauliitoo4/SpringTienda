@@ -1,7 +1,7 @@
 package com.tienda.userservice.application.service;
 
-import com.tienda.tienda.user.application.port.output.UserFavoritoOutputPort;
-import com.tienda.tienda.user.domain.model.User;
+import com.tienda.userservice.application.port.output.UserFavoritoOutputPort;
+import com.tienda.userservice.domain.model.User;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
