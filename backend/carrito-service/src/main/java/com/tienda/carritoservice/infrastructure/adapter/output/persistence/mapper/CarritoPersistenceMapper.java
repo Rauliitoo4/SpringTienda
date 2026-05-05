@@ -1,4 +1,4 @@
-package com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.mapper;
+package com.tienda.carritoservice.infrastructure.adapter.output.persistence.mapper;
 
 import com.tienda.tienda.carrito.domain.model.Carrito;
 import com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.entity.CarritoEntity;

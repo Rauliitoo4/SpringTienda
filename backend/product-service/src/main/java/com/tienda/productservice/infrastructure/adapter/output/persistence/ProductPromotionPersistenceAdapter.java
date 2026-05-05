@@ -1,7 +1,7 @@
-package com.tienda.tienda.product.infrastructure.adapter.output.persistence;
+package com.tienda.productservice.infrastructure.adapter.output.persistence;
 
-import com.tienda.tienda.product.application.port.output.ProductPromotionOutputPort;
-import com.tienda.tienda.product.infrastructure.adapter.output.persistence.repository.ProductPromotionR2dbcRepository;
+import com.tienda.productservice.application.port.output.ProductPromotionOutputPort;
+import com.tienda.productservice.infrastructure.adapter.output.persistence.repository.ProductPromotionR2dbcRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

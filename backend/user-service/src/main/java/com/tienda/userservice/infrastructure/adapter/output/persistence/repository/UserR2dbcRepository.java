@@ -1,4 +1,4 @@
-package com.tienda.userservice.adapter.output.persistence.repository;
+package com.tienda.userservice.infrastructure.adapter.output.persistence.repository;
 
 import com.tienda.tienda.user.infrastructure.adapter.output.persistence.entity.UserEntity;
 import org.springframework.data.r2dbc.repository.Query;

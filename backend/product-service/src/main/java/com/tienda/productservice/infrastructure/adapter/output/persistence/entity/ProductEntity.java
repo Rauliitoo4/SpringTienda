@@ -1,4 +1,4 @@
-package com.tienda.tienda.product.infrastructure.adapter.output.persistence.entity;
+package com.tienda.productservice.infrastructure.adapter.output.persistence.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;

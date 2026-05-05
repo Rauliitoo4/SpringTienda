@@ -1,9 +1,9 @@
-package com.tienda.tienda.product.infrastructure.adapter.input.rest;
+package com.tienda.productservice.infrastructure.adapter.input.rest;
 
-import com.tienda.tienda.product.application.port.input.CreateProductInputPort;
-import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.mapper.ProductRestMapper;
-import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.request.ProductRequest;
-import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.response.ProductResponse;
+import com.tienda.productservice.application.port.input.CreateProductInputPort;
+import com.tienda.productservice.infrastructure.adapter.input.rest.data.mapper.ProductRestMapper;
+import com.tienda.productservice.infrastructure.adapter.input.rest.data.request.ProductRequest;
+import com.tienda.productservice.infrastructure.adapter.input.rest.data.response.ProductResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

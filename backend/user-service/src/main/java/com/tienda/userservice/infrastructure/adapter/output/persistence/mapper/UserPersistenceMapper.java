@@ -1,4 +1,4 @@
-package com.tienda.userservice.adapter.output.persistence.mapper;
+package com.tienda.userservice.infrastructure.adapter.output.persistence.mapper;
 
 import com.tienda.tienda.user.domain.model.User;
 import com.tienda.tienda.user.infrastructure.adapter.output.persistence.entity.UserEntity;

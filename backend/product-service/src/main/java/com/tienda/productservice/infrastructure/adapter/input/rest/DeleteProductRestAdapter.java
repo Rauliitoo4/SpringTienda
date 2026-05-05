@@ -1,6 +1,6 @@
-package com.tienda.tienda.product.infrastructure.adapter.input.rest;
+package com.tienda.productservice.infrastructure.adapter.input.rest;
 
-import com.tienda.tienda.product.application.port.input.DeleteProductInputPort;
+import com.tienda.productservice.application.port.input.DeleteProductInputPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;

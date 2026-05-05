@@ -1,4 +1,4 @@
-package com.tienda.userservice.adapter.input.rest;
+package com.tienda.userservice.infrastructure.adapter.input.rest;
 
 import com.tienda.tienda.user.application.port.input.LoginInputPort;
 import com.tienda.tienda.user.infrastructure.adapter.input.rest.data.mapper.UserRestMapper;

@@ -1,5 +1,6 @@
-package com.tienda.tienda.carrito.domain.model;
+package com.tienda.carritoservice.domain.model;
 
+import com.tienda.tienda.carrito.domain.model.LineaCarrito;
 import lombok.Setter;
 import lombok.Getter;
 import lombok.AllArgsConstructor;

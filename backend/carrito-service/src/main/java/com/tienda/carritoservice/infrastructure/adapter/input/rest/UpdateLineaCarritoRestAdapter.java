@@ -1,4 +1,4 @@
-package com.tienda.tienda.carrito.infrastructure.adapter.input.rest;
+package com.tienda.carritoservice.infrastructure.adapter.input.rest;
 
 import com.tienda.tienda.carrito.application.port.input.UpdateLineaCarritoInputPort;
 import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.mapper.LineaCarritoRestMapper;

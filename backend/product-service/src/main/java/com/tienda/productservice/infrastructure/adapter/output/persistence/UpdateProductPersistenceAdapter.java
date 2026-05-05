@@ -1,9 +1,9 @@
-package com.tienda.tienda.product.infrastructure.adapter.output.persistence;
+package com.tienda.productservice.infrastructure.adapter.output.persistence;
 
-import com.tienda.tienda.product.application.port.output.UpdateProductOutputPort;
-import com.tienda.tienda.product.domain.model.Product;
-import com.tienda.tienda.product.infrastructure.adapter.output.persistence.mapper.ProductPersistenceMapper;
-import com.tienda.tienda.product.infrastructure.adapter.output.persistence.repository.ProductR2dbcRepository;
+import com.tienda.productservice.application.port.output.UpdateProductOutputPort;
+import com.tienda.productservice.domain.model.Product;
+import com.tienda.productservice.infrastructure.adapter.output.persistence.mapper.ProductPersistenceMapper;
+import com.tienda.productservice.infrastructure.adapter.output.persistence.repository.ProductR2dbcRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 

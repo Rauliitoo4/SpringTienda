@@ -1,13 +1,12 @@
-package com.tienda.tienda.product.application.usecase;
+package com.tienda.productservice.application.usecase;
 
-import com.tienda.tienda.product.application.port.input.RemovePromotionInputPort;
-import com.tienda.tienda.product.domain.model.Product;
-import com.tienda.tienda.product.application.port.output.GetProductOutputPort;
-import com.tienda.tienda.product.application.port.output.UpdateProductOutputPort;
-import com.tienda.tienda.product.application.port.output.ProductPromotionOutputPort;
-import com.tienda.tienda.product.application.service.PriceCalculator;
-import com.tienda.tienda.product.application.service.PromotionLoader;
-import com.tienda.tienda.carrito.application.service.LineasCarritoUpdater;
+import com.tienda.productservice.application.port.input.RemovePromotionInputPort;
+import com.tienda.productservice.application.port.output.GetProductOutputPort;
+import com.tienda.productservice.application.port.output.ProductPromotionOutputPort;
+import com.tienda.productservice.application.port.output.UpdateProductOutputPort;
+import com.tienda.productservice.application.service.PriceCalculator;
+import com.tienda.productservice.application.service.PromotionLoader;
+import com.tienda.productservice.domain.model.Product;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -18,15 +17,16 @@ public class RemovePromotionUseCase implements RemovePromotionInputPort {
     private final UpdateProductOutputPort updateProductOutputPort;
     private final ProductPromotionOutputPort productPromotionOutputPort;
     private final PromotionLoader promotionLoader;
-    private final LineasCarritoUpdater lineasCarritoUpdater;
     private final PriceCalculator priceCalculator = new PriceCalculator();
 
-    public RemovePromotionUseCase(GetProductOutputPort getProductOutputPort, UpdateProductOutputPort updateProductOutputPort, ProductPromotionOutputPort productPromotionOutputPort, PromotionLoader promotionLoader, LineasCarritoUpdater lineasCarritoUpdater) {
+    public RemovePromotionUseCase(GetProductOutputPort getProductOutputPort,
+                                  UpdateProductOutputPort updateProductOutputPort,
+                                  ProductPromotionOutputPort productPromotionOutputPort,
+                                  PromotionLoader promotionLoader) {
         this.getProductOutputPort = getProductOutputPort;
         this.updateProductOutputPort = updateProductOutputPort;
         this.productPromotionOutputPort = productPromotionOutputPort;
         this.promotionLoader = promotionLoader;
-        this.lineasCarritoUpdater = lineasCarritoUpdater;
     }
 
     public Mono<Product> execute(int productId, int promotionId) {
@@ -37,7 +37,6 @@ public class RemovePromotionUseCase implements RemovePromotionInputPort {
                                 .flatMap(p -> {
                                     priceCalculator.recalculateFinalPrice(p);
                                     return updateProductOutputPort.save(p)
-                                            .then(lineasCarritoUpdater.updateLineas(p))
                                             .thenReturn(p);
                                 })
                 );

@@ -1,4 +1,4 @@
-package com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.request;
+package com.tienda.carritoservice.infrastructure.adapter.input.rest.data.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

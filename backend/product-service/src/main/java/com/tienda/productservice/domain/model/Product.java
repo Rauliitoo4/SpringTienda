@@ -1,6 +1,5 @@
-package com.tienda.tienda.product.domain.model;
+package com.tienda.productservice.domain.model;
 
-import com.tienda.tienda.promotion.domain.model.Promotion;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
@@ -25,7 +24,7 @@ public class Product {
     private String material;
     private String considerations;
     private String imageUrl;
-    private List<Promotion> promotions;
+    private List<Integer> promotionIds;
     private List<Size> sizes = new ArrayList<>(Arrays.asList(Size.values()));
     private Category category;
     private LocalDateTime createdAt = LocalDateTime.now();

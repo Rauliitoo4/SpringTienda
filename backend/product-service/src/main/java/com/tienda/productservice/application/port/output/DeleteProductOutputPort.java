@@ -1,4 +1,4 @@
-package com.tienda.tienda.product.application.port.output;
+package com.tienda.productservice.application.port.output;
 
 import reactor.core.publisher.Mono;
 

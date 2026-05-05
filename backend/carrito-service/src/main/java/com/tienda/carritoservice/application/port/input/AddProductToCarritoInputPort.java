@@ -1,4 +1,4 @@
-package com.tienda.tienda.carrito.application.port.input;
+package com.tienda.carritoservice.application.port.input;
 
 import com.tienda.tienda.carrito.domain.model.Carrito;
 import com.tienda.tienda.product.domain.model.Size;

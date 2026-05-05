@@ -1,4 +1,4 @@
-package com.tienda.userservice.adapter.input.rest.data.request;
+package com.tienda.userservice.infrastructure.adapter.input.rest.data.request;
 
 import lombok.Getter;
 import lombok.Setter;

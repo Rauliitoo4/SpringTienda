@@ -1,4 +1,4 @@
-package com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.entity;
+package com.tienda.carritoservice.infrastructure.adapter.output.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;

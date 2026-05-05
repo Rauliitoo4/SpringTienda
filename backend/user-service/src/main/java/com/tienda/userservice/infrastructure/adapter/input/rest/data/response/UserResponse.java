@@ -1,4 +1,4 @@
-package com.tienda.userservice.adapter.input.rest.data.response;
+package com.tienda.userservice.infrastructure.adapter.input.rest.data.response;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

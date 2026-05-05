@@ -1,4 +1,4 @@
-package com.tienda.userservice.adapter.output.persistence.entity;
+package com.tienda.userservice.infrastructure.adapter.output.persistence.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

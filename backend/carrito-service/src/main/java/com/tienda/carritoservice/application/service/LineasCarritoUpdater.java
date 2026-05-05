@@ -1,4 +1,4 @@
-package com.tienda.tienda.carrito.application.service;
+package com.tienda.carritoservice.application.service;
 
 import com.tienda.tienda.carrito.application.port.output.GetLineaCarritoOutputPort;
 import com.tienda.tienda.carrito.application.port.output.UpdateLineaCarritoOutputPort;

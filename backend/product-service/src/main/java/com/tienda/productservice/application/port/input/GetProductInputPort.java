@@ -1,6 +1,6 @@
-package com.tienda.tienda.product.application.port.input;
+package com.tienda.productservice.application.port.input;
 
-import com.tienda.tienda.product.domain.model.Product;
+import com.tienda.productservice.domain.model.Product;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

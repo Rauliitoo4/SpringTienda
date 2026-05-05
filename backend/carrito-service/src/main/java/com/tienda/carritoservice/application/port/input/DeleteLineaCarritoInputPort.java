@@ -1,4 +1,4 @@
-package com.tienda.tienda.carrito.application.port.input;
+package com.tienda.carritoservice.application.port.input;
 
 import reactor.core.publisher.Mono;
 

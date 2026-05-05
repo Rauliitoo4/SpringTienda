@@ -1,4 +1,4 @@
-package com.tienda.tienda.carrito.application.usecase;
+package com.tienda.carritoservice.application.usecase;
 
 import com.tienda.tienda.carrito.application.port.input.AddProductToCarritoInputPort;
 import com.tienda.tienda.carrito.domain.model.Carrito;

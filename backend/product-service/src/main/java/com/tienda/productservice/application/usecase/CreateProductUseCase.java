@@ -1,9 +1,9 @@
-package com.tienda.tienda.product.application.usecase;
+package com.tienda.productservice.application.usecase;
 
-import com.tienda.tienda.product.application.port.input.CreateProductInputPort;
-import com.tienda.tienda.product.domain.model.Product;
-import com.tienda.tienda.product.application.port.output.CreateProductOutputPort;
-import com.tienda.tienda.product.application.service.PromotionLoader;
+import com.tienda.productservice.application.port.input.CreateProductInputPort;
+import com.tienda.productservice.domain.model.Product;
+import com.tienda.productservice.application.port.output.CreateProductOutputPort;
+import com.tienda.productservice.application.service.PromotionLoader;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 

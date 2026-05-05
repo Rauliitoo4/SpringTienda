@@ -1,4 +1,4 @@
-package com.tienda.userservice.adapter.output.persistence;
+package com.tienda.userservice.infrastructure.adapter.output.persistence;
 
 import com.tienda.tienda.user.domain.model.User;
 import com.tienda.tienda.user.application.port.output.UpdateUserOutputPort;

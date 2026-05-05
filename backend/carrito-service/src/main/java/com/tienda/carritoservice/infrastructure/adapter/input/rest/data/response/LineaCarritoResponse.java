@@ -1,4 +1,4 @@
-package com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.response;
+package com.tienda.carritoservice.infrastructure.adapter.input.rest.data.response;
 
 import com.tienda.tienda.product.domain.model.Size;
 import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.response.ProductResponse;

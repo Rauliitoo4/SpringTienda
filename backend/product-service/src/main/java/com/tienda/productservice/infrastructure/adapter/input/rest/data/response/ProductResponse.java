@@ -1,8 +1,8 @@
-package com.tienda.tienda.product.infrastructure.adapter.input.rest.data.response;
+package com.tienda.productservice.infrastructure.adapter.input.rest.data.response;
 
-import com.tienda.tienda.product.domain.model.Category;
-import com.tienda.tienda.product.domain.model.Size;
-import com.tienda.tienda.promotion.infrastructure.adapter.input.rest.data.response.PromotionResponse;
+import com.tienda.productservice.domain.model.Category;
+import com.tienda.productservice.domain.model.Size;
+import com.tienda.productservice.infrastructure.adapter.input.rest.data.response.PromotionResponse;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

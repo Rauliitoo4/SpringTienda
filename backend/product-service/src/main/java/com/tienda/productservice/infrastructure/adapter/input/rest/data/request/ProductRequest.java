@@ -1,6 +1,6 @@
-package com.tienda.tienda.product.infrastructure.adapter.input.rest.data.request;
+package com.tienda.productservice.infrastructure.adapter.input.rest.data.request;
 
-import com.tienda.tienda.product.domain.model.Category;
+import com.tienda.productservice.domain.model.Category;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

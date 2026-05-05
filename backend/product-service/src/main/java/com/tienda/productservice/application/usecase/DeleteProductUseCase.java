@@ -1,7 +1,7 @@
-package com.tienda.tienda.product.application.usecase;
+package com.tienda.productservice.application.usecase;
 
-import com.tienda.tienda.product.application.port.input.DeleteProductInputPort;
-import com.tienda.tienda.product.application.port.output.DeleteProductOutputPort;
+import com.tienda.productservice.application.port.input.DeleteProductInputPort;
+import com.tienda.productservice.application.port.output.DeleteProductOutputPort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 

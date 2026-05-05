@@ -1,4 +1,4 @@
-package com.tienda.tienda.carrito.infrastructure.adapter.output.persistence;
+package com.tienda.carritoservice.infrastructure.adapter.output.persistence;
 
 import com.tienda.tienda.carrito.application.port.output.DeleteLineaCarritoOutputPort;
 import com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.repository.LineaCarritoR2dbcRepository;
