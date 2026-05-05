@@ -1,7 +1,7 @@
 package com.tienda.carritoservice.infrastructure.adapter.input.rest.data.mapper;
 
-import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.request.AddProductToCarritoRequest;
-import com.tienda.tienda.product.domain.model.Size;
+import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.request.AddProductToCarritoRequest;
+import com.tienda.carritoservice.domain.model.Size;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,7 +1,5 @@
 package com.tienda.carritoservice.domain.model;
 
-import com.tienda.tienda.product.domain.model.Product;
-import com.tienda.tienda.product.domain.model.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -19,5 +17,4 @@ public class LineaCarrito {
     private Size size;
     private Integer carritoId;
     private Integer productId;
-    private Product product;
 }

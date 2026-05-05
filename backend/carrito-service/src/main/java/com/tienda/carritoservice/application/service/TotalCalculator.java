@@ -1,9 +1,9 @@
 package com.tienda.carritoservice.application.service;
 
-import com.tienda.tienda.carrito.domain.model.LineaCarrito;
-import com.tienda.tienda.carrito.application.port.output.GetCarritoOutputPort;
-import com.tienda.tienda.carrito.application.port.output.GetLineaCarritoOutputPort;
-import com.tienda.tienda.carrito.application.port.output.UpdateCarritoOutputPort;
+import com.tienda.carritoservice.domain.model.LineaCarrito;
+import com.tienda.carritoservice.application.port.output.GetCarritoOutputPort;
+import com.tienda.carritoservice.application.port.output.GetLineaCarritoOutputPort;
+import com.tienda.carritoservice.application.port.output.UpdateCarritoOutputPort;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 

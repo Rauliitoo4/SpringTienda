@@ -1,6 +1,6 @@
 package com.tienda.carritoservice.application.port.input;
 
-import com.tienda.tienda.carrito.domain.model.LineaCarrito;
+import com.tienda.carritoservice.domain.model.LineaCarrito;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

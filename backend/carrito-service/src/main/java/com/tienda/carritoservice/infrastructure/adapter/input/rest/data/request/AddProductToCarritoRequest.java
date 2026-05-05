@@ -1,6 +1,6 @@
 package com.tienda.carritoservice.infrastructure.adapter.input.rest.data.request;
 
-import com.tienda.tienda.product.domain.model.Size;
+import com.tienda.carritoservice.domain.model.Size;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

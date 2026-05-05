@@ -1,7 +1,7 @@
 package com.tienda.carritoservice.application.port.output;
 
-import com.tienda.tienda.carrito.domain.model.LineaCarrito;
-import com.tienda.tienda.product.domain.model.Size;
+import com.tienda.carritoservice.domain.model.LineaCarrito;
+import com.tienda.carritoservice.domain.model.Size;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

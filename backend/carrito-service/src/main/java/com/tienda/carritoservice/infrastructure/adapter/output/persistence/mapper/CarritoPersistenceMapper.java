@@ -1,7 +1,7 @@
 package com.tienda.carritoservice.infrastructure.adapter.output.persistence.mapper;
 
-import com.tienda.tienda.carrito.domain.model.Carrito;
-import com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.entity.CarritoEntity;
+import com.tienda.carritoservice.domain.model.Carrito;
+import com.tienda.carritoservice.infrastructure.adapter.output.persistence.entity.CarritoEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

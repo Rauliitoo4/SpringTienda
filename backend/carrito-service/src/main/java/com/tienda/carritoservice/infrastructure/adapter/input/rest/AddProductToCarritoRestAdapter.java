@@ -1,10 +1,10 @@
 package com.tienda.carritoservice.infrastructure.adapter.input.rest;
 
-import com.tienda.tienda.carrito.application.port.input.AddProductToCarritoInputPort;
-import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.mapper.AddProductToCarritoRequestMapper;
-import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.mapper.CarritoRestMapper;
-import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.request.AddProductToCarritoRequest;
-import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.response.CarritoResponse;
+import com.tienda.carritoservice.application.port.input.AddProductToCarritoInputPort;
+import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.mapper.AddProductToCarritoRequestMapper;
+import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.mapper.CarritoRestMapper;
+import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.request.AddProductToCarritoRequest;
+import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.response.CarritoResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;

@@ -1,9 +1,9 @@
 package com.tienda.carritoservice.infrastructure.adapter.output.persistence;
 
-import com.tienda.tienda.carrito.domain.model.Carrito;
-import com.tienda.tienda.carrito.application.port.output.CreateCarritoOutputPort;
-import com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.mapper.CarritoPersistenceMapper;
-import com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.repository.CarritoR2dbcRepository;
+import com.tienda.carritoservice.domain.model.Carrito;
+import com.tienda.carritoservice.application.port.output.CreateCarritoOutputPort;
+import com.tienda.carritoservice.infrastructure.adapter.output.persistence.mapper.CarritoPersistenceMapper;
+import com.tienda.carritoservice.infrastructure.adapter.output.persistence.repository.CarritoR2dbcRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 

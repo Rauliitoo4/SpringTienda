@@ -1,11 +1,12 @@
 package com.tienda.carritoservice.infrastructure.adapter.input.rest.data.mapper;
 
-import com.tienda.tienda.carrito.domain.model.LineaCarrito;
-import com.tienda.tienda.carrito.infrastructure.adapter.input.rest.data.response.LineaCarritoResponse;
-import com.tienda.tienda.product.infrastructure.adapter.input.rest.data.mapper.ProductRestMapper;
+import com.tienda.carritoservice.domain.model.LineaCarrito;
+import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.response.LineaCarritoResponse;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {ProductRestMapper.class})
+@Mapper(componentModel = "spring")
 public interface LineaCarritoRestMapper {
+    @Mapping(target = "product", ignore = true)
     LineaCarritoResponse toResponse(LineaCarrito lineaCarrito);
 }

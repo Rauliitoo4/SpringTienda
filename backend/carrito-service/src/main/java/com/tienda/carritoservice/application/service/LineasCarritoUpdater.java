@@ -1,8 +1,7 @@
 package com.tienda.carritoservice.application.service;
 
-import com.tienda.tienda.carrito.application.port.output.GetLineaCarritoOutputPort;
-import com.tienda.tienda.carrito.application.port.output.UpdateLineaCarritoOutputPort;
-import com.tienda.tienda.product.domain.model.Product;
+import com.tienda.carritoservice.application.port.output.GetLineaCarritoOutputPort;
+import com.tienda.carritoservice.application.port.output.UpdateLineaCarritoOutputPort;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -13,17 +12,19 @@ public class LineasCarritoUpdater {
     private final UpdateLineaCarritoOutputPort updateLineaCarritoOutputPort;
     private final TotalCalculator totalCalculator;
 
-    public LineasCarritoUpdater(GetLineaCarritoOutputPort getLineaCarritoOutputPort, UpdateLineaCarritoOutputPort updateLineaCarritoOutputPort, TotalCalculator totalCalculator) {
+    public LineasCarritoUpdater(GetLineaCarritoOutputPort getLineaCarritoOutputPort,
+                                UpdateLineaCarritoOutputPort updateLineaCarritoOutputPort,
+                                TotalCalculator totalCalculator) {
         this.getLineaCarritoOutputPort = getLineaCarritoOutputPort;
         this.updateLineaCarritoOutputPort = updateLineaCarritoOutputPort;
         this.totalCalculator = totalCalculator;
     }
 
-    public Mono<Void> updateLineas(Product product) {
+    public Mono<Void> updateLineas(Integer productId, double finalPrice) {
         return getLineaCarritoOutputPort.findAll()
-                .filter(linea -> linea.getProductId().equals(product.getId()))
+                .filter(linea -> linea.getProductId().equals(productId))
                 .flatMap(linea -> {
-                    linea.setSubtotal(product.getFinalPrice() * linea.getQuantity());
+                    linea.setSubtotal(finalPrice * linea.getQuantity());
                     return updateLineaCarritoOutputPort.save(linea);
                 })
                 .collectList()

@@ -1,6 +1,6 @@
 package com.tienda.carritoservice.infrastructure.adapter.input.rest;
 
-import com.tienda.tienda.carrito.application.port.input.DeleteLineaCarritoInputPort;
+import com.tienda.carritoservice.application.port.input.DeleteLineaCarritoInputPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;

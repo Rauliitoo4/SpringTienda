@@ -1,8 +1,8 @@
 package com.tienda.carritoservice.application.usecase;
 
-import com.tienda.tienda.carrito.application.port.input.CreateCarritoInputPort;
-import com.tienda.tienda.carrito.domain.model.Carrito;
-import com.tienda.tienda.carrito.application.port.output.CreateCarritoOutputPort;
+import com.tienda.carritoservice.application.port.input.CreateCarritoInputPort;
+import com.tienda.carritoservice.domain.model.Carrito;
+import com.tienda.carritoservice.application.port.output.CreateCarritoOutputPort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 

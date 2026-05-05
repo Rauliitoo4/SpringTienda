@@ -1,7 +1,7 @@
 package com.tienda.carritoservice.infrastructure.adapter.output.persistence.repository;
 
-import com.tienda.tienda.carrito.domain.model.LineaCarrito;
-import com.tienda.tienda.carrito.infrastructure.adapter.output.persistence.entity.LineaCarritoEntity;
+import com.tienda.carritoservice.domain.model.LineaCarrito;
+import com.tienda.carritoservice.infrastructure.adapter.output.persistence.entity.LineaCarritoEntity;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;

@@ -1,9 +1,9 @@
 package com.tienda.carritoservice.application.usecase;
 
-import com.tienda.tienda.carrito.application.port.input.DeleteLineaCarritoInputPort;
-import com.tienda.tienda.carrito.application.port.output.GetLineaCarritoOutputPort;
-import com.tienda.tienda.carrito.application.port.output.DeleteLineaCarritoOutputPort;
-import com.tienda.tienda.carrito.application.service.TotalCalculator;
+import com.tienda.carritoservice.application.port.input.DeleteLineaCarritoInputPort;
+import com.tienda.carritoservice.application.port.output.GetLineaCarritoOutputPort;
+import com.tienda.carritoservice.application.port.output.DeleteLineaCarritoOutputPort;
+import com.tienda.carritoservice.application.service.TotalCalculator;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
