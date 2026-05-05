@@ -12,4 +12,4 @@ spring:
     url: jdbc:postgresql://localhost:5432/user_db
     user: postgres
     password: postgres
-    change-log: classpath:db/changelog/db.changelog-master.yaml
+    change-log: classpath:db/changelog/db.changelog-master.xml
