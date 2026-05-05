@@ -1,0 +1,15 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: user-service
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/user_db
+    username: postgres
+    password: postgres
+  liquibase:
+    url: jdbc:postgresql://localhost:5432/user_db
+    user: postgres
+    password: postgres
+    change-log: classpath:db/changelog/db.changelog-master.yaml

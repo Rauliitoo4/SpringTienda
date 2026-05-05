@@ -1,0 +1,15 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: carrito-service
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/carrito_db
+    username: postgres
+    password: postgres
+  liquibase:
+    url: jdbc:postgresql://localhost:5432/carrito_db
+    user: postgres
+    password: postgres
+    change-log: classpath:db/changelog/db.changelog-master.xml

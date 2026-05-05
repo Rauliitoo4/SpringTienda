@@ -1,0 +1,158 @@
+version: '3.8'
+
+services:
+
+  # BASES DE DATOS
+
+  product-db:
+    image: postgres:17
+    container_name: product-db
+    environment:
+      POSTGRES_DB: product_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  promotion-db:
+    image: postgres:17
+    container_name: promotion-db
+    environment:
+      POSTGRES_DB: promotion_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  carrito-db:
+    image: postgres:17
+    container_name: carrito-db
+    environment:
+      POSTGRES_DB: carrito_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  user-db:
+    image: postgres:17
+    container_name: user-db
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  # MICROSERVICIOS
+
+  product-service:
+    build:
+      context: ./backend/product-service
+    container_name: product-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_R2DBC_URL: r2dbc:postgresql://product-db:5432/product_db
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
+      SPRING_LIQUIBASE_URL: jdbc:postgresql://product-db:5432/product_db
+      SPRING_LIQUIBASE_USER: postgres
+      SPRING_LIQUIBASE_PASSWORD: postgres
+    depends_on:
+      - product-db
+
+  promotion-service:
+    build:
+      context: ./backend/promotion-service
+    container_name: promotion-service
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_R2DBC_URL: r2dbc:postgresql://promotion-db:5432/promotion_db
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
+      SPRING_LIQUIBASE_URL: jdbc:postgresql://promotion-db:5432/promotion_db
+      SPRING_LIQUIBASE_USER: postgres
+      SPRING_LIQUIBASE_PASSWORD: postgres
+    depends_on:
+      - promotion-db
+
+  carrito-service:
+    build:
+      context: ./backend/carrito-service
+    container_name: carrito-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_R2DBC_URL: r2dbc:postgresql://carrito-db:5432/carrito_db
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
+      SPRING_LIQUIBASE_URL: jdbc:postgresql://carrito-db:5432/carrito_db
+      SPRING_LIQUIBASE_USER: postgres
+      SPRING_LIQUIBASE_PASSWORD: postgres
+    depends_on:
+      - carrito-db
+
+  user-service:
+    build:
+      context: ./backend/user-service
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_R2DBC_URL: r2dbc:postgresql://user-db:5432/user_db
+      SPRING_R2DBC_USERNAME: postgres
+      SPRING_R2DBC_PASSWORD: postgres
+      SPRING_LIQUIBASE_URL: jdbc:postgresql://user-db:5432/user_db
+      SPRING_LIQUIBASE_USER: postgres
+      SPRING_LIQUIBASE_PASSWORD: postgres
+    depends_on:
+      - user-db
+
+  # API GATEWAY - KONG
+
+  kong-db:
+    image: postgres:17
+    container_name: kong-db
+    environment:
+      POSTGRES_DB: kong
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: kong
+    ports:
+      - "5437:5432"
+
+  kong-migration:
+    image: kong:3.6
+    container_name: kong-migration
+    command: kong migrations bootstrap
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-db
+      KONG_PG_DATABASE: kong
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+    depends_on:
+      - kong-db
+    restart: on-failure
+
+  kong:
+    image: kong:3.6
+    container_name: kong
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-db
+      KONG_PG_DATABASE: kong
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    ports:
+      - "8080:8000"
+      - "8001:8001"
+    depends_on:
+      - kong-migration
+    restart: on-failure
