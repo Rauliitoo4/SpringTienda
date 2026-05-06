@@ -13,3 +13,7 @@ spring:
     user: postgres
     password: postgres
     change-log: classpath:db/changelog/db.changelog-master.xml
+
+services:
+  promotion-service:
+    url: http://promotion-service:8084

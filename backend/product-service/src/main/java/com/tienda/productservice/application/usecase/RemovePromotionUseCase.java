@@ -4,7 +4,6 @@ import com.tienda.productservice.application.port.input.RemovePromotionInputPort
 import com.tienda.productservice.application.port.output.GetProductOutputPort;
 import com.tienda.productservice.application.port.output.ProductPromotionOutputPort;
 import com.tienda.productservice.application.port.output.UpdateProductOutputPort;
-import com.tienda.productservice.application.service.PriceCalculator;
 import com.tienda.productservice.application.service.PromotionLoader;
 import com.tienda.productservice.domain.model.Product;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,6 @@ public class RemovePromotionUseCase implements RemovePromotionInputPort {
     private final UpdateProductOutputPort updateProductOutputPort;
     private final ProductPromotionOutputPort productPromotionOutputPort;
     private final PromotionLoader promotionLoader;
-    private final PriceCalculator priceCalculator = new PriceCalculator();
 
     public RemovePromotionUseCase(GetProductOutputPort getProductOutputPort,
                                   UpdateProductOutputPort updateProductOutputPort,
@@ -34,11 +32,7 @@ public class RemovePromotionUseCase implements RemovePromotionInputPort {
                 .flatMap(product ->
                         productPromotionOutputPort.deleteByProductIdAndPromotionId(productId, promotionId)
                                 .then(promotionLoader.loadPromotions(product))
-                                .flatMap(p -> {
-                                    priceCalculator.recalculateFinalPrice(p);
-                                    return updateProductOutputPort.save(p)
-                                            .thenReturn(p);
-                                })
+                                .flatMap(p -> updateProductOutputPort.save(p).thenReturn(p))
                 );
     }
 }

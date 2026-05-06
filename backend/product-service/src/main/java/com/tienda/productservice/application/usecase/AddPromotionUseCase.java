@@ -4,7 +4,6 @@ import com.tienda.productservice.application.port.input.AddPromotionInputPort;
 import com.tienda.productservice.application.port.output.GetProductOutputPort;
 import com.tienda.productservice.application.port.output.ProductPromotionOutputPort;
 import com.tienda.productservice.application.port.output.UpdateProductOutputPort;
-import com.tienda.productservice.application.service.PriceCalculator;
 import com.tienda.productservice.application.service.PromotionLoader;
 import com.tienda.productservice.domain.model.Product;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,6 @@ public class AddPromotionUseCase implements AddPromotionInputPort {
     private final UpdateProductOutputPort updateProductOutputPort;
     private final ProductPromotionOutputPort productPromotionOutputPort;
     private final PromotionLoader promotionLoader;
-    private final PriceCalculator priceCalculator = new PriceCalculator();
 
     public AddPromotionUseCase(GetProductOutputPort getProductOutputPort,
                                UpdateProductOutputPort updateProductOutputPort,
@@ -39,11 +37,7 @@ public class AddPromotionUseCase implements AddPromotionInputPort {
                                     }
                                     return productPromotionOutputPort.insertRelation(productId, promotionId)
                                             .then(promotionLoader.loadPromotions(product))
-                                            .flatMap(p -> {
-                                                priceCalculator.recalculateFinalPrice(p);
-                                                return updateProductOutputPort.save(p)
-                                                        .thenReturn(p);
-                                            });
+                                            .flatMap(p -> updateProductOutputPort.save(p).thenReturn(p));
                                 })
                 );
     }
