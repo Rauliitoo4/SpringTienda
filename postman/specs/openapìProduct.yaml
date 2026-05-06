@@ -1,0 +1,251 @@
+openapi: 3.0.3
+info:
+  title: Product Service API
+  description: API para la gestión de productos
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8081
+    description: Servidor local
+
+tags:
+  - name: Productos
+
+paths:
+
+  /productos:
+    get:
+      tags: [Productos]
+      summary: Obtener todos los productos
+      operationId: getAllProductos
+      responses:
+        '200':
+          description: Lista de productos (puede estar vacía)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductResponse'
+
+    post:
+      tags: [Productos]
+      summary: Crear un producto
+      operationId: createProducto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+            example:
+              name: Camiseta básica
+              price: 19.99
+              description: Camiseta blanca de algodón
+              material: Algodón
+              considerations: Lavar a 30 grados
+              imageUrl: https://example.com/img.jpg
+              category: CAMISETAS
+      responses:
+        '201':
+          description: Producto creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: Datos inválidos
+
+  /productos/{id}:
+    get:
+      tags: [Productos]
+      summary: Obtener producto por ID
+      operationId: getProductoById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          description: Producto no encontrado
+
+    put:
+      tags: [Productos]
+      summary: Actualizar producto
+      operationId: updateProducto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+      responses:
+        '204':
+          description: Producto actualizado
+        '400':
+          description: Datos inválidos
+        '404':
+          description: Producto no encontrado
+
+    delete:
+      tags: [Productos]
+      summary: Eliminar producto
+      operationId: deleteProducto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Producto eliminado
+        '404':
+          description: Producto no encontrado
+
+  /productos/{productoId}/promociones/{promocionId}:
+    post:
+      tags: [Productos]
+      summary: Añadir promoción a producto
+      operationId: addPromotionToProduct
+      parameters:
+        - name: productoId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: promocionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Promoción añadida
+        '404':
+          description: Producto o promoción no encontrado
+
+    delete:
+      tags: [Productos]
+      summary: Eliminar promoción de producto
+      operationId: removePromotionFromProduct
+      parameters:
+        - name: productoId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: promocionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Promoción eliminada
+        '404':
+          description: Producto o promoción no encontrado
+
+components:
+
+  schemas:
+
+    ProductRequest:
+      type: object
+      required: [name, price, category]
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+          format: double
+        description:
+          type: string
+        material:
+          type: string
+        considerations:
+          type: string
+        imageUrl:
+          type: string
+        category:
+          $ref: '#/components/schemas/Category'
+
+    ProductResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+          format: double
+        finalPrice:
+          type: number
+          format: double
+        description:
+          type: string
+        material:
+          type: string
+        considerations:
+          type: string
+        imageUrl:
+          type: string
+
+        category:
+          $ref: '#/components/schemas/Category'
+
+        sizes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Size'
+
+        promotions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PromotionResponse'
+
+        createdAt:
+          type: string
+
+    PromotionResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+        discount:
+          type: number
+          format: double
+
+    Category:
+      type: string
+      enum:
+        - CAMISETAS
+        - PANTALONES
+        - SUDADERAS
+        - CHAQUETAS
+
+    Size:
+      type: string
+      enum:
+        - XS
+        - S
+        - M
+        - L
+        - XL

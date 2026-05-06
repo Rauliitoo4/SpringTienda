@@ -189,3 +189,15 @@ services:
       kong-migration:
         condition: service_completed_successfully
     restart: on-failure
+
+  # KONGA - UI para Kong
+
+  konga:
+    image: pantsel/konga
+    container_name: konga
+    environment:
+      NODE_ENV: production
+    ports:
+      - "1337:1337"
+    depends_on:
+      - kong

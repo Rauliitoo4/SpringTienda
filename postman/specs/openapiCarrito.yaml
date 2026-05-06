@@ -1,0 +1,222 @@
+openapi: 3.0.3
+info:
+  title: Carrito Service API
+  description: API para la gestión de carritos y líneas de carrito
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8084
+    description: Servidor local
+
+tags:
+  - name: Carritos
+  - name: LineasCarrito
+
+paths:
+
+  /carritos/{id}:
+    get:
+      tags: [Carritos]
+      summary: Obtener carrito por ID
+      operationId: getCarritoById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Carrito encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarritoResponse'
+        '404':
+          description: Carrito no encontrado
+
+  /carritos/{carritoId}/productos:
+    post:
+      tags: [Carritos]
+      summary: Añadir producto al carrito
+      operationId: addProductToCarrito
+      parameters:
+        - name: carritoId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddProductToCarritoRequest'
+            example:
+              productId: 1
+              quantity: 2
+              size: M
+      responses:
+        '200':
+          description: Producto añadido al carrito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarritoResponse'
+        '404':
+          description: Carrito o producto no encontrado
+
+  /lineas:
+    get:
+      tags: [LineasCarrito]
+      summary: Obtener todas las líneas de carrito
+      operationId: getAllLineas
+      responses:
+        '200':
+          description: Lista de líneas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LineaCarritoResponse'
+
+  /lineas/{id}:
+    get:
+      tags: [LineasCarrito]
+      summary: Obtener línea por ID
+      operationId: getLineaCarritoById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Línea encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LineaCarritoResponse'
+        '404':
+          description: Línea no encontrada
+
+    put:
+      tags: [LineasCarrito]
+      summary: Actualizar línea de carrito
+      operationId: updateLineaCarrito
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLineaCarritoRequest'
+            example:
+              quantity: 3
+      responses:
+        '200':
+          description: Línea actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LineaCarritoResponse'
+        '404':
+          description: Línea no encontrada
+
+    delete:
+      tags: [LineasCarrito]
+      summary: Eliminar línea de carrito
+      operationId: deleteLineaCarrito
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Línea eliminada
+        '404':
+          description: Línea no encontrada
+
+components:
+
+  schemas:
+
+    AddProductToCarritoRequest:
+      type: object
+      required: [productId, quantity, size]
+      properties:
+        productId:
+          type: integer
+        quantity:
+          type: integer
+        size:
+          $ref: '#/components/schemas/Size'
+
+    UpdateLineaCarritoRequest:
+      type: object
+      required: [quantity]
+      properties:
+        quantity:
+          type: integer
+
+    CarritoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        total:
+          type: number
+          format: double
+        lineas:
+          type: array
+          items:
+            $ref: '#/components/schemas/LineaCarritoResponse'
+
+    LineaCarritoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        subtotal:
+          type: number
+          format: double
+        quantity:
+          type: integer
+        size:
+          $ref: '#/components/schemas/Size'
+        carritoId:
+          type: integer
+        productId:
+          type: integer
+        product:
+          $ref: '#/components/schemas/ProductResponse'
+
+    ProductResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+        finalPrice:
+          type: number
+
+    Size:
+      type: string
+      enum:
+        - XS
+        - S
+        - M
+        - L
+        - XL

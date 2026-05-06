@@ -1,0 +1,221 @@
+openapi: 3.0.3
+info:
+  title: User Service API
+  description: API para la gestión de usuarios
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8083
+    description: Servidor local
+
+tags:
+  - name: Usuarios
+  - name: Auth
+
+paths:
+
+  /usuarios:
+    get:
+      tags: [Usuarios]
+      summary: Obtener todos los usuarios
+      operationId: getAllUsuarios
+      responses:
+        '200':
+          description: Lista de usuarios (puede estar vacía)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+
+    post:
+      tags: [Usuarios]
+      summary: Crear un usuario
+      operationId: createUsuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '201':
+          description: Usuario creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Datos inválidos
+
+  /usuarios/{id}:
+    get:
+      tags: [Usuarios]
+      summary: Obtener usuario por ID
+      operationId: getUsuarioById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: Usuario no encontrado
+
+    put:
+      tags: [Usuarios]
+      summary: Actualizar usuario
+      operationId: updateUsuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '204':
+          description: Usuario actualizado
+        '400':
+          description: Datos inválidos
+        '404':
+          description: Usuario no encontrado
+
+    delete:
+      tags: [Usuarios]
+      summary: Eliminar usuario
+      operationId: deleteUsuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Usuario eliminado
+        '404':
+          description: Usuario no encontrado
+
+  /usuarios/{userId}/favoritos/{productId}:
+    post:
+      tags: [Usuarios]
+      summary: Añadir producto a favoritos
+      operationId: addFavorito
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Producto añadido a favoritos
+        '404':
+          description: Usuario o producto no encontrado
+
+    delete:
+      tags: [Usuarios]
+      summary: Eliminar producto de favoritos
+      operationId: removeFavorito
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Producto eliminado de favoritos
+        '404':
+          description: Usuario o producto no encontrado
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login de usuario
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Credenciales inválidas
+
+components:
+
+  schemas:
+
+    UserRequest:
+      type: object
+      required: [nombre, email, password]
+      properties:
+        nombre:
+          type: string
+        apellidos:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        apellidos:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        carritoId:
+          type: integer
