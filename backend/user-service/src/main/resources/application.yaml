@@ -13,3 +13,7 @@ spring:
     user: postgres
     password: postgres
     change-log: classpath:db/changelog/db.changelog-master.xml
+
+services:
+  carrito-service:
+    url: http://carrito-service:8082
