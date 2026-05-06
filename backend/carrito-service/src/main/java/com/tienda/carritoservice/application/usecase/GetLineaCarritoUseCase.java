@@ -1,9 +1,8 @@
 package com.tienda.carritoservice.application.usecase;
 
 import com.tienda.carritoservice.application.port.input.GetLineaCarritoInputPort;
-import com.tienda.carritoservice.domain.model.LineaCarrito;
 import com.tienda.carritoservice.application.port.output.GetLineaCarritoOutputPort;
-import com.tienda.carritoservice.application.service.ProductLoader;
+import com.tienda.carritoservice.domain.model.LineaCarrito;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -12,20 +11,16 @@ import reactor.core.publisher.Mono;
 public class GetLineaCarritoUseCase implements GetLineaCarritoInputPort {
 
     private final GetLineaCarritoOutputPort getLineaCarritoOutputPort;
-    private final ProductLoader productLoader;
 
-    public GetLineaCarritoUseCase(GetLineaCarritoOutputPort getLineaCarritoOutputPort, ProductLoader productLoader) {
+    public GetLineaCarritoUseCase(GetLineaCarritoOutputPort getLineaCarritoOutputPort) {
         this.getLineaCarritoOutputPort = getLineaCarritoOutputPort;
-        this.productLoader = productLoader;
     }
 
     public Mono<LineaCarrito> execute(int id) {
-        return getLineaCarritoOutputPort.findById(id)
-                .flatMap(productLoader::loadProduct);
+        return getLineaCarritoOutputPort.findById(id);
     }
 
     public Flux<LineaCarrito> executeAll() {
-        return getLineaCarritoOutputPort.findAll()
-                .flatMap(productLoader::loadProduct);
+        return getLineaCarritoOutputPort.findAll();
     }
 }

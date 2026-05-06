@@ -3,6 +3,7 @@ package com.tienda.carritoservice.application.usecase;
 import com.tienda.carritoservice.application.port.input.UpdateLineaCarritoInputPort;
 import com.tienda.carritoservice.application.port.output.GetLineaCarritoOutputPort;
 import com.tienda.carritoservice.application.port.output.UpdateLineaCarritoOutputPort;
+import com.tienda.carritoservice.application.service.ProductLoader;
 import com.tienda.carritoservice.application.service.TotalCalculator;
 import com.tienda.carritoservice.domain.model.LineaCarrito;
 import org.springframework.stereotype.Service;
@@ -13,13 +14,16 @@ public class UpdateLineaCarritoUseCase implements UpdateLineaCarritoInputPort {
 
     private final GetLineaCarritoOutputPort getLineaCarritoOutputPort;
     private final UpdateLineaCarritoOutputPort updateLineaCarritoOutputPort;
+    private final ProductLoader productLoader;
     private final TotalCalculator totalCalculator;
 
     public UpdateLineaCarritoUseCase(GetLineaCarritoOutputPort getLineaCarritoOutputPort,
                                      UpdateLineaCarritoOutputPort updateLineaCarritoOutputPort,
+                                     ProductLoader productLoader,
                                      TotalCalculator totalCalculator) {
         this.getLineaCarritoOutputPort = getLineaCarritoOutputPort;
         this.updateLineaCarritoOutputPort = updateLineaCarritoOutputPort;
+        this.productLoader = productLoader;
         this.totalCalculator = totalCalculator;
     }
 
@@ -28,9 +32,13 @@ public class UpdateLineaCarritoUseCase implements UpdateLineaCarritoInputPort {
                 .flatMap(linea -> {
                     if (quantity <= 0) return Mono.empty();
                     linea.setQuantity(quantity);
-                    return updateLineaCarritoOutputPort.save(linea)
-                            .then(totalCalculator.recalculate(linea.getCarritoId()))
-                            .then(getLineaCarritoOutputPort.findById(id));
+                    return productLoader.loadProduct(linea.getProductId())
+                            .flatMap(product -> {
+                                linea.setSubtotal(product.getFinalPrice() * quantity);
+                                return updateLineaCarritoOutputPort.save(linea)
+                                        .then(totalCalculator.recalculate(linea.getCarritoId()))
+                                        .then(getLineaCarritoOutputPort.findById(id));
+                            });
                 });
     }
 }

@@ -13,3 +13,7 @@ spring:
     user: postgres
     password: postgres
     change-log: classpath:db/changelog/db.changelog-master.xml
+
+services:
+  product-service:
+    url: http://product-service:8081

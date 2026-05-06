@@ -1,8 +1,8 @@
 package com.tienda.carritoservice.application.service;
 
-import com.tienda.carritoservice.application.service.ProductLoader;
-import com.tienda.carritoservice.domain.model.Carrito;
 import com.tienda.carritoservice.application.port.output.GetLineaCarritoOutputPort;
+import com.tienda.carritoservice.domain.model.Carrito;
+import com.tienda.carritoservice.domain.model.LineaCarrito;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -19,7 +19,6 @@ public class LineaLoader {
 
     public Mono<Carrito> loadLineas(Carrito carrito) {
         return getLineaCarritoOutputPort.findByCarritoId(carrito.getId())
-                .flatMap(productLoader::loadProduct)
                 .collectList()
                 .doOnNext(carrito::setLineas)
                 .thenReturn(carrito);
