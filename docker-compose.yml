@@ -223,6 +223,8 @@ services:
     image: pantsel/konga
     container_name: konga-prepare
     command: "-c prepare -a postgres -u postgresql://konga:konga@konga-db:5432/konga"
+    volumes:
+      - konga-prepare-data:/app/kongadata
     depends_on:
       konga-db:
         condition: service_healthy
@@ -240,6 +242,8 @@ services:
       DB_PASSWORD: konga
       DB_DATABASE: konga
       TOKEN_SECRET: secreto123
+    volumes:
+      - konga-data:/app/kongadata
     ports:
       - "1337:1337"
     depends_on:
@@ -257,3 +261,5 @@ volumes:
   user-db-data:
   kong-db-data:
   konga-db-data:
+  konga-data:
+  konga-prepare-data:
