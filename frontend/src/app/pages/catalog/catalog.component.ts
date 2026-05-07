@@ -98,7 +98,7 @@ export class CatalogComponent implements OnInit {
         );
         break;
       default: 
-        list = [...list].sort((a, b) => b.promotions.length - a.promotions.length);
+        list = [...list].sort((a, b) => (b.promotions?.length ?? 0) - (a.promotions?.length ?? 0));
         break;
     }
 

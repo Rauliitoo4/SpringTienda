@@ -24,10 +24,10 @@
   <div class="featured__carousel">
     <a class="featured__card" *ngFor="let product of visibleProducts" [routerLink]="['/producto', product.id]">
       <div class="featured__image">
-        <span *ngIf="product.promotions.length > 0" class="featured__badge featured__badge--sale">
+        <span *ngIf="product.promotions && product.promotions.length > 0" class="featured__badge featured__badge--sale">
           −{{ product.promotions[0].discount }}%
         </span>
-        <span *ngIf="product.promotions.length === 0 && isNew(product.createdAt)" class="featured__badge featured__badge--new">
+        <span *ngIf="!product.promotions || product.promotions.length === 0 && isNew(product.createdAt)" class="featured__badge featured__badge--new">
           NUEVO
         </span>
         <img *ngIf="product.imageUrl" [src]="product.imageUrl" [alt]="product.name" class="featured__img"/>
