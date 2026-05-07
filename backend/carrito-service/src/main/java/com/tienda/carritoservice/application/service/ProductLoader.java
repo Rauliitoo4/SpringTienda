@@ -2,7 +2,7 @@ package com.tienda.carritoservice.application.service;
 
 import com.tienda.carritoservice.application.model.ProductModel;
 import com.tienda.carritoservice.application.port.output.GetProductOutputPort;
-import com.tienda.carritoservice.domain.model.LineaCarrito;
+import com.tienda.carritoservice.domain.model.Product;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -15,7 +15,8 @@ public class ProductLoader {
         this.getProductOutputPort = getProductOutputPort;
     }
 
-    public Mono<ProductModel> loadProduct(int productId) {
-        return getProductOutputPort.findById(productId);
+    public Mono<Product> loadProduct(int productId) {
+        return getProductOutputPort.findById(productId)
+                .map(p -> new Product(p.getId(), p.getName(), p.getPrice(), p.getFinalPrice(), p.getImageUrl(), p.getCategory()));
     }
 }

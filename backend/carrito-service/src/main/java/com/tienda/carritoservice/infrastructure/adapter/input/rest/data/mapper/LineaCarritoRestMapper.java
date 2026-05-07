@@ -7,6 +7,5 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface LineaCarritoRestMapper {
-    @Mapping(target = "product", ignore = true)
     LineaCarritoResponse toResponse(LineaCarrito lineaCarrito);
 }

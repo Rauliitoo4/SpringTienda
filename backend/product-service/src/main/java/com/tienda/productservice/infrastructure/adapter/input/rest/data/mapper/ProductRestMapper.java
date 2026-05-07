@@ -10,7 +10,6 @@ import org.mapstruct.Mapping;
 public interface ProductRestMapper {
     Product toDomain(ProductRequest request);
 
-    @Mapping(target = "promotions", ignore = true)
     @Mapping(target = "createdAt", expression = "java(product.getCreatedAt() != null ? product.getCreatedAt().toString() : null)")
     ProductResponse toResponse(Product product);
 }

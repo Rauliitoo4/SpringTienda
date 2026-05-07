@@ -24,7 +24,7 @@ public class Product {
     private String material;
     private String considerations;
     private String imageUrl;
-    private List<Integer> promotionIds;
+    private List<Promotion> promotions = new ArrayList<>();
     private List<Size> sizes = new ArrayList<>(Arrays.asList(Size.values()));
     private Category category;
     private LocalDateTime createdAt = LocalDateTime.now();

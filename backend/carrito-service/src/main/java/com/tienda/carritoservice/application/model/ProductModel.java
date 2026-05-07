@@ -15,4 +15,5 @@ public class ProductModel {
     private double price;
     private double finalPrice;
     private String imageUrl;
+    private String category;
 }

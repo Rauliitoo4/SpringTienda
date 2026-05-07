@@ -9,13 +9,11 @@ import lombok.AllArgsConstructor;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LineaCarrito {
-
+public class Product {
     private Integer id;
-    private double subtotal;
-    private int quantity;
-    private Size size;
-    private Integer carritoId;
-    private Integer productId;
-    private Product product;
+    private String name;
+    private double price;
+    private double finalPrice;
+    private String imageUrl;
+    private String category;
 }

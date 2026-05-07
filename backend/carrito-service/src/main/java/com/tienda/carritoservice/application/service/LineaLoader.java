@@ -19,6 +19,9 @@ public class LineaLoader {
 
     public Mono<Carrito> loadLineas(Carrito carrito) {
         return getLineaCarritoOutputPort.findByCarritoId(carrito.getId())
+                .flatMap(linea -> productLoader.loadProduct(linea.getProductId())
+                        .doOnNext(linea::setProduct)
+                        .thenReturn(linea))
                 .collectList()
                 .doOnNext(carrito::setLineas)
                 .thenReturn(carrito);

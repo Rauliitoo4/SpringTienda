@@ -4,6 +4,7 @@ import com.tienda.productservice.application.model.PromotionModel;
 import com.tienda.productservice.application.port.output.GetPromotionOutputPort;
 import com.tienda.productservice.application.port.output.ProductPromotionOutputPort;
 import com.tienda.productservice.domain.model.Product;
+import com.tienda.productservice.domain.model.Promotion;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -28,7 +29,9 @@ public class PromotionLoader {
                 .collectList()
                 .flatMap(ids -> getPromotionOutputPort.findAllByIds(ids).collectList())
                 .doOnNext(promotions -> {
-                    product.setPromotionIds(promotions.stream().map(PromotionModel::getId).toList());
+                    product.setPromotions(promotions.stream()
+                            .map(p -> new Promotion(p.getId(), p.getDiscount(), p.getDescription()))
+                            .toList());
                     priceCalculator.recalculateFinalPrice(product, promotions);
                 })
                 .thenReturn(product);

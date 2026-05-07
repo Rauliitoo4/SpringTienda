@@ -13,6 +13,8 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5433:5432"
+    volumes:
+      - product-db-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -28,6 +30,8 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5434:5432"
+    volumes:
+      - promotion-db-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -43,6 +47,8 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5435:5432"
+    volumes:
+      - carrito-db-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -58,6 +64,8 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5436:5432"
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -145,6 +153,8 @@ services:
       POSTGRES_PASSWORD: kong
     ports:
       - "5437:5432"
+    volumes:
+      - kong-db-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U kong"]
       interval: 5s
@@ -192,12 +202,58 @@ services:
 
   # KONGA - UI para Kong
 
+  konga-db:
+    image: postgres:9.6
+    container_name: konga-db
+    environment:
+      POSTGRES_DB: konga
+      POSTGRES_USER: konga
+      POSTGRES_PASSWORD: konga
+    ports:
+      - "5438:5432"
+    volumes:
+      - konga-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U konga"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  konga-prepare:
+    image: pantsel/konga
+    container_name: konga-prepare
+    command: "-c prepare -a postgres -u postgresql://konga:konga@konga-db:5432/konga"
+    depends_on:
+      konga-db:
+        condition: service_healthy
+    restart: on-failure
+
   konga:
     image: pantsel/konga
     container_name: konga
     environment:
       NODE_ENV: production
+      DB_ADAPTER: postgres
+      DB_HOST: konga-db
+      DB_PORT: 5432
+      DB_USER: konga
+      DB_PASSWORD: konga
+      DB_DATABASE: konga
+      TOKEN_SECRET: secreto123
     ports:
       - "1337:1337"
     depends_on:
-      - kong
+      konga-db:
+        condition: service_healthy
+      konga-prepare:
+        condition: service_completed_successfully
+      kong:
+        condition: service_started
+
+volumes:
+  product-db-data:
+  promotion-db-data:
+  carrito-db-data:
+  user-db-data:
+  kong-db-data:
+  konga-db-data:
