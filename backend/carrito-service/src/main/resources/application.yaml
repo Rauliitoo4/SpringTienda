@@ -7,11 +7,11 @@ spring:
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/carrito_db
     username: postgres
-    password: postgres
+    password: admin123
   liquibase:
     url: jdbc:postgresql://localhost:5432/carrito_db
     user: postgres
-    password: postgres
+    password: admin123
     change-log: classpath:db/changelog/db.changelog-master.xml
 
 services:
