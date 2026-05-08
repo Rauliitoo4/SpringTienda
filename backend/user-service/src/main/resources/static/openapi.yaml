@@ -1,59 +1,64 @@
 openapi: 3.0.3
 info:
   title: User Service API
-  description: API para la gestión de usuarios
+  description: Microservicio de gestión de usuarios, autenticación y favoritos
   version: 1.0.0
 
 servers:
   - url: http://localhost:8083
-    description: Servidor local
+    description: Local
 
 tags:
   - name: Usuarios
+    description: Operaciones sobre usuarios
+  - name: Favoritos
+    description: Gestión de productos favoritos de un usuario
   - name: Auth
+    description: Autenticación
 
 paths:
 
   /usuarios:
     get:
-      tags: [Usuarios]
+      tags:
+        - Usuarios
       summary: Obtener todos los usuarios
-      operationId: getAllUsuarios
+      operationId: getAllUsers
       responses:
-        '200':
-          description: Lista de usuarios (puede estar vacía)
+        "200":
+          description: Lista de usuarios
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UserResponse'
+                  $ref: "#/components/schemas/UserResponse"
 
     post:
-      tags: [Usuarios]
-      summary: Crear un usuario
-      operationId: createUsuario
+      tags:
+        - Usuarios
+      summary: Crear usuario
+      operationId: createUser
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRequest'
+              $ref: "#/components/schemas/UserRequest"
       responses:
-        '201':
+        "201":
           description: Usuario creado
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        '400':
-          description: Datos inválidos
+                $ref: "#/components/schemas/UserResponse"
 
   /usuarios/{id}:
     get:
-      tags: [Usuarios]
+      tags:
+        - Usuarios
       summary: Obtener usuario por ID
-      operationId: getUsuarioById
+      operationId: getUserById
       parameters:
         - name: id
           in: path
@@ -61,19 +66,20 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Usuario encontrado
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        '404':
+                $ref: "#/components/schemas/UserResponse"
+        "404":
           description: Usuario no encontrado
 
     put:
-      tags: [Usuarios]
+      tags:
+        - Usuarios
       summary: Actualizar usuario
-      operationId: updateUsuario
+      operationId: updateUser
       parameters:
         - name: id
           in: path
@@ -85,19 +91,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRequest'
+              $ref: "#/components/schemas/UserRequest"
       responses:
-        '204':
+        "200":
           description: Usuario actualizado
-        '400':
-          description: Datos inválidos
-        '404':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "404":
           description: Usuario no encontrado
 
     delete:
-      tags: [Usuarios]
+      tags:
+        - Usuarios
       summary: Eliminar usuario
-      operationId: deleteUsuario
+      operationId: deleteUser
       parameters:
         - name: id
           in: path
@@ -105,14 +114,15 @@ paths:
           schema:
             type: integer
       responses:
-        '204':
+        "204":
           description: Usuario eliminado
-        '404':
+        "404":
           description: Usuario no encontrado
 
   /usuarios/{userId}/favoritos/{productId}:
     post:
-      tags: [Usuarios]
+      tags:
+        - Favoritos
       summary: Añadir producto a favoritos
       operationId: addFavorito
       parameters:
@@ -127,13 +137,18 @@ paths:
           schema:
             type: integer
       responses:
-        '204':
-          description: Producto añadido a favoritos
-        '404':
+        "200":
+          description: Favorito añadido, devuelve el usuario actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "404":
           description: Usuario o producto no encontrado
 
     delete:
-      tags: [Usuarios]
+      tags:
+        - Favoritos
       summary: Eliminar producto de favoritos
       operationId: removeFavorito
       parameters:
@@ -148,14 +163,19 @@ paths:
           schema:
             type: integer
       responses:
-        '204':
-          description: Producto eliminado de favoritos
-        '404':
+        "200":
+          description: Favorito eliminado, devuelve el usuario actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "404":
           description: Usuario o producto no encontrado
 
   /auth/login:
     post:
-      tags: [Auth]
+      tags:
+        - Auth
       summary: Login de usuario
       operationId: login
       requestBody:
@@ -163,41 +183,38 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
       responses:
-        '200':
-          description: Login exitoso
+        "200":
+          description: Login correcto, devuelve el usuario
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        '401':
-          description: Credenciales inválidas
+                $ref: "#/components/schemas/UserResponse"
+        "401":
+          description: Credenciales incorrectas
 
 components:
-
   schemas:
 
-    UserRequest:
+    LoginRequest:
       type: object
-      required: [nombre, email, password]
       properties:
-        nombre:
-          type: string
-        apellidos:
-          type: string
-        username:
-          type: string
         email:
           type: string
           format: email
         password:
           type: string
 
-    LoginRequest:
+    UserRequest:
       type: object
-      required: [email, password]
       properties:
+        name:
+          type: string
+        lastname:
+          type: string
+        username:
+          type: string
         email:
           type: string
           format: email
@@ -209,13 +226,18 @@ components:
       properties:
         id:
           type: integer
-        nombre:
+        name:
           type: string
-        apellidos:
+        lastname:
           type: string
         username:
           type: string
         email:
           type: string
+          format: email
         carritoId:
           type: integer
+        favoritoIds:
+          type: array
+          items:
+            type: integer

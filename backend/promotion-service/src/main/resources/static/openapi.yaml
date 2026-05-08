@@ -1,61 +1,59 @@
 openapi: 3.0.3
 info:
   title: Promotion Service API
-  description: API para la gestión de promociones
+  description: Microservicio de gestión de promociones
   version: 1.0.0
 
 servers:
   - url: http://localhost:8084
-    description: Servidor local
+    description: Local
 
 tags:
-  - name: Promotions
-    description: Gestión de promociones
+  - name: Promociones
+    description: Operaciones sobre promociones
 
 paths:
 
-  /promotions:
+  /promociones:
     get:
-      tags: [Promotions]
+      tags:
+        - Promociones
       summary: Obtener todas las promociones
       operationId: getAllPromotions
       responses:
-        '200':
-          description: Lista de promociones (puede estar vacía)
+        "200":
+          description: Lista de promociones
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PromotionResponse'
+                  $ref: "#/components/schemas/PromotionResponse"
 
     post:
-      tags: [Promotions]
-      summary: Crear una nueva promoción
+      tags:
+        - Promociones
+      summary: Crear promoción
       operationId: createPromotion
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PromotionRequest'
-            example:
-              descripcion: Descuento de verano
-              descuento: 10.0
+              $ref: "#/components/schemas/PromotionRequest"
       responses:
-        '201':
-          description: Promoción creada exitosamente
+        "201":
+          description: Promoción creada
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PromotionResponse'
-        '400':
-          description: Datos de entrada inválidos
+                $ref: "#/components/schemas/PromotionResponse"
 
-  /promotions/{id}:
+  /promociones/{id}:
     get:
-      tags: [Promotions]
-      summary: Obtener una promoción por ID
+      tags:
+        - Promociones
+      summary: Obtener promoción por ID
       operationId: getPromotionById
       parameters:
         - name: id
@@ -64,18 +62,19 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Promoción encontrada
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PromotionResponse'
-        '404':
+                $ref: "#/components/schemas/PromotionResponse"
+        "404":
           description: Promoción no encontrada
 
     put:
-      tags: [Promotions]
-      summary: Actualizar una promoción
+      tags:
+        - Promociones
+      summary: Actualizar promoción
       operationId: updatePromotion
       parameters:
         - name: id
@@ -88,21 +87,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PromotionRequest'
-            example:
-              descripcion: Descuento actualizado
-              descuento: 15.0
+              $ref: "#/components/schemas/PromotionRequest"
       responses:
-        '204':
-          description: Promoción actualizada exitosamente
-        '400':
-          description: Datos de entrada inválidos
-        '404':
+        "200":
+          description: Promoción actualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PromotionResponse"
+        "404":
           description: Promoción no encontrada
 
     delete:
-      tags: [Promotions]
-      summary: Eliminar una promoción
+      tags:
+        - Promociones
+      summary: Eliminar promoción
       operationId: deletePromotion
       parameters:
         - name: id
@@ -111,35 +110,30 @@ paths:
           schema:
             type: integer
       responses:
-        '204':
-          description: Promoción eliminada exitosamente
-        '404':
+        "204":
+          description: Promoción eliminada
+        "404":
           description: Promoción no encontrada
 
 components:
-
   schemas:
 
     PromotionRequest:
       type: object
-      required: [descripcion, descuento]
       properties:
-        descripcion:
-          type: string
-          example: Descuento de verano
-        descuento:
+        discount:
           type: number
           format: double
-          example: 10.0
+        description:
+          type: string
 
     PromotionResponse:
       type: object
       properties:
         id:
           type: integer
-          example: 1
-        descripcion:
-          type: string
-        descuento:
+        discount:
           type: number
           format: double
+        description:
+          type: string
