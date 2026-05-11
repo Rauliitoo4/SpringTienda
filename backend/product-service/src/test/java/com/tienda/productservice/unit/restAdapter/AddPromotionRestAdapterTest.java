@@ -1,0 +1,79 @@
+package com.tienda.productservice.unit.restAdapter;
+
+import com.tienda.productservice.application.port.input.AddPromotionInputPort;
+import com.tienda.productservice.domain.model.Product;
+import com.tienda.productservice.infrastructure.adapter.input.rest.AddPromotionRestAdapter;
+import com.tienda.productservice.infrastructure.adapter.input.rest.data.mapper.ProductRestMapper;
+import com.tienda.productservice.infrastructure.adapter.input.rest.data.response.ProductResponse;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
+
+import static org.mockito.Mockito.*;
+
+@WebFluxTest(AddPromotionRestAdapter.class)
+class AddPromotionRestAdapterTest {
+
+    @Autowired
+    private WebTestClient webTestClient;
+
+    @MockitoBean
+    private AddPromotionInputPort addPromotionInputPort;
+
+    @MockitoBean
+    private ProductRestMapper mapper;
+
+    private Product product;
+    private ProductResponse productResponse;
+
+    @BeforeEach
+    void setUp() {
+        product = new Product();
+        product.setId(1);
+        product.setName("Camiseta");
+        product.setPrice(20.0);
+        product.setFinalPrice(18.0);
+
+        productResponse = new ProductResponse();
+        productResponse.setId(1);
+        productResponse.setName("Camiseta");
+        productResponse.setPrice(20.0);
+        productResponse.setFinalPrice(18.0);
+    }
+
+    @Test
+    void addPromotion_shouldReturnProductAndStatus200() {
+        when(addPromotionInputPort.execute(1, 1)).thenReturn(Mono.just(product));
+        when(mapper.toResponse(product)).thenReturn(productResponse);
+
+        webTestClient.post().uri("/productos/1/promociones/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ProductResponse.class)
+                .isEqualTo(productResponse);
+
+        verify(addPromotionInputPort, times(1)).execute(1, 1);
+    }
+
+    @Test
+    void addPromotion_ifProductNotExists_shouldReturn404() {
+        when(addPromotionInputPort.execute(99, 1)).thenReturn(Mono.empty());
+
+        webTestClient.post().uri("/productos/99/promociones/1")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void addPromotion_ifPromotionNotExists_shouldReturn404() {
+        when(addPromotionInputPort.execute(1, 99)).thenReturn(Mono.empty());
+
+        webTestClient.post().uri("/productos/1/promociones/99")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+}

@@ -1,4 +1,4 @@
-/*package com.tienda.carritoservice.integration;
+package com.tienda.carritoservice.integration;
 
 import com.tienda.carritoservice.application.service.ProductLoader;
 import com.tienda.carritoservice.application.usecase.*;
@@ -198,4 +198,4 @@ class CarritoIntegrationTest {
         assertNotNull(carrito);
         assertEquals(0.0, carrito.getTotal());
     }
-}*/
+}

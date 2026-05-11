@@ -1,4 +1,4 @@
-package com.tienda.productservice.infrastructure.client;
+package com.tienda.productservice.infrastructure.adapter.output.client;
 
 import com.tienda.productservice.application.model.PromotionModel;
 import com.tienda.productservice.application.port.output.GetPromotionOutputPort;
