@@ -1,8 +1,10 @@
 FROM maven:3.9.14-eclipse-temurin-17 AS build
 WORKDIR /app
+
+COPY settings.xml /root/.m2/settings.xml
 COPY pom.xml .
 COPY src ./src
-RUN mvn clean package -Dmaven.test.skip=true
+RUN mvn clean package -B -Dmaven.test.skip=true
 
 FROM eclipse-temurin:17-jre
 WORKDIR /app
