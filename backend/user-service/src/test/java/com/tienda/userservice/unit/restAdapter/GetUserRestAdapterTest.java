@@ -4,7 +4,7 @@ import com.tienda.userservice.application.port.input.GetUserInputPort;
 import com.tienda.userservice.domain.model.User;
 import com.tienda.userservice.infrastructure.adapter.input.rest.GetUserRestAdapter;
 import com.tienda.userservice.infrastructure.adapter.input.rest.data.mapper.UserRestMapper;
-import com.tienda.userservice.infrastructure.adapter.input.rest.data.response.UserResponse;
+import com.tienda.user.model.UserResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
