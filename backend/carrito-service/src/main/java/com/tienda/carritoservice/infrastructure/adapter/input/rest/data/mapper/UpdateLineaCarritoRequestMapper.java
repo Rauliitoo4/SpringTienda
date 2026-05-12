@@ -1,6 +1,6 @@
 package com.tienda.carritoservice.infrastructure.adapter.input.rest.data.mapper;
 
-import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.request.UpdateLineaCarritoRequest;
+import com.tienda.carrito.model.UpdateLineaCarritoRequest;
 import org.springframework.stereotype.Component;
 
 @Component

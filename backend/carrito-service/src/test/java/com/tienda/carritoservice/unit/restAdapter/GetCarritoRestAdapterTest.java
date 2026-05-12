@@ -4,7 +4,7 @@ import com.tienda.carritoservice.application.port.input.GetCarritoInputPort;
 import com.tienda.carritoservice.domain.model.Carrito;
 import com.tienda.carritoservice.infrastructure.adapter.input.rest.GetCarritoRestAdapter;
 import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.mapper.CarritoRestMapper;
-import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.response.CarritoResponse;
+import com.tienda.carrito.model.CarritoResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

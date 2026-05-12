@@ -1,6 +1,6 @@
 package com.tienda.carritoservice.infrastructure.adapter.input.rest.data.mapper;
 
-import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.request.AddProductToCarritoRequest;
+import com.tienda.carrito.model.AddProductToCarritoRequest;
 import com.tienda.carritoservice.domain.model.Size;
 import org.springframework.stereotype.Component;
 
@@ -15,5 +15,5 @@ public class AddProductToCarritoRequestMapper {
         return request.getQuantity();
     }
 
-    public Size toSize(AddProductToCarritoRequest request){ return request.getSize(); }
+    public Size toSize(AddProductToCarritoRequest request){ return Size.valueOf(request.getSize().getValue());}
 }

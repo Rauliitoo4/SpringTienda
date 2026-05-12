@@ -5,7 +5,7 @@ import com.tienda.carritoservice.domain.model.LineaCarrito;
 import com.tienda.carritoservice.domain.model.Size;
 import com.tienda.carritoservice.infrastructure.adapter.input.rest.GetLineaCarritoRestAdapter;
 import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.mapper.LineaCarritoRestMapper;
-import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.response.LineaCarritoResponse;
+import com.tienda.carrito.model.LineaCarritoResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ class GetLineaCarritoRestAdapterTest {
         lineaResponse.setId(1);
         lineaResponse.setQuantity(2);
         lineaResponse.setSubtotal(40.0);
-        lineaResponse.setSize(Size.M);
+        lineaResponse.setSize(com.tienda.carrito.model.Size.M);
         lineaResponse.setCarritoId(1);
         lineaResponse.setProductId(1);
     }

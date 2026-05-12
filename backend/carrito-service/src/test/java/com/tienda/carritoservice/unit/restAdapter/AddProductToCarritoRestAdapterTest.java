@@ -7,9 +7,9 @@ import com.tienda.carritoservice.domain.model.Size;
 import com.tienda.carritoservice.infrastructure.adapter.input.rest.AddProductToCarritoRestAdapter;
 import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.mapper.AddProductToCarritoRequestMapper;
 import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.mapper.CarritoRestMapper;
-import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.request.AddProductToCarritoRequest;
-import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.response.CarritoResponse;
-import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.response.LineaCarritoResponse;
+import com.tienda.carrito.model.AddProductToCarritoRequest;
+import com.tienda.carrito.model.CarritoResponse;
+import com.tienda.carrito.model.LineaCarritoResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +68,7 @@ class AddProductToCarritoRestAdapterTest {
         request = new AddProductToCarritoRequest();
         request.setProductId(1);
         request.setQuantity(2);
-        request.setSize(Size.M);
+        request.setSize(com.tienda.carrito.model.Size.M);
     }
 
     @Test
@@ -109,7 +109,7 @@ class AddProductToCarritoRestAdapterTest {
         AddProductToCarritoRequest requestProduct99 = new AddProductToCarritoRequest();
         requestProduct99.setProductId(99);
         requestProduct99.setQuantity(2);
-        requestProduct99.setSize(Size.M);
+        requestProduct99.setSize(com.tienda.carrito.model.Size.M);
 
         when(requestMapper.toProductId(any(AddProductToCarritoRequest.class))).thenReturn(99);
         when(requestMapper.toQuantity(any(AddProductToCarritoRequest.class))).thenReturn(2);
