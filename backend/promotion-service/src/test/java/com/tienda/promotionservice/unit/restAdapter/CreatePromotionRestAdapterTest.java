@@ -4,8 +4,8 @@ import com.tienda.promotionservice.application.port.input.CreatePromotionInputPo
 import com.tienda.promotionservice.domain.model.Promotion;
 import com.tienda.promotionservice.infrastructure.adapter.input.rest.CreatePromotionRestAdapter;
 import com.tienda.promotionservice.infrastructure.adapter.input.rest.data.mapper.PromotionRestMapper;
-import com.tienda.promotionservice.infrastructure.adapter.input.rest.data.request.PromotionRequest;
-import com.tienda.promotionservice.infrastructure.adapter.input.rest.data.response.PromotionResponse;
+import com.tienda.promotion.model.PromotionRequest;
+import com.tienda.promotion.model.PromotionResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

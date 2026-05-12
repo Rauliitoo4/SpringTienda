@@ -2,8 +2,8 @@ package com.tienda.promotionservice.infrastructure.adapter.input.rest;
 
 import com.tienda.promotionservice.application.port.input.UpdatePromotionInputPort;
 import com.tienda.promotionservice.infrastructure.adapter.input.rest.data.mapper.PromotionRestMapper;
-import com.tienda.promotionservice.infrastructure.adapter.input.rest.data.request.PromotionRequest;
-import com.tienda.promotionservice.infrastructure.adapter.input.rest.data.response.PromotionResponse;
+import com.tienda.promotion.model.PromotionRequest;
+import com.tienda.promotion.model.PromotionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;

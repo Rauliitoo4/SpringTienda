@@ -1,8 +1,8 @@
 package com.tienda.promotionservice.infrastructure.adapter.input.rest.data.mapper;
 
 import com.tienda.promotionservice.domain.model.Promotion;
-import com.tienda.promotionservice.infrastructure.adapter.input.rest.data.request.PromotionRequest;
-import com.tienda.promotionservice.infrastructure.adapter.input.rest.data.response.PromotionResponse;
+import com.tienda.promotion.model.PromotionRequest;
+import com.tienda.promotion.model.PromotionResponse;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
