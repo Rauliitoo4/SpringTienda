@@ -2,7 +2,7 @@ package com.tienda.productservice.infrastructure.adapter.input.rest;
 
 import com.tienda.productservice.application.port.input.GetProductInputPort;
 import com.tienda.productservice.infrastructure.adapter.input.rest.data.mapper.ProductRestMapper;
-import com.tienda.productservice.infrastructure.adapter.input.rest.data.response.ProductResponse;
+import com.tienda.product.model.ProductResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
