@@ -5,10 +5,14 @@ import com.tienda.userservice.domain.model.User;
 import com.tienda.userservice.infrastructure.adapter.input.rest.RemoveFavoritoRestAdapter;
 import com.tienda.userservice.infrastructure.adapter.input.rest.data.mapper.UserRestMapper;
 import com.tienda.user.model.UserResponse;
+import com.tienda.userservice.infrastructure.security.JwtAuthenticationFilter;
+import com.tienda.userservice.infrastructure.security.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -18,6 +22,7 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 
 @WebFluxTest(RemoveFavoritoRestAdapter.class)
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 class RemoveFavoritoRestAdapterTest {
 
     @Autowired
@@ -48,6 +53,7 @@ class RemoveFavoritoRestAdapterTest {
     }
 
     @Test
+    @WithMockUser
     void removeFavorito_shouldReturnUserAndStatus200() {
         when(removeFavoritoInputPort.execute(1, 1)).thenReturn(Mono.just(user));
         when(userRestMapper.toResponse(user)).thenReturn(userResponse);
@@ -62,6 +68,7 @@ class RemoveFavoritoRestAdapterTest {
     }
 
     @Test
+    @WithMockUser
     void removeFavorito_ifUserNotExists_shouldReturn404() {
         when(removeFavoritoInputPort.execute(99, 1)).thenReturn(Mono.empty());
 

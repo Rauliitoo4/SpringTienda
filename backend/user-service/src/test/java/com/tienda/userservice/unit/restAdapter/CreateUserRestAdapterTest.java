@@ -6,10 +6,13 @@ import com.tienda.userservice.infrastructure.adapter.input.rest.CreateUserRestAd
 import com.tienda.userservice.infrastructure.adapter.input.rest.data.mapper.UserRestMapper;
 import com.tienda.user.model.UserRequest;
 import com.tienda.user.model.UserResponse;
+import com.tienda.userservice.infrastructure.security.JwtAuthenticationFilter;
+import com.tienda.userservice.infrastructure.security.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -19,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @WebFluxTest(CreateUserRestAdapter.class)
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 class CreateUserRestAdapterTest {
 
     @Autowired

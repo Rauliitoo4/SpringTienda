@@ -2,9 +2,12 @@ package com.tienda.userservice.unit.restAdapter;
 
 import com.tienda.userservice.application.port.input.DeleteUserInputPort;
 import com.tienda.userservice.infrastructure.adapter.input.rest.DeleteUserRestAdapter;
+import com.tienda.userservice.infrastructure.security.JwtAuthenticationFilter;
+import com.tienda.userservice.infrastructure.security.SecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -12,6 +15,7 @@ import reactor.core.publisher.Mono;
 import static org.mockito.Mockito.*;
 
 @WebFluxTest(DeleteUserRestAdapter.class)
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 class DeleteUserRestAdapterTest {
 
     @Autowired

@@ -2,6 +2,7 @@ package com.tienda.userservice.infrastructure.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
@@ -35,7 +36,16 @@ public class SecurityConfig {
                 )
                 // Reglas de autorización
                 .authorizeExchange(auth -> auth
-                        .pathMatchers("/auth/login").permitAll()
+                        // Públicos
+                        .pathMatchers(HttpMethod.POST,   "/auth/login").permitAll()
+                        .pathMatchers(HttpMethod.POST,   "/usuarios").permitAll()
+                        .pathMatchers(HttpMethod.GET,    "/usuarios/{id}").permitAll()
+                        .pathMatchers(HttpMethod.GET,    "/usuarios").permitAll()
+                        .pathMatchers(HttpMethod.DELETE, "/usuarios/{id}").permitAll()
+                        // Requieren token
+                        .pathMatchers(HttpMethod.PUT,    "/usuarios/{id}").authenticated()
+                        .pathMatchers(HttpMethod.POST,   "/usuarios/{id}/favoritos/{favId}").authenticated()
+                        .pathMatchers(HttpMethod.DELETE, "/usuarios/{id}/favoritos/{favId}").authenticated()
                         .anyExchange().authenticated()
                 )
                 // Filtro JWT antes del filtro de autorización de Spring
