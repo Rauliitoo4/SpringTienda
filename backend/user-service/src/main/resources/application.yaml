@@ -17,3 +17,7 @@ spring:
 services:
   carrito-service:
     url: http://carrito-service:8082
+
+jwt:
+  secret: ${JWT_SECRET:clave.secreta-local-minimo-32-caracteres!!}
+  expiration-ms: 86400000;

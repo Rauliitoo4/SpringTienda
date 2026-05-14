@@ -3,6 +3,8 @@ package com.tienda.userservice.unit.usecase;
 import com.tienda.userservice.application.port.output.GetUserOutputPort;
 import com.tienda.userservice.application.usecase.LoginUseCase;
 import com.tienda.userservice.domain.model.User;
+import com.tienda.userservice.infrastructure.security.JwtTokenProvider;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,31 +21,45 @@ class LoginUseCaseTest {
     @Mock
     private GetUserOutputPort getUserOutputPort;
 
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
+
     @InjectMocks
     private LoginUseCase loginUseCase;
 
-    @Test
-    void execute_shouldReturnUserIfCredentialsAreValid() {
-        User user = new User();
-        user.setId(1);
-        user.setEmail("alberto@gmail.com");
+    private User testUser;
 
-        when(getUserOutputPort.findByEmailAndPassword("alberto@gmail.com", "1234"))
-                .thenReturn(Mono.just(user));
-
-        StepVerifier.create(loginUseCase.execute("alberto@gmail.com", "1234"))
-                .expectNextMatches(result -> result.getId() == 1)
-                .verifyComplete();
-
-        verify(getUserOutputPort, times(1)).findByEmailAndPassword("alberto@gmail.com", "1234");
+    @BeforeEach
+    void setUp() {
+        testUser = new User();
+        testUser.setId(1);
+        testUser.setEmail("test@test.com");
+        testUser.setPassword("password");
     }
 
     @Test
-    void execute_ifCredentialsInvalid_shouldReturnEmpty() {
-        when(getUserOutputPort.findByEmailAndPassword("wrong@gmail.com", "wrongpass"))
+    void execute_credencialesCorrectas_devuelveToken() {
+        when(getUserOutputPort.findByEmailAndPassword("test@test.com", "password"))
+                .thenReturn(Mono.just(testUser));
+        when(jwtTokenProvider.generateToken("1"))
+                .thenReturn("eyJhbGciOiJIUzI1NiJ9.token");
+
+        StepVerifier.create(loginUseCase.execute("test@test.com", "password"))
+                .expectNext("eyJhbGciOiJIUzI1NiJ9.token")
+                .verifyComplete();
+
+        verify(getUserOutputPort).findByEmailAndPassword("test@test.com", "password");
+        verify(jwtTokenProvider).generateToken("1");
+    }
+
+    @Test
+    void execute_credencialesIncorrectas_devuelveVacio() {
+        when(getUserOutputPort.findByEmailAndPassword("wrong@test.com", "wrong"))
                 .thenReturn(Mono.empty());
 
-        StepVerifier.create(loginUseCase.execute("wrong@gmail.com", "wrongpass"))
+        StepVerifier.create(loginUseCase.execute("wrong@test.com", "wrong"))
                 .verifyComplete();
+
+        verify(jwtTokenProvider, never()).generateToken(any());
     }
 }

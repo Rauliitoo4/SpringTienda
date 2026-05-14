@@ -1,9 +1,8 @@
 package com.tienda.userservice.infrastructure.adapter.input.rest;
 
+import com.tienda.user.model.LoginResponse;
 import com.tienda.userservice.application.port.input.LoginInputPort;
-import com.tienda.userservice.infrastructure.adapter.input.rest.data.mapper.UserRestMapper;
 import com.tienda.user.model.LoginRequest;
-import com.tienda.user.model.UserResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -13,17 +12,19 @@ import reactor.core.publisher.Mono;
 public class LoginRestAdapter {
 
     private final LoginInputPort loginInputPort;
-    private final UserRestMapper mapper;
 
-    public LoginRestAdapter(LoginInputPort loginInputPort, UserRestMapper mapper) {
+    public LoginRestAdapter(LoginInputPort loginInputPort) {
         this.loginInputPort = loginInputPort;
-        this.mapper = mapper;
     }
 
     @PostMapping("/login")
-    public Mono<ResponseEntity<UserResponse>> login(@RequestBody LoginRequest request) {
+    public Mono<ResponseEntity<LoginResponse>> login(@RequestBody LoginRequest request) {
         return loginInputPort.execute(request.getEmail(), request.getPassword())
-                .map(user -> ResponseEntity.ok(mapper.toResponse(user)))
+                .map(token -> {
+                    LoginResponse response = new LoginResponse();
+                    response.setToken(token);
+                    return ResponseEntity.ok(response);
+                })
                 .defaultIfEmpty(ResponseEntity.status(401).build());
     }
 }

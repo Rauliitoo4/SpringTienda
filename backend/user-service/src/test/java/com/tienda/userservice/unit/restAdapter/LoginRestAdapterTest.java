@@ -1,83 +1,59 @@
 package com.tienda.userservice.unit.restAdapter;
 
 import com.tienda.userservice.application.port.input.LoginInputPort;
-import com.tienda.userservice.domain.model.User;
 import com.tienda.userservice.infrastructure.adapter.input.rest.LoginRestAdapter;
-import com.tienda.userservice.infrastructure.adapter.input.rest.data.mapper.UserRestMapper;
 import com.tienda.user.model.LoginRequest;
-import com.tienda.user.model.UserResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
-@WebFluxTest(LoginRestAdapter.class)
+@ExtendWith(MockitoExtension.class)
 class LoginRestAdapterTest {
 
-    @Autowired
-    private WebTestClient webTestClient;
-
-    @MockitoBean
+    @Mock
     private LoginInputPort loginInputPort;
 
-    @MockitoBean
-    private UserRestMapper mapper;
+    @InjectMocks
+    private LoginRestAdapter loginRestAdapter;
 
-    private User user;
-    private UserResponse userResponse;
-    private LoginRequest loginRequest;
+    @Test
+    void login_credencialesCorrectas_devuelve200ConToken() {
+        LoginRequest request = new LoginRequest();
+        request.setEmail("test@test.com");
+        request.setPassword("password");
 
-    @BeforeEach
-    void setUp() {
-        user = new User();
-        user.setId(1);
-        user.setName("Alberto");
-        user.setEmail("alberto@gmail.com");
+        when(loginInputPort.execute("test@test.com", "password"))
+                .thenReturn(Mono.just("eyJhbGciOiJIUzI1NiJ9.token"));
 
-        userResponse = new UserResponse();
-        userResponse.setId(1);
-        userResponse.setName("Alberto");
-        userResponse.setEmail("alberto@gmail.com");
-
-        loginRequest = new LoginRequest();
-        loginRequest.setEmail("alberto@gmail.com");
-        loginRequest.setPassword("1234");
+        StepVerifier.create(loginRestAdapter.login(request))
+                .assertNext(response -> {
+                    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+                    assertThat(response.getBody()).isNotNull();
+                    assertThat(response.getBody().getToken()).isEqualTo("eyJhbGciOiJIUzI1NiJ9.token");
+                })
+                .verifyComplete();
     }
 
     @Test
-    void login_shouldReturnUserAndStatus200() {
-        when(loginInputPort.execute("alberto@gmail.com", "1234")).thenReturn(Mono.just(user));
-        when(mapper.toResponse(user)).thenReturn(userResponse);
+    void login_credencialesIncorrectas_devuelve401() {
+        LoginRequest request = new LoginRequest();
+        request.setEmail("wrong@test.com");
+        request.setPassword("wrong");
 
-        webTestClient.post().uri("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(loginRequest)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(UserResponse.class)
-                .isEqualTo(userResponse);
+        when(loginInputPort.execute("wrong@test.com", "wrong"))
+                .thenReturn(Mono.empty());
 
-        verify(loginInputPort, times(1)).execute("alberto@gmail.com", "1234");
-    }
-
-    @Test
-    void login_ifCredentialsInvalid_shouldReturn401() {
-        when(loginInputPort.execute("wrong@gmail.com", "wrongpass")).thenReturn(Mono.empty());
-
-        LoginRequest wrongRequest = new LoginRequest();
-        wrongRequest.setEmail("wrong@gmail.com");
-        wrongRequest.setPassword("wrongpass");
-
-        webTestClient.post().uri("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(wrongRequest)
-                .exchange()
-                .expectStatus().isUnauthorized();
+        StepVerifier.create(loginRestAdapter.login(request))
+                .assertNext(response ->
+                        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED))
+                .verifyComplete();
     }
 }
