@@ -72,6 +72,49 @@ services:
       timeout: 5s
       retries: 5
 
+  # KEYCLOAK
+
+  keycloak-db:
+    image: postgres:17
+    container_name: keycloak-db
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    ports:
+      - "5439:5432"
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    container_name: keycloak
+    command: start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HTTP_PORT: 9090
+    ports:
+      - "9090:9090"
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9090"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
   # MICROSERVICIOS
 
   product-service:
@@ -87,8 +130,12 @@ services:
       SPRING_LIQUIBASE_URL: jdbc:postgresql://product-db:5432/product_db
       SPRING_LIQUIBASE_USER: postgres
       SPRING_LIQUIBASE_PASSWORD: postgres
+      KEYCLOAK_ISSUER_URI: http://localhost:9090/realms/tienda
+      KEYCLOAK_JWK_SET_URI: http://keycloak:9090/realms/tienda/protocol/openid-connect/certs
     depends_on:
       product-db:
+        condition: service_healthy
+      keycloak:
         condition: service_healthy
 
   promotion-service:
@@ -104,8 +151,12 @@ services:
       SPRING_LIQUIBASE_URL: jdbc:postgresql://promotion-db:5432/promotion_db
       SPRING_LIQUIBASE_USER: postgres
       SPRING_LIQUIBASE_PASSWORD: postgres
+      KEYCLOAK_ISSUER_URI: http://localhost:9090/realms/tienda
+      KEYCLOAK_JWK_SET_URI: http://keycloak:9090/realms/tienda/protocol/openid-connect/certs
     depends_on:
       promotion-db:
+        condition: service_healthy
+      keycloak:
         condition: service_healthy
 
   carrito-service:
@@ -121,8 +172,12 @@ services:
       SPRING_LIQUIBASE_URL: jdbc:postgresql://carrito-db:5432/carrito_db
       SPRING_LIQUIBASE_USER: postgres
       SPRING_LIQUIBASE_PASSWORD: postgres
+      KEYCLOAK_ISSUER_URI: http://localhost:9090/realms/tienda
+      KEYCLOAK_JWK_SET_URI: http://keycloak:9090/realms/tienda/protocol/openid-connect/certs
     depends_on:
       carrito-db:
+        condition: service_healthy
+      keycloak:
         condition: service_healthy
 
   user-service:
@@ -138,8 +193,12 @@ services:
       SPRING_LIQUIBASE_URL: jdbc:postgresql://user-db:5432/user_db
       SPRING_LIQUIBASE_USER: postgres
       SPRING_LIQUIBASE_PASSWORD: postgres
+      KEYCLOAK_ISSUER_URI: http://localhost:9090/realms/tienda
+      KEYCLOAK_JWK_SET_URI: http://keycloak:9090/realms/tienda/protocol/openid-connect/certs
     depends_on:
       user-db:
+        condition: service_healthy
+      keycloak:
         condition: service_healthy
 
   # API GATEWAY - KONG
@@ -259,6 +318,7 @@ volumes:
   promotion-db-data:
   carrito-db-data:
   user-db-data:
+  keycloak-db-data:
   kong-db-data:
   konga-db-data:
   konga-data:
