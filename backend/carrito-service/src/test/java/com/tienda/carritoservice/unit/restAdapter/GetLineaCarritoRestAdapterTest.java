@@ -6,10 +6,13 @@ import com.tienda.carritoservice.domain.model.Size;
 import com.tienda.carritoservice.infrastructure.adapter.input.rest.GetLineaCarritoRestAdapter;
 import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.mapper.LineaCarritoRestMapper;
 import com.tienda.carrito.model.LineaCarritoResponse;
+import com.tienda.carritoservice.infrastructure.security.JwtAuthenticationFilter;
+import com.tienda.carritoservice.infrastructure.security.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
@@ -18,6 +21,7 @@ import reactor.core.publisher.Mono;
 import static org.mockito.Mockito.*;
 
 @WebFluxTest(GetLineaCarritoRestAdapter.class)
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 class GetLineaCarritoRestAdapterTest {
 
     @Autowired

@@ -8,11 +8,15 @@ import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.mapper.L
 import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.mapper.UpdateLineaCarritoRequestMapper;
 import com.tienda.carrito.model.UpdateLineaCarritoRequest;
 import com.tienda.carrito.model.LineaCarritoResponse;
+import com.tienda.carritoservice.infrastructure.security.JwtAuthenticationFilter;
+import com.tienda.carritoservice.infrastructure.security.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -21,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @WebFluxTest(UpdateLineaCarritoRestAdapter.class)
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 class UpdateLineaCarritoRestAdapterTest {
 
     @Autowired
@@ -62,6 +67,7 @@ class UpdateLineaCarritoRestAdapterTest {
     }
 
     @Test
+    @WithMockUser
     void updateLinea_shouldReturnLineaUpdatedAndStatus200() {
         when(requestMapper.toQuantity(any(UpdateLineaCarritoRequest.class))).thenReturn(5);
         when(updateLineaCarritoInputPort.execute(1, 5)).thenReturn(Mono.just(linea));
@@ -79,6 +85,7 @@ class UpdateLineaCarritoRestAdapterTest {
     }
 
     @Test
+    @WithMockUser
     void updateLinea_ifNotExists_shouldReturn404() {
         when(requestMapper.toQuantity(any(UpdateLineaCarritoRequest.class))).thenReturn(5);
         when(updateLineaCarritoInputPort.execute(99, 5)).thenReturn(Mono.empty());

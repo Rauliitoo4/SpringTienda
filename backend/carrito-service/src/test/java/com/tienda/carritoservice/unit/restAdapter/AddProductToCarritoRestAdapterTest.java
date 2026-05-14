@@ -10,11 +10,15 @@ import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.mapper.C
 import com.tienda.carrito.model.AddProductToCarritoRequest;
 import com.tienda.carrito.model.CarritoResponse;
 import com.tienda.carrito.model.LineaCarritoResponse;
+import com.tienda.carritoservice.infrastructure.security.JwtAuthenticationFilter;
+import com.tienda.carritoservice.infrastructure.security.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -25,6 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @WebFluxTest(AddProductToCarritoRestAdapter.class)
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 class AddProductToCarritoRestAdapterTest {
 
     @Autowired
@@ -72,6 +77,7 @@ class AddProductToCarritoRestAdapterTest {
     }
 
     @Test
+    @WithMockUser
     void addProductToCarrito_shouldReturnCarritoUpdatedAndStatus200() {
         when(requestMapper.toProductId(any(AddProductToCarritoRequest.class))).thenReturn(1);
         when(requestMapper.toQuantity(any(AddProductToCarritoRequest.class))).thenReturn(2);
@@ -91,6 +97,7 @@ class AddProductToCarritoRestAdapterTest {
     }
 
     @Test
+    @WithMockUser
     void addProductToCarrito_ifCarritoNotExists_shouldReturn404() {
         when(requestMapper.toProductId(any(AddProductToCarritoRequest.class))).thenReturn(1);
         when(requestMapper.toQuantity(any(AddProductToCarritoRequest.class))).thenReturn(2);
@@ -105,6 +112,7 @@ class AddProductToCarritoRestAdapterTest {
     }
 
     @Test
+    @WithMockUser
     void addProductToCarrito_ifProductNotExists_shouldReturn404() {
         AddProductToCarritoRequest requestProduct99 = new AddProductToCarritoRequest();
         requestProduct99.setProductId(99);

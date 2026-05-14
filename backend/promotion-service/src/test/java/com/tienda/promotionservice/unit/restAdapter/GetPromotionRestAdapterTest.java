@@ -5,10 +5,13 @@ import com.tienda.promotionservice.domain.model.Promotion;
 import com.tienda.promotionservice.infrastructure.adapter.input.rest.GetPromotionRestAdapter;
 import com.tienda.promotionservice.infrastructure.adapter.input.rest.data.mapper.PromotionRestMapper;
 import com.tienda.promotion.model.PromotionResponse;
+import com.tienda.promotionservice.infrastructure.security.JwtAuthenticationFilter;
+import com.tienda.promotionservice.infrastructure.security.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
@@ -17,6 +20,7 @@ import reactor.core.publisher.Mono;
 import static org.mockito.Mockito.*;
 
 @WebFluxTest(GetPromotionRestAdapter.class)
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 class GetPromotionRestAdapterTest {
 
     @Autowired

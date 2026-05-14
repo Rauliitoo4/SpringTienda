@@ -13,3 +13,6 @@ spring:
     user: postgres
     password: postgres
     change-log: classpath:db/changelog/db.changelog-master.xml
+
+jwt:
+  secret: ${JWT_SECRET:clave-secreta-local-minimo-32-caracteres!!}

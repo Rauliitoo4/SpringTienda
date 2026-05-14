@@ -17,3 +17,6 @@ spring:
 services:
   promotion-service:
     url: http://promotion-service:8084
+
+jwt:
+  secret: ${JWT_SECRET:clave-secreta-local-minimo-32-caracteres!!}

@@ -6,11 +6,15 @@ import com.tienda.productservice.infrastructure.adapter.input.rest.UpdateProduct
 import com.tienda.productservice.infrastructure.adapter.input.rest.data.mapper.ProductRestMapper;
 import com.tienda.product.model.ProductRequest;
 import com.tienda.product.model.ProductResponse;
+import com.tienda.productservice.infrastructure.security.JwtAuthenticationFilter;
+import com.tienda.productservice.infrastructure.security.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -20,6 +24,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @WebFluxTest(UpdateProductRestAdapter.class)
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 class UpdateProductRestAdapterTest {
 
     @Autowired
@@ -55,6 +60,7 @@ class UpdateProductRestAdapterTest {
     }
 
     @Test
+    @WithMockUser
     void updateProduct_shouldReturnProductAndStatus200() {
         when(mapper.toDomain(any(ProductRequest.class))).thenReturn(product);
         when(updateProductInputPort.execute(eq(1), any(Product.class))).thenReturn(Mono.just(product));
@@ -72,6 +78,7 @@ class UpdateProductRestAdapterTest {
     }
 
     @Test
+    @WithMockUser
     void updateProduct_ifNotExists_shouldReturn404() {
         when(mapper.toDomain(any(ProductRequest.class))).thenReturn(product);
         when(updateProductInputPort.execute(eq(99), any(Product.class))).thenReturn(Mono.empty());

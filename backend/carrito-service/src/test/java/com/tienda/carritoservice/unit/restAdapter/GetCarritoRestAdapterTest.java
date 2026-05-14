@@ -5,10 +5,14 @@ import com.tienda.carritoservice.domain.model.Carrito;
 import com.tienda.carritoservice.infrastructure.adapter.input.rest.GetCarritoRestAdapter;
 import com.tienda.carritoservice.infrastructure.adapter.input.rest.data.mapper.CarritoRestMapper;
 import com.tienda.carrito.model.CarritoResponse;
+import com.tienda.carritoservice.infrastructure.security.JwtAuthenticationFilter;
+import com.tienda.carritoservice.infrastructure.security.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -18,6 +22,7 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 
 @WebFluxTest(GetCarritoRestAdapter.class)
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 class GetCarritoRestAdapterTest {
 
     @Autowired
@@ -46,6 +51,7 @@ class GetCarritoRestAdapterTest {
     }
 
     @Test
+    @WithMockUser
     void getCarrito_shouldReturnCarritoAndStatus200() {
         when(getCarritoInputPort.execute(1)).thenReturn(Mono.just(carrito));
         when(mapper.toResponse(carrito)).thenReturn(carritoResponse);
@@ -60,6 +66,7 @@ class GetCarritoRestAdapterTest {
     }
 
     @Test
+    @WithMockUser
     void getCarrito_ifNotExists_shouldReturn404() {
         when(getCarritoInputPort.execute(99)).thenReturn(Mono.empty());
 

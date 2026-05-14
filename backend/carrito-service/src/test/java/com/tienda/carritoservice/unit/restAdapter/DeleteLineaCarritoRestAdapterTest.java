@@ -2,9 +2,13 @@ package com.tienda.carritoservice.unit.restAdapter;
 
 import com.tienda.carritoservice.application.port.input.DeleteLineaCarritoInputPort;
 import com.tienda.carritoservice.infrastructure.adapter.input.rest.DeleteLineaCarritoRestAdapter;
+import com.tienda.carritoservice.infrastructure.security.JwtAuthenticationFilter;
+import com.tienda.carritoservice.infrastructure.security.SecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -12,6 +16,7 @@ import reactor.core.publisher.Mono;
 import static org.mockito.Mockito.*;
 
 @WebFluxTest(DeleteLineaCarritoRestAdapter.class)
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 class DeleteLineaCarritoRestAdapterTest {
 
     @Autowired
@@ -21,6 +26,7 @@ class DeleteLineaCarritoRestAdapterTest {
     private DeleteLineaCarritoInputPort deleteLineaCarritoInputPort;
 
     @Test
+    @WithMockUser
     void deleteLinea_shouldReturnStatus204() {
         when(deleteLineaCarritoInputPort.execute(1)).thenReturn(Mono.just(true));
 
@@ -32,6 +38,7 @@ class DeleteLineaCarritoRestAdapterTest {
     }
 
     @Test
+    @WithMockUser
     void deleteLinea_ifNotExists_shouldReturn404() {
         when(deleteLineaCarritoInputPort.execute(99)).thenReturn(Mono.just(false));
 
