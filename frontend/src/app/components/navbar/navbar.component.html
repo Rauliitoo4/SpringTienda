@@ -12,7 +12,7 @@
 
   <div class="navbar__right">
     <div class="navbar__session" *ngIf="isLoggedIn">
-      <span>Sesión iniciada como <em>{{ currentUser!.username }}</em></span>
+      <span>Sesión iniciada como <em>{{ currentUser?.username }}</em></span>
     </div>
 
     <div class="navbar__actions">
