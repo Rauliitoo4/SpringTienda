@@ -28,4 +28,9 @@ public class GetUserUseCase implements GetUserInputPort {
         return getUserOutputPort.findAll()
                 .flatMap(favoritoLoader::loadFavoritos);
     }
+
+    public Mono<User> executeByEmail(String email) {
+        return getUserOutputPort.findByEmail(email)
+                .flatMap(favoritoLoader::loadFavoritos);
+    }
 }

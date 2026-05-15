@@ -32,4 +32,11 @@ public class GetUserRestAdapter {
         return ResponseEntity.ok(getUserInputPort.executeAll()
                 .map(mapper::toResponse));
     }
+
+    @GetMapping("/email/{email}")
+    public Mono<ResponseEntity<UserResponse>> getByEmail(@PathVariable String email) {
+        return getUserInputPort.executeByEmail(email)
+                .map(user -> ResponseEntity.ok(mapper.toResponse(user)))
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
 }

@@ -1,9 +1,10 @@
 import { Injectable, inject, signal, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
-import { Observable, tap, firstValueFrom } from 'rxjs';
+import { Observable, tap, firstValueFrom, switchMap, map } from 'rxjs';
 import { User } from '../../models/user/user.model';
 import { CarritoService } from '../carrito/carrito.service';
+import { environment } from '../../../environments/environment';
 
 export interface LoginRequest {
   email: string;
@@ -19,7 +20,10 @@ export interface RegisterRequest {
 }
 
 export interface LoginResponse {
-  token: string;
+  access_token: string;
+  expires_in: number;
+  refresh_token: string;
+  token_type: string;
 }
 
 @Injectable({
@@ -35,14 +39,22 @@ export class AuthService {
   isLoggedIn = signal(false);
 
   login(data: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, data).pipe(
+    const body = new URLSearchParams();
+    body.set('grant_type', 'password');
+    body.set('client_id', 'tienda-app');
+    body.set('client_secret', environment.keycloakClientSecret);
+    body.set('username', data.email);
+    body.set('password', data.password);
+
+    return this.http.post<LoginResponse>(
+      'http://localhost:9090/realms/tienda/protocol/openid-connect/token',
+      body.toString(),
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+    ).pipe(
       tap(response => {
         if (isPlatformBrowser(this.platformId)) {
-          localStorage.setItem('token', response.token);
-          const userId = this.getUserIdFromToken(response.token);
-          if (userId) {
-            localStorage.setItem('userId', userId);
-          }
+          localStorage.setItem('token', response.access_token);
+          localStorage.setItem('userEmail', data.email);
         }
         this.isLoggedIn.set(true);
         this.loadUserFromStorage();
@@ -52,13 +64,11 @@ export class AuthService {
 
   register(data: RegisterRequest): Observable<User> {
     return this.http.post<User>(`${this.apiUrl}/usuarios`, data).pipe(
-      tap(user => {
-        this.currentUser.set(user);
-        this.isLoggedIn.set(true);
-        if (isPlatformBrowser(this.platformId)) {
-          localStorage.setItem('userId', String(user.id));
-        }
-      })
+      switchMap(user =>
+        this.login({ email: data.email, password: data.password }).pipe(
+          map(() => user)
+        )
+      )
     );
   }
 
@@ -69,20 +79,24 @@ export class AuthService {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token');
       localStorage.removeItem('userId');
+      localStorage.removeItem('userEmail');
     }
   }
 
   loadUserFromStorage(): Promise<void> {
     if (!isPlatformBrowser(this.platformId)) return Promise.resolve();
 
-    const userId = localStorage.getItem('userId');
-    if (!userId) return Promise.resolve();
+    const email = localStorage.getItem('userEmail');
+    if (!email) return Promise.resolve();
 
     return firstValueFrom(
-      this.http.get<User>(`${this.apiUrl}/usuarios/${userId}`)
+      this.http.get<User>(`${this.apiUrl}/usuarios/email/${email}`)
     ).then(user => {
       this.currentUser.set(user);
       this.isLoggedIn.set(true);
+      if (isPlatformBrowser(this.platformId)) {
+        localStorage.setItem('userId', String(user.id));
+      }
     }).catch(() => {
       this.logout();
     });

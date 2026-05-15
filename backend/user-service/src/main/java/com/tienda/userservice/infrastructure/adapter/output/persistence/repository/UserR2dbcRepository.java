@@ -6,6 +6,5 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Mono;
 
 public interface UserR2dbcRepository extends ReactiveCrudRepository<UserEntity, Integer>{
-    @Query("SELECT * FROM usuarios WHERE email = :email AND password = :password")
-    Mono<UserEntity> findByEmailAndPassword(String email, String password);
+    Mono<UserEntity> findByEmail(String email);
 }

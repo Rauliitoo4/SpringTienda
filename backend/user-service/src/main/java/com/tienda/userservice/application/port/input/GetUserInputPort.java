@@ -7,4 +7,5 @@ import reactor.core.publisher.Mono;
 public interface GetUserInputPort {
     Mono<User> execute(int id);
     Flux<User> executeAll();
+    Mono<User> executeByEmail(String email);
 }

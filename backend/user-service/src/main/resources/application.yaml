@@ -23,3 +23,10 @@ spring:
 services:
   carrito-service:
     url: http://carrito-service:8082
+
+keycloak:
+  admin:
+    url: ${KEYCLOAK_URL:http://localhost:9090}
+    realm: tienda
+    client-id: admin-cli
+    client-secret: A3DT7TlCqKndwYvKDSIYMtkXDk3HawHJ

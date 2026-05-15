@@ -26,6 +26,7 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.POST,   "/usuarios").permitAll()
                         .pathMatchers(HttpMethod.GET,    "/usuarios/{id}").permitAll()
                         .pathMatchers(HttpMethod.GET,    "/usuarios").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/usuarios/email/{email}").permitAll()
                         .pathMatchers(HttpMethod.DELETE, "/usuarios/{id}").permitAll()
                         .pathMatchers(HttpMethod.PUT,    "/usuarios/{id}").authenticated()
                         .pathMatchers(HttpMethod.POST,   "/usuarios/{id}/favoritos/{favId}").authenticated()

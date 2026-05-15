@@ -195,6 +195,7 @@ services:
       SPRING_LIQUIBASE_PASSWORD: postgres
       KEYCLOAK_ISSUER_URI: http://localhost:9090/realms/tienda
       KEYCLOAK_JWK_SET_URI: http://keycloak:9090/realms/tienda/protocol/openid-connect/certs
+      KEYCLOAK_URL: http://keycloak:9090
     depends_on:
       user-db:
         condition: service_healthy
